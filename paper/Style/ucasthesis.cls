@@ -210,16 +210,6 @@
 \newcommand{\studydateto}[1]{\def\ucas@value@ch@studydateto{#1}}
 \def\ucas@value@ch@date{}
 \renewcommand{\date}[1]{\def\ucas@value@ch@date{#1}}
-
-\def\ucas@value@ch@period{}
-\newcommand{\period}[1]{\def\ucas@value@ch@period{#1}}
-\def\ucas@value@ch@class{}
-\newcommand{\class}[1]{\def\ucas@value@ch@class{#1}}
-\def\ucas@label@ch@duration{}
-\newcommand{\duration}[1]{\def\ucas@value@ch@duration{#1}}
-\def\ucas@label@ch@studentid{}
-\newcommand{\studentid}[1]{\def\ucas@value@ch@studentid{#1}}
-
 %-
 %-> English item commands
 %-
