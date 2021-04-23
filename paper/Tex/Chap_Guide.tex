@@ -1,0 +1,318 @@
+\chapter{\LaTeX{}使用说明}\label{chap:guide}
+
+为方便使用及更好地展示\LaTeX{}排版的优秀特性，ucasthesis的框架和文件体系进行了细致地处理，尽可能地对各个功能和板块进行了模块化和封装，对于初学者来说，众多的文件目录也许一开始让人觉得有些无所适从，但阅读完下面的使用说明后，会发现原来使用思路是简单而清晰的，而且，当对\LaTeX{}有一定的认识和了解后，会发现其相对Word类排版系统极具吸引力的优秀特性。所以，如果是初学者，请不要退缩，请稍加尝试和坚持，以领略到\LaTeX{}的非凡魅力，并可以通过阅读相关资料如\LaTeX{} Wikibook \citep{wikibook2014latex} 来完善自己的使用知识。
+
+\section{先试试效果}
+
+\begin{enumerate}
+    \item 安装软件：根据所用操作系统和章节~\ref{sec:system}中的信息安装\LaTeX{}编译环境。
+    \item 获取模板：下载 \href{https://github.com/mohuangrui/ucasthesis}{ucasthesis} 模板并解压。ucasthesis模板不仅提供了相应的类文件，同时也提供了包括参考文献等在内的完成学位论文的一切要素，所以，下载时，推荐下载整个ucasthesis文件夹，而不是单独的文档类。
+    \item 编译模板：
+        \begin{enumerate}
+            \item Windows：双击运行artratex.bat脚本。
+            \item Linux或MacOS: {\scriptsize \verb|terminal| -> \verb|chmod +x ./artratex.sh| -> \verb|./artratex.sh xa|}
+            \item 任意系统：都可使用\LaTeX{}编辑器打开Thesis.tex文件并选择xelatex编译引擎进行编译。
+        \end{enumerate}
+    \item 错误处理：若编译中遇到了问题，请先查看“常见问题”（章节~\ref{sec:qa}）。
+\end{enumerate}
+
+编译完成即可获得本PDF说明文档。而这也完成了学习使用ucasthesis撰写论文的一半进程。什么？这就学成一半了，这么简单？？？，是的，就这么简单！
+
+\section{文档目录简介}
+
+\subsection{Thesis.tex}
+
+Thesis.tex为主文档，其设计和规划了论文的整体框架，通过对其的阅读可以了解整个论文框架的搭建。
+
+\subsection{编译脚本}
+
+\begin{itemize}
+    \item Windows：双击Dos脚本artratex.bat可得全编译后的PDF文档，其存在是为了帮助不了解\LaTeX{}编译过程的初学者跨过编译这第一道坎，请勿通过邮件传播和接收此脚本，以防范Dos脚本的潜在风险。
+    \item Linux或MacOS：在terminal中运行
+        \begin{itemize}
+            \item \verb|./artratex.sh xa|：获得全编译后的PDF文档
+            \item \verb|./artratex.sh x|：快速编译，不会生成文献引用
+        \end{itemize}
+\end{itemize}
+
+全编译指运行 \verb|xelatex+bibtex+xelatex+xelatex| 以正确生成所有的引用链接，如目录，参考文献及引用等。在写作过程中若无添加新的引用，则可用快速编译，即只运行一遍\LaTeX{}编译引擎以减少编译时间。
+
+\subsection{Tmp文件夹}
+
+运行编译脚本后，编译所生成的文档皆存于Tmp文件夹内，包括编译得到的PDF文档，其存在是为了保持工作空间的整洁，因为好的心情是很重要的。
+
+\subsection{Style文件夹}
+
+包含ucasthesis文档类的定义文件和配置文件，通过对它们的修改可以实现特定的模版设定。
+
+\begin{enumerate}
+    \item ucasthesis.cls：文档类定义文件，论文的最核心的格式即通过它来定义的。
+    \item ucasthesis.cfg：文档类配置文件，设定如目录显示为“目~录”而非“目录”。
+    \item artratex.sty: 常用宏包及文档设定，如参考文献样式、文献引用样式、页眉页脚设定等。这些功能具有开关选项，常只需在Thesis.tex中进行启用即可，一般无需修改artratex.sty本身。
+    \item artracom.sty：自定义命令以及添加宏包的推荐放置位置。
+\end{enumerate}
+
+\subsection{Tex文件夹}
+
+文件夹内为论文的所有实体内容，正常情况下，这也是\textbf{使用ucasthesis撰写学位论文时，主要关注和修改的一个位置，注：所有文件都必须采用UTF-8编码，否则编译后将出现乱码文本}，详细分类介绍如下：
+
+\begin{itemize}
+    \item Frontinfo.tex：为论文中英文封面信息。\textbf{论文封面会根据英文学位名称如Bachelor，Master，Doctor, Postdoctor 自动切换为相应的格式}。
+    \item Frontmatter.tex：为论文前言内容如中英文摘要等。
+    \item Mainmatter.tex：索引需要出现的Chapter。开始写论文时，可以只索引当前章节，以快速编译查看，当论文完成后，再对所有章节进行索引即可。
+    \item Chap{\_}xxx.tex：为论文主体的各章，可根据需要添加和撰写。\textbf{添加新章时，可拷贝一个已有的章文件再重命名，以继承文档的 UTF8 编码}。
+    \item Appendix.tex：为附录内容。
+    \item Backmatter.tex：为发表文章信息和致谢部分等。
+\end{itemize}
+
+\subsection{Img文件夹}
+
+用于放置论文中所需要的图类文件，支持格式有：.jpg, .png, .pdf。其中，\verb|ucas_logo.pdf|为国科大校徽。不建议为各章节图片建子目录，即使图片众多，若命名规则合理，图片查询亦是十分方便。
+
+\subsection{Biblio文件夹}
+
+\begin{enumerate}
+    \item ref.bib：参考文献信息库。
+\end{enumerate}
+
+\section{数学公式、图表、参考文献等功能}
+
+\subsection{数学公式}
+
+比如Navier-Stokes方程（方程~\eqref{eq:ns}）：
+\begin{equation} \label{eq:ns}
+    \adddotsbeforeeqnnum%
+    \begin{cases}
+        \frac{\partial \rho}{\partial t} + \nabla\cdot(\rho\Vector{V}) = 0 \ \mathrm{times\ math\ test: 1,2,3,4,5}, 1,2,3,4,5\\
+        \frac{\partial (\rho\Vector{V})}{\partial t} + \nabla\cdot(\rho\Vector{V}\Vector{V}) = \nabla\cdot\Tensor{\sigma} \ \text{times text test: 1,2,3,4,5}\\
+        \frac{\partial (\rho E)}{\partial t} + \nabla\cdot(\rho E\Vector{V}) = \nabla\cdot(k\nabla T) + \nabla\cdot(\Tensor{\sigma}\cdot\Vector{V})
+    \end{cases}
+\end{equation}
+\begin{equation}
+    \adddotsbeforeeqnnum%
+    \frac{\partial }{\partial t}\int\limits_{\Omega} u \, \mathrm{d}\Omega + \int\limits_{S} \unitVector{n}\cdot(u\Vector{V}) \, \mathrm{d}S = \dot{\phi}
+\end{equation}
+\[
+    \begin{split}
+        \mathcal{L} \{f\}(s) &= \int _{0^{-}}^{\infty} f(t) e^{-st} \, \mathrm{d}t, \ 
+        \mathscr{L} \{f\}(s) = \int _{0^{-}}^{\infty} f(t) e^{-st} \, \mathrm{d}t\\
+        \mathcal{F} {\bigl (} f(x+x_{0}) {\bigr )} &= \mathcal{F} {\bigl (} f(x) {\bigr )} e^{2\pi i\xi x_{0}}, \ 
+        \mathscr{F} {\bigl (} f(x+x_{0}) {\bigr )} = \mathscr{F} {\bigl (} f(x) {\bigr )} e^{2\pi i\xi x_{0}}
+    \end{split}
+\]
+
+数学公式常用命令请见 \href{https://en.wikibooks.org/wiki/LaTeX/Mathematics}{WiKibook Mathematics}。artracom.sty中对一些常用数据类型如矢量矩阵等进行了封装，这样的好处是如有一天需要修改矢量的显示形式，只需单独修改artracom.sty中的矢量定义即可实现全文档的修改。
+
+\subsection{数学环境}
+
+\begin{axiom}
+   这是一个公理。 
+\end{axiom}
+\begin{theorem}
+   这是一个定理。 
+\end{theorem}
+\begin{lemma}
+   这是一个引理。 
+\end{lemma}
+\begin{corollary}
+   这是一个推论。 
+\end{corollary}
+\begin{assertion}
+   这是一个断言。 
+\end{assertion}
+\begin{proposition}
+   这是一个命题。 
+\end{proposition}
+\begin{proof}
+    这是一个证明。
+\end{proof}
+\begin{definition}
+    这是一个定义。
+\end{definition}
+\begin{example}
+    这是一个例子。
+\end{example}
+\begin{remark}
+    这是一个注。
+\end{remark}
+
+\subsection{表格}
+
+请见表~\ref{tab:sample}。
+\begin{table}[!htbp]
+    \bicaption{这是一个样表。}{This is a sample table.}
+    \label{tab:sample}
+    \centering
+    \footnotesize% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{lcccccccc}
+        \hline
+        行号 & \multicolumn{8}{c}{跨多列的标题}\\
+        %\cline{2-9}% partial hline from column i to column j
+        \hline
+        Row 1 & $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$ & $8$\\
+        Row 2 & $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$ & $8$\\
+        Row 3 & $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$ & $8$\\
+        Row 4 & $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$ & $8$\\
+        \hline
+    \end{tabular}
+\end{table}
+
+制图制表的更多范例，请见 \href{https://github.com/mohuangrui/ucasthesis/wiki}{ucasthesis 知识小站} 和 \href{https://en.wikibooks.org/wiki/LaTeX/Tables}{WiKibook Tables}。
+
+\subsection{图片插入}
+
+论文中图片的插入通常分为单图和多图，下面分别加以介绍：
+
+单图插入：假设插入名为\verb|c06h06|（后缀可以为.jpg、.png、.pdf，下同）的图片，其效果如图~\ref{fig:c06h06}。
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.40\textwidth]{c06h06}
+    \bicaption{Q判据等值面图，同时测试一下一个很长的标题，比如这真的是一个很长很长很长很长很长很长很长很长的标题。}{Isocontour of Q criteria, at the same time, this is to test a long title, for instance, this is a really very long very long very long very long very long title.}
+    \label{fig:c06h06}
+\end{figure}
+
+如果插图的空白区域过大，以图片\verb|c06h06|为例，自动裁剪如图~\ref{fig:c06h06_trim}。
+\begin{figure}[!htbp]
+    \centering
+    %trim option's parameter order: left bottom right top
+    \includegraphics[trim = 60mm 80mm 60mm 60mm, clip, width=0.40\textwidth]{c06h06}
+    \bicaption{激波圆柱作用。}{Shock-cylinder interaction.}
+    \label{fig:c06h06_trim}
+\end{figure}
+
+多图的插入如图~\ref{fig:oaspl}，多图不应在子图中给文本子标题，只要给序号，并在主标题中进行引用说明。
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.35\textwidth}
+      \includegraphics[width=\textwidth]{oaspl_a}
+      \caption{}
+      \label{fig:oaspl_a}
+    \end{subfigure}%
+    ~% add desired spacing
+    \begin{subfigure}[b]{0.35\textwidth}
+      \includegraphics[width=\textwidth]{oaspl_b}
+      \caption{}
+      \label{fig:oaspl_b}
+    \end{subfigure}
+    \\% line break
+    \begin{subfigure}[b]{0.35\textwidth}
+      \includegraphics[width=\textwidth]{oaspl_c}
+      \caption{}
+      \label{fig:oaspl_c}
+    \end{subfigure}%
+    ~% add desired spacing
+    \begin{subfigure}[b]{0.35\textwidth}
+      \includegraphics[width=\textwidth]{oaspl_d}
+      \caption{}
+      \label{fig:oaspl_d}
+    \end{subfigure}
+    \bicaption{总声压级。(a) 这是子图说明信息，(b) 这是子图说明信息，(c) 这是子图说明信息，(d) 这是子图说明信息。}{OASPL.(a) This is the explanation of subfig, (b) This is the explanation of subfig, (c) This is the explanation of subfig, (d) This is the explanation of subfig.}
+    \label{fig:oaspl}
+\end{figure}
+
+\subsection{算法}
+
+如见算法~\ref{alg:euclid}，详细使用方法请参见文档 \href{https://ctan.org/pkg/algorithmicx?lang=en}{algorithmicx}。
+
+\begin{algorithm}[!htbp]
+    \small
+    \caption{Euclid's algorithm}\label{alg:euclid}
+    \begin{algorithmic}[1]
+        \Procedure{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
+        \State $r\gets a\bmod b$
+        \While{$r\not=0$}\Comment{We have the answer if r is 0}
+        \State $a\gets b$
+        \State $b\gets r$
+        \State $r\gets a\bmod b$
+        \EndWhile\label{euclidendwhile}
+        \State \textbf{return} $b$\Comment{The gcd is b}
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{参考文献引用}
+
+参考文献引用过程以实例进行介绍，假设需要引用名为"Document Preparation System"的文献，步骤如下：
+
+1）使用Google Scholar搜索Document Preparation System，在目标条目下点击Cite，展开后选择Import into BibTeX打开此文章的BibTeX索引信息，将它们copy添加到ref.bib文件中（此文件位于Biblio文件夹下）。
+
+2）索引第一行 \verb|@article{lamport1986document,|中 \verb|lamport1986document| 即为此文献的label (\textbf{中文文献也必须使用英文label}，一般遵照：姓氏拼音+年份+标题第一字拼音的格式)，想要在论文中索引此文献，有两种索引类型：
+
+文本类型：\verb|\citet{lamport1986document}|。正如此处所示 \citet{lamport1986document}; 
+
+括号类型：\verb|\citep{lamport1986document}|。正如此处所示 \citep{lamport1986document}。
+
+\textbf{多文献索引用英文逗号隔开}：
+
+\verb|\citep{lamport1986document, chu2004tushu, chen2005zhulu}|。正如此处所示 \citep{lamport1986document, chu2004tushu, chen2005zhulu}
+
+更多例子如：
+
+\citet{walls2013drought} 根据 \citet{betts2005aging} 的研究，首次提出...。其中关于... \citep{walls2013drought, betts2005aging}，是当前中国...得到迅速发展的研究领域 \citep{chen1980zhongguo, bravo1990comparative}。引用同一著者在同一年份出版的多篇文献时，在出版年份之后用
+英文小写字母区别，如：\citep{yuan2012lana, yuan2012lanb, yuan2012lanc} 和 \citet{yuan2012lana, yuan2012lanb, yuan2012lanc}。同一处引用多篇文献时，按出版年份由近及远依次标注。例如 \citep{chen1980zhongguo, stamerjohanns2009mathml, hls2012jinji, niu2013zonghe}。
+
+使用著者-出版年制（authoryear）式参考文献样式时，中文文献必须在BibTeX索引信息的 \textbf{key} 域（请参考ref.bib文件）填写作者姓名的拼音，才能使得文献列表按照拼音排序。参考文献表中的条目（不排序号），先按语种分类排列，语种顺 序是：中文、日文、英文、俄文、其他文种。然后，中文按汉语拼音字母顺序排列，日文按第一著者的姓氏笔画排序，西文和 俄文按第一著者姓氏首字母顺序排列。如中 \citep{niu2013zonghe}、日 \citep{Bohan1928}、英 \citep{stamerjohanns2009mathml}、俄 \citep{Dubrovin1906}。
+
+如此，即完成了文献的索引，请查看下本文档的参考文献一章，看看是不是就是这么简单呢？是的，就是这么简单！
+
+不同文献样式和引用样式，如著者-出版年制（authoryear）、顺序编码制（numbers）、上标顺序编码制（super）可在Thesis.tex中对artratex.sty调用实现，详见 \href{https://github.com/mohuangrui/ucasthesis/wiki}{ucasthesis 知识小站之文献样式}
+
+%若在上标顺序编码制（super）模式下，希望在特定位置将上标改为嵌入式标，可使用 \citetns{niu2013zonghe,stamerjohanns2009mathml} 和 \citepns{niu2013zonghe,stamerjohanns2009mathml}。
+
+参考文献索引的更多知识，请见 \href{https://en.wikibooks.org/wiki/LaTeX/Bibliography_Management}{WiKibook Bibliography}。\nocite{*}% 使文献列表显示所有参考文献（包括未引用文献）
+
+\section{常见使用问题}\label{sec:qa}
+
+\begin{enumerate}
+    \item 模板每次发布前，都已在Windows，Linux，MacOS系统上测试通过。下载模板后，若编译出现错误，则请见 \href{https://github.com/mohuangrui/ucasthesis/wiki}{ucasthesis知识小站} 的 \href{https://github.com/mohuangrui/ucasthesis/wiki/%E7%BC%96%E8%AF%91%E6%8C%87%E5%8D%97}{编译指南}。
+
+    \item 模板文档的编码为UTF-8编码。所有文件都必须采用UTF-8编码，否则编译后生成的文档将出现乱码文本。若出现文本编辑器无法打开文档或打开文档乱码的问题，请检查编辑器对UTF-8编码的支持。如果使用WinEdt作为文本编辑器（\textbf{不推荐使用}），应在其Options -> Preferences -> wrapping选项卡下将两种Wrapping Modes中的内容：
+        
+        TeX;HTML;ANSI;ASCII|DTX...
+        
+        修改为：TeX;\textbf{UTF-8|ACP;}HTML;ANSI;ASCII|DTX...
+        
+        同时，取消Options -> Preferences -> Unicode中的Enable ANSI Format。
+
+    \item 推荐选择xelatex或lualatex编译引擎编译中文文档。编译脚本的默认设定为xelatex编译引擎。你也可以选择不使用脚本编译，如直接使用 \LaTeX{}文本编辑器编译。注：\LaTeX{}文本编辑器编译的默认设定为pdflatex编译引擎，若选择xelatex或lualatex编译引擎，请进入下拉菜单选择。为正确生成引用链接和参考文献，需要进行\textbf{全编译}。
+
+    \item Texmaker使用简介
+        \begin{enumerate}
+            \footnotesize
+            \item 使用 Texmaker “打开 (Open)” Thesis.tex。
+            \item 菜单 “选项 (Options)” -> “设置当前文档为主文档 (Define as Master Document)”
+            \item 菜单 “自定义 (User)” -> “自定义命令 (User Commands)” -> “编辑自定义命令 (Edit User Commands)” -> 左侧选择 “command 1”，右侧 “菜单项 (Menu Item)” 填入 Auto Build -> 点击下方“向导 (Wizard)” -> “添加 (Add)”: xelatex + bibtex + xelatex + xelatex + pdf viewer -> 点击“完成 (OK)”
+            \item 使用 Auto Build 编译带有未生成引用链接的源文件，可以仅使用 xelatex 编译带有已经正确生成引用链接的源文件。
+            \item 编译完成，“查看(View)” PDF，在PDF中 “ctrl+click” 可链接到相对应的源文件。
+        \end{enumerate}
+    
+    \item 模版的设计可能地考虑了适应性。致谢等所有条目都是通过最为通用的
+
+        \verb+\chapter{item name}+  and \verb+\section*{item name}+
+
+        来显式实现的 (请观察Backmatter.tex)，从而可以随意添加，放置，和修改，如同一般章节。对于图表目录名称则可在ucasthesis.cfg中进行修改。
+
+    \item 设置文档样式: 在artratex.sty中搜索关键字定位相应命令，然后修改
+        \begin{enumerate}
+            \item 正文行距：启用和设置 \verb|\linespread{1.5}|，默认1.5倍行距。
+            \item 参考文献行距：修改 \verb|\setlength{\bibsep}{0.0ex}|
+            \item 目录显示级数：修改 \verb|\setcounter{tocdepth}{2}|
+            \item 文档超链接的颜色及其显示：修改 \verb|\hypersetup|
+        \end{enumerate}
+
+    \item 文档内字体切换方法：
+        \begin{itemize}
+            \item 宋体：国科大论文模板ucasthesis 或 \textrm{国科大论文模板ucasthesis}
+            \item 粗宋体：{\bfseries 国科大论文模板ucasthesis} 或 \textbf{国科大论文模板ucasthesis}
+            \item 黑体：{\sffamily 国科大论文模板ucasthesis} 或 \textsf{国科大论文模板ucasthesis}
+            \item 粗黑体：{\bfseries\sffamily 国科大论文模板ucasthesis} 或 \textsf{\bfseries 国科大论文模板ucasthesis}
+            \item 仿宋：{\ttfamily 国科大论文模板ucasthesis} 或 \texttt{国科大论文模板ucasthesis}
+            \item 粗仿宋：{\bfseries\ttfamily 国科大论文模板ucasthesis} 或 \texttt{\bfseries 国科大论文模板ucasthesis}
+            \item 楷体：{\itshape 国科大论文模板ucasthesis} 或 \textit{国科大论文模板ucasthesis}
+            \item 粗楷体：{\bfseries\itshape 国科大论文模板ucasthesis} 或 \textit{\bfseries 国科大论文模板ucasthesis}
+        \end{itemize}
+\end{enumerate}
+
+

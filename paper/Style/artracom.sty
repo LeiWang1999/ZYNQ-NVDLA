@@ -1,0 +1,110 @@
+%---------------------------------------------------------------------------%
+%-                                                                         -%
+%-                        User-defined Commands                            -%
+%-                                                                         -%
+%---------------------------------------------------------------------------%
+%- Copyright (C) Huangrui Mo <huangrui.mo@gmail.com> 
+%- This is free software: you can redistribute it and/or modify it
+%- under the terms of the GNU General Public License as published by
+%- the Free Software Foundation, either version 3 of the License, or
+%- (at your option) any later version.
+%---------------------------------------------------------------------------%
+%->> Identification
+%---------------------------------------------------------------------------%
+\NeedsTeXFormat{LaTeX2e}%
+\ProvidesPackage{artracom}[2014/10/01 v1.0 LaTeX macros package]%
+%---------------------------------------------------------------------------%
+%->> Declare options
+%---------------------------------------------------------------------------%
+%-
+%-> Handle non-implemented options
+%-
+\DeclareOption*{%
+    \PackageWarning{artracom}{Unknown option '\CurrentOption'}%
+}
+%-
+%-> Terminates all options processing
+%-
+\ProcessOptions\relax%
+%---------------------------------------------------------------------------%
+%->> User added packages
+%---------------------------------------------------------------------------%
+%- this part adds normal packages
+\RequirePackage{chemfig}% draw 2D chemical structures
+\RequirePackage[version=4]{mhchem}% typeset chemical formulae [mhchem|chemformula]
+%- this part adds packages that should be loaded at the very end
+\AtEndPreamble{%
+    %\RequirePackage{cleveref}% clever cross-referencing
+}
+%---------------------------------------------------------------------------%
+%->> User defined commands
+%---------------------------------------------------------------------------%
+%-
+%-> General information
+%- 
+%- \def\macroname#1<sep1>#2<sep2>{macro content, use of argument #1, #2 ...}
+%- each parameter #n is the shortest possible input sequence that matches the
+%- macro definition, separators included. Without separators, then Plain TeX
+%- macros are used just as LaTeX macros (without default parameter):
+%- \def\macroname#1#2#3{...} -> \newcommand{macroname}[3]{...}
+%- \def: define a command whether new or predefined, equivalent to
+%-       \providecommand{macroname}{}%
+%-       \renewcommand*{macroname}[number of arguments][default value]{definition}
+%- \long\def: define a command whether new or predefined, equivalent to
+%-       \providecommand{macroname}{}%
+%-       \renewcommand{macroname}[number of arguments][default value]{definition}
+%- \newcommand: defines a new command, makes an error if already defined
+%- \renewcommand: redefines a predefined command, makes an error if not yet defined
+%- \providecommand: defines a new command, if already defined, keep old definition
+%- *-forms: enable error check for missing arguments or arguments contain \par
+%- *-forms that are usually the better form to use when defining commands with
+%- arguments, unless any of these arguments is intended to contain whole paragraphs
+%- of text. If you need to use the non-star form then you should ask whether that 
+%- argument better be treated as the contents of a suitably defined environment.
+%-
+%-> Math functions
+%-
+%- International standard layout rules (from isomath package)
+%- The overall rule is that symbols representing math quantities or variables should
+%- be italicised, symbols representing units or labels are unitalicised (roman).
+%- Symbols for vectors and matrices are bold italic, symbols for tensors are 
+%- sans-serif bold italic.
+%- The above rules apply equally to letter symbols from the Greek and 
+%- the Latin alphabet.
+%- More information may be found in <<The LaTeX Mathematics Companion>>
+%- However, math typefaces vary from field to field. To keep consistent typography
+%- and easy adaption, it it always best to create a corresponding command for 
+%- variables in each math category.  
+%\providecommand{\Scalar}[1]{#1}% scalar is the normal math typeset, italic
+\providecommand{\Vector}[1]{\boldsymbol{#1}}% general vectors in bold italic
+\providecommand{\unitVector}[1]{\boldsymbol{\mathbf{#1}}}% unit vectors in bold roman
+\providecommand{\Matrix}[1]{\boldsymbol{\mathbf{#1}}}% matrix in bold roman
+\providecommand{\unitMatrix}[1]{\boldsymbol{\mathbf{#1}}}% identity matrix in bold roman
+\providecommand{\Tensor}[1]{\boldsymbol{\mathsf{#1}}}% tensor in sans-serif bold italic
+\providecommand{\unitTensor}[1]{\boldsymbol{\mathsf{#1}}}% identity tensor in sans-serif bold
+\providecommand{\Unit}[1]{\,\mathrm{#1}}% units in roman
+\providecommand{\Const}[1]{\mathrm{#1}}% math constants, functions
+\providecommand{\Set}[1]{\mathbb{#1}}% special sets in blackboard bold
+\providecommand{\Div}{\operatorname{div}}% divergence operator
+\providecommand{\Order}{\operatorname{O}}% order operator
+\providecommand{\Trace}{\operatorname{tr}}% trace operator
+\providecommand{\Diag}{\operatorname{diag}}% diagonal
+\providecommand{\Def}{\operatorname{def}}% define
+\providecommand{\Loptr}{\operatorname{\mathcal{L}}}% spatial operator
+\providecommand{\Toptr}{\operatorname{\mathcal{LL}}}% temporal operator
+\providecommand{\Soptr}{\operatorname{\mathcal{S}}}% solution operator
+\providecommand{\Des}[1]{\mathrm{#1}}% descriptive superscripts and subscripts in roman type 
+\providecommand{\Rev}[1]{\begingroup\color{blue}{#1}\endgroup}% revision highlight
+%-
+%-> Graphical length factor
+%-
+\providecommand*{\onef}{0.6}% for single figure
+\providecommand*{\twof}{0.45}% for two subfigures
+\providecommand*{\trif}{0.32}% for three subfigures
+%-
+%-> Add dots before equation number
+%-
+\newcommand{\adddotsbeforeeqnnum}{\def\maketag@@@##1{\hbox{\m@th\normalfont\dots\ ##1}}}%
+%---------------------------------------------------------------------------%
+\endinput
+
