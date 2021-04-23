@@ -1,0 +1,95 @@
+%---------------------------------------------------------------------------%
+%-                                                                         -%
+%-                           LaTeX Template                                -%
+%-                                                                         -%
+%---------------------------------------------------------------------------%
+%- Copyright (C) Huangrui Mo <huangrui.mo@gmail.com> 
+%- This is free software: you can redistribute it and/or modify it
+%- under the terms of the GNU General Public License as published by
+%- the Free Software Foundation, either version 3 of the License, or
+%- (at your option) any later version.
+%---------------------------------------------------------------------------%
+%->> Document class declaration
+%---------------------------------------------------------------------------%
+\documentclass[twoside]{Style/ucasthesis}%
+%- Multiple optional arguments:
+%- [<oneside|twoside|print>]% oneside eprint, twoside eprint, or paper print
+%- [fontset=<adobe|none|...>]% specify font set instead of automatic detection
+%- [scheme=plain]% thesis writing of international students
+%- [draftversion]% show draft version information
+%- [standard options for ctex book class: draft|paper size|font size|...]%
+%---------------------------------------------------------------------------%
+%->> Document settings
+%---------------------------------------------------------------------------%
+\usepackage[authoryear,list]{Style/artratex}% document settings
+%- usage: \usepackage[option1,option2,...,optionN]{artratex}
+%- Multiple optional arguments:
+%- [bibtex|biber]% set bibliography processor and package
+%- [<numbers|super|authoryear|alpha>]% set citation and reference style
+%- <numbers>: textual: Jones [1]; parenthetical: [1]
+%- <super>: textual: Jones superscript [1]; parenthetical: superscript [1]
+%- <authoryear>: textual: Jones (1995); parenthetical: (Jones, 1995)
+%- <alpha>: textual: not available; parenthetical: [Jon95]
+%- [geometry]% reconfigure page layout via geometry package
+%- [lscape]% provide landscape layout environment
+%- [xhf]% disable header and footer via fancyhdr package
+%- [color]% provide color support via xcolor package
+%- [background]% enable page background
+%- [tikz]% provide complex diagrams via tikz package
+%- [table]% provide complex tables via ctable package
+%- [list]% provide enhanced list environments for algorithm and coding
+%- [math]% enable some extra math packages
+%- [xlink]% disable link colors
+\usepackage{Style/artracom}% user defined commands
+%---------------------------------------------------------------------------%
+%->> Document inclusion
+%---------------------------------------------------------------------------%
+%\includeonly{Tex/Chap_1,...,Tex/Chap_N}% selected files compilation
+%---------------------------------------------------------------------------%
+%->> Document content
+%---------------------------------------------------------------------------%
+%-
+%-> Titlepage information
+%-
+\input{Tex/Frontinfo}%
+\begin{document}
+%-
+%-> Frontmatter: title page, abstract, content list, symbol list, preface
+%-
+\frontmatter% initialize the environment
+\input{Tex/Frontmatter}% title page, abstract
+{% content list region
+\linespread{1.2}% local line space
+\intobmk*{\cleardoublepage}{\contentsname}% add link to bookmark
+\tableofcontents% content catalog
+\intobmk*{\cleardoublepage}{\listfigurename}% add link to bookmark
+\listoffigures% figure catalog
+\intobmk*{\cleardoublepage}{\listtablename}% add link to bookmark
+\listoftables% table catalog
+}
+\input{Tex/Prematter}% symbol list, preface content
+%-
+%-> Mainmatter
+%-
+\mainmatter% initialize the environment
+\input{Tex/Mainmatter}% main content
+%-
+%-> Appendix
+%-
+\cleardoublepage%
+\appendix% initialize the environment
+\input{Tex/Appendix}% appendix content
+%-
+%-> Backmatter: bibliography, glossary, index
+%-
+\backmatter% initialize the environment
+\intotoc*{\cleardoublepage}{\bibname}% add link to toc
+\artxifstreq{\artxbib}{bibtex}{% enable bibtex
+    \bibliography{Biblio/ref}% bibliography
+}{%
+    \printbibliography% bibliography
+}
+\input{Tex/Backmatter}% other information
+\end{document}
+%---------------------------------------------------------------------------%
+
