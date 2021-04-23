@@ -145,7 +145,7 @@
 }
 %- underline
 \ifxetex%
-    \RequirePackage{ulem}%
+    %\RequirePackage{ulem}% loaded by xeCJKfntef
 \else%
     \RequirePackage{ulem}%
 \fi
@@ -210,6 +210,17 @@
 \newcommand{\studydateto}[1]{\def\ucas@value@ch@studydateto{#1}}
 \def\ucas@value@ch@date{}
 \renewcommand{\date}[1]{\def\ucas@value@ch@date{#1}}
+
+
+\def\ucas@value@ch@period{}
+\newcommand{\period}[1]{\def\ucas@value@ch@period{#1}}
+\def\ucas@value@ch@class{}
+\newcommand{\class}[1]{\def\ucas@value@ch@class{#1}}
+\def\ucas@label@ch@duration{}
+\newcommand{\duration}[1]{\def\ucas@value@ch@duration{#1}}
+\def\ucas@label@ch@studentid{}
+\newcommand{\studentid}[1]{\def\ucas@value@ch@studentid{#1}}
+
 %-
 %-> English item commands
 %-
@@ -287,40 +298,53 @@
     \cleardoublepage
     \thispagestyle{empty}
     \begin{center}
-        \linespread{1.6}
-        \zihao{4}\bfseries
 
-        \hfill{} \ucasifstrbk{\ucas@value@ch@confidential}{}{\ucas@label@ch@confidential \ulenhance{\ulextend[50pt]{\hspace*{-\ulhshift}\zihao{5}\ucas@value@ch@confidential}}}
+        \vspace*{0.61cm}
 
-        \vspace*{\stretch{4}}
+        \begin{figure}[H] 
+            \centering 
+            \includegraphics[height=1.61cm, width=7.09cm]{\njlogo} 
+        \end{figure}
 
-        {\ucas@value@ch@schoollogo}
+        \vspace*{1.8cm}
 
-        \vspace*{\stretch{2}}
+        % \zihao{1} \kaishu \ulenhance[1.2pt]{\ucas@value@ch@period}\ucas@label@ch@period
+        \zihao{1} \kaishu \underline{\ucas@value@ch@period}\ucas@label@ch@period
 
-        {\zihao{1}\bfseries\sffamily {\ucas@label@ch@thesis}}
+        \vspace*{3cm}
 
-        \vspace*{\stretch{3}}
 
-        {\zihao{-3}\bfseries\sffamily \ulenhance[1.5pt]{\ucas@value@ch@title}}
+        \begin{center}
+            \zihao{3}
+            \songti
+            \renewcommand{\arraystretch}{1.3} %rows, default value is 1.0
+            \begin{tabular}{ p{3cm} p{9cm}<{\centering} }
+                \makebox[5em][s]{\ucas@label@ch@title} & \ucas@value@ch@title \\
+                \cline{2-2}
+                
+                \makebox[5em][s]{\ucas@label@ch@major} & \ucas@value@ch@major \\
+                \cline{2-2}
+                
+                \makebox[5em][s]{\ucas@label@ch@studentid} & \ucas@value@ch@studentid \\
+                \cline{2-2}
+                
+                \makebox[5em][s]{\ucas@label@ch@author} & \ucas@value@ch@author \\
+                \cline{2-2}
+                
+                \makebox[5em][s]{\ucas@label@ch@advisor} & \ucas@value@ch@advisor \\
+                \cline{2-2}
+                
+                \makebox[5em][s]{\ucas@label@ch@duration} & \ucas@value@ch@duration \\
+                \cline{2-2}
+                
+            \end{tabular}
+        \end{center}
 
-        \vspace*{\stretch{3}}
+        \vspace*{2cm}
 
-        \def\tabcolsep{1pt}
-        \def\arraystretch{1.3}
-        \begin{tabular}{lc}
-            \ucas@label@ch@author & \ulenhance[1.2pt]{\ulextend{\ucas@value@ch@author}}\\
-            \ucas@label@ch@advisor & \ucaslntotab[1.2pt]{\ucas@value@ch@advisor}\\
-            \ucas@label@ch@degree & \ulenhance[1.2pt]{\ulextend{\ucas@value@ch@degreetype\ucas@value@ch@degree}}\\
-            \ucas@label@ch@major & \ulenhance[1.2pt]{\ulextend{\ucas@value@ch@major}}\\
-            \ucas@label@ch@institute & \ucaslntotab[1.2pt]{\ucas@value@ch@institute}\\
-        \end{tabular}
+        \zihao{3} \songti \ucas@value@ch@date
 
-        \vspace*{\stretch{4}}
 
-        {\ucas@value@ch@date}
-
-        \vspace*{\stretch{4}}
     \end{center}
     \clearpage
     \if@twoside
@@ -350,6 +374,73 @@
         }
     \fi
 }
+% \newcommand{\maketitle@xpdc}{%
+%     \cleardoublepage
+%     \thispagestyle{empty}
+%     \begin{center}
+%         \linespread{1.6}
+%         \zihao{4}\bfseries
+
+%         \hfill{} \ucasifstrbk{\ucas@value@ch@confidential}{}{\ucas@label@ch@confidential \ulenhance{\ulextend[50pt]{\hspace*{-\ulhshift}\zihao{5}\ucas@value@ch@confidential}}}
+
+%         \vspace*{\stretch{4}}
+
+%         {\ucas@value@ch@schoollogo}
+
+%         \vspace*{\stretch{2}}
+
+%         {\zihao{1}\bfseries\sffamily {\ucas@label@ch@thesis}}
+
+%         \vspace*{\stretch{3}}
+
+%         {\zihao{-3}\bfseries\sffamily \ulenhance[1.5pt]{\ucas@value@ch@title}}
+
+%         \vspace*{\stretch{3}}
+
+%         \def\tabcolsep{1pt}
+%         \def\arraystretch{1.3}
+%         \begin{tabular}{lc}
+%             \ucas@label@ch@author & \ulenhance[1.2pt]{\ulextend{\ucas@value@ch@author}}\\
+%             \ucas@label@ch@advisor & \ucaslntotab[1.2pt]{\ucas@value@ch@advisor}\\
+%             \ucas@label@ch@degree & \ulenhance[1.2pt]{\ulextend{\ucas@value@ch@degreetype\ucas@value@ch@degree}}\\
+%             \ucas@label@ch@major & \ulenhance[1.2pt]{\ulextend{\ucas@value@ch@major}}\\
+%             \ucas@label@ch@institute & \ucaslntotab[1.2pt]{\ucas@value@ch@institute}\\
+%         \end{tabular}
+
+%         \vspace*{\stretch{4}}
+
+%         {\ucas@value@ch@date}
+
+%         \vspace*{\stretch{4}}
+%     \end{center}
+%     \clearpage
+%     \if@twoside
+%         \thispagestyle{empty}
+%         \ifucas@versioninfo
+%             \vspace*{\stretch{1}}
+%             \begin{footnotesize}
+%                 \noindent
+%                 Draft Version (\today)
+%             \end{footnotesize}
+%         \fi
+%         \cleardoublepage[empty]
+%     \else
+%         \ifucas@versioninfo
+%             \thispagestyle{empty}
+%             \vspace*{\stretch{1}}
+%             \begin{footnotesize}
+%                 \noindent
+%                 Draft Version (\today)
+%             \end{footnotesize}
+%             \cleardoublepage[empty]
+%         \fi
+%     \fi
+%     \ifucas@print%
+%         \hypersetup{% set hyperlinks
+%             hidelinks,% remove link color and border
+%         }
+%     \fi
+% }
 \newcommand{\maketitle@pdc}{%
     \cleardoublepage
     \thispagestyle{empty}
@@ -599,17 +690,19 @@
     \def\proofname{\ucas@label@ch@proofname}
     \def\@title{\ucas@value@ch@titlemark}
     \def\@author{\ucas@value@ch@author}
+    \def\@period{\ucas@value@ch@period}
 \fi
 %---------------------------------------------------------------------------%
 %->> Structure layout
 %---------------------------------------------------------------------------%
 %- chapter
+%- 一级标题：行距1.0，3号宋体，居中
 \ctexset {
     chapter = {
-        format = \linespread{1.0}\zihao{4}\bfseries\sffamily\centering,
+        format = \linespread{1.0}\zihao{3}\songti\centering,
         nameformat = {},
         titleformat = {},
-        number = \arabic{chapter},
+        % number = \arabic{chapter},
         numberformat = \rmfamily,
         aftername = \quad,
         beforeskip = {7pt},
@@ -618,9 +711,10 @@
     }
 }
 %- section
+%- 二级标题：行距1.0，4号宋体，加粗，居左
 \ctexset {
     section = {
-        format = \linespread{1.0}\zihao{-4}\sffamily\raggedright,
+        format = \linespread{1.0}\zihao{4}\bfseries\songti\raggedright,
         numberformat = \rmfamily,
         aftername = \quad,
         beforeskip = {24pt},
@@ -628,9 +722,10 @@
     }
 }
 %- subsection
+%- 三级标题：行距1.0，小4号宋体，居左
 \ctexset {
     subsection = {
-        format = \linespread{1.0}\zihao{-4}\sffamily\raggedright,
+        format = \linespread{1.0}\zihao{-4}\songti\raggedright,
         numberformat = \rmfamily,
         aftername = \quad,
         beforeskip = {12pt},
@@ -638,11 +733,16 @@
     }
 }
 %- subsubsection
+%- 四级标题：首行缩进两个字符，宋体小四号字: 1.
 \ctexset {
     subsubsection = {
-        format = \linespread{1.0}\zihao{-4}\sffamily\raggedright,
+        format = \linespread{1.0}\zihao{-4}\songti\raggedright,
+        nameformat = {},
+        titleformat = {},
+        number = \arabic{subsubsection},
+        indent=2\ccwd,
         numberformat = \rmfamily,
-        aftername = \quad,
+        aftername = .\ ,
         beforeskip = {12pt},
         afterskip = {6pt},
     }
@@ -667,20 +767,20 @@
 %- <title>    title
 %- <page>     page number
 
-%- parameters for spacing and length in toc
-\def\@dotsep{1.5mu}% separation between dots in mu units
-\def\@pnumwidth{2em}% width of a box in which the page number is put
+% %- parameters for spacing and length in toc
+\def\@dotsep{0.2mu}% separation between dots in mu units
+\def\@pnumwidth{1.2em}% width of a box in which the page number is put
 \def\@tocrmarg{2em}% right margin for multiple line entries, \@tocrmarg ≥ \@pnumwidth
 \def\@chaptervspace{1ex}% vertical space between chapter titles
 
 %- redefine dottedtocline from classes.dtx and latex.ltx
 \renewcommand*{\@dottedtocline}[5]{% [<level>,<indent>,<numwidth>,<title>,<page>]
     \ifnum #1>\c@tocdepth \else
-        \vskip \z@ \@plus.2\p@
+        \vskip \@chaptervspace \@plus.2\p@
         {\leftskip #2\relax \rightskip \@tocrmarg \parfillskip -\rightskip
         \parindent #2\relax\@afterindenttrue
         \interlinepenalty\@M
-        \leavevmode \zihao{-4}\sffamily
+        \leavevmode \zihao{-4}\songti
         \@tempdima #3\relax
         \advance\leftskip \@tempdima \null\nobreak\hskip -\leftskip
         {#4}\nobreak
@@ -718,7 +818,7 @@
         \begingroup
             \parindent \z@ \rightskip \@pnumwidth
             \parfillskip -\@pnumwidth
-            \leavevmode \zihao{4}\sffamily
+            \leavevmode \zihao{4}\heiti
             \advance\leftskip\@tempdima
             \hskip -\leftskip
             #1\nobreak
@@ -729,13 +829,25 @@
     \fi
 }
 %- redefine indentation for others
-\renewcommand*\l@section{\@dottedtocline{1}{1em}{1.8em}}
-\renewcommand*\l@subsection{\@dottedtocline{2}{2em}{2.8em}}
-\renewcommand*\l@subsubsection{\@dottedtocline{3}{3em}{3.8em}}
-\renewcommand*\l@paragraph{\@dottedtocline{4}{4em}{4.8em}}
-\renewcommand*\l@subparagraph{\@dottedtocline{5}{5em}{5.8em}}
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{1.8em}}
+\renewcommand*\l@subsection{\@dottedtocline{2}{2.5em}{2.8em}}
+\renewcommand*\l@subsubsection{\@dottedtocline{3}{3.5em}{3.8em}}
+\renewcommand*\l@paragraph{\@dottedtocline{4}{4.5em}{4.8em}}
+\renewcommand*\l@subparagraph{\@dottedtocline{5}{5.5em}{5.8em}}
 \renewcommand*\l@figure{\@dottedtocline{1}{1em}{1.8em}}
 \renewcommand*\l@table{\@dottedtocline{1}{1em}{1.8em}}
 %---------------------------------------------------------------------------%
+
+% %---------------------------------------------------------------------------%
+% %->> Configure normalsize
+% %---------------------------------------------------------------------------%
+% \renewcommand\normalsize{%
+% \@setfontsize\normalsize\@xpt\@xiipt
+% \abovedisplayskip -10\p@ \@plus2\p@ \@minus5\p@
+% \abovedisplayshortskip \z@ \@plus3\p@
+% \belowdisplayshortskip 6\p@ \@plus3\p@ \@minus3\p@
+% \belowdisplayskip \abovedisplayskip
+% \let\@listi\@listI}
+% %---------------------------------------------------------------------------%
 \endinput
 

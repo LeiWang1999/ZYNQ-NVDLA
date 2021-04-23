@@ -5,27 +5,57 @@
 %-> 生成封面
 %-
 \maketitle% 生成中文封面
-\MAKETITLE% 生成英文封面
+% \MAKETITLE% 生成英文封面
 %-
 %-> 作者声明
 %-
-\makedeclaration% 生成声明页
+% \makedeclaration% 生成声明页
 %-
 %-> 中文摘要
 %-
-\intobmk\chapter*{摘\quad 要}% 显示在书签但不显示在目录
+% \intobmk\chapter*{摘要}% 显示在书签但不显示在目录
+% syntax: \chapter[目录]{标题}\chaptermark{页眉}
+\chapter[摘要]{\MyTitleCh}\chaptermark{摘要}
 \setcounter{page}{1}% 开始页码
 \pagenumbering{Roman}% 页码符号
 
-本文是中国科学院大学学位论文模板ucasthesis的使用说明文档。主要内容为介绍\LaTeX{}文档类ucasthesis的用法，以及如何使用\LaTeX{}快速高效地撰写学位论文。
+\begin{center}
+\vspace{-0.3cm}
+\zihao{3} \songti 摘要
+\vspace{0.3cm}
+\end{center}
 
-\keywords{中国科学院大学，学位论文，\LaTeX{}模板}% 中文关键词
+近年来，卷积神经网络为代表的深度学习算法在许多领域中取得了巨大的突破，如模式识别、图像处理、计算机视觉等。由于 FPGA 低功耗、低延时、可重配置的特性，适合应用于一些对功耗有限制的小型流式应用场景。目前限制 FPGA 在深度学习领域无法大规模应用的主要有以下的两点：
+
+\begin{enumerate}
+    \item 开发效率低。随着高层次综合技术（HLS）的不断成熟，已经可以使用 C、C++ 等高级语言进行 FPGA 算法开发，该问题正逐步被解决；
+
+    \item 通用性差，对硬件资源要求高。受制于 FPGA 芯片资源的限制，低成本的 FPGA 芯片往往无法实现一些复杂的算法。
+\end{enumerate}
+
+因此本文设计的一种使用 RISC-V 处理器的异构卷积神经网络算法加速系统，将 CNN 网络进行部分展开，展开程度可以根据具体 FPGA 芯片资源的丰富程度灵活调整，同时使用了一个 RISC-V 处理器来完成一些不适合放在 FPGA 上完成的计算任务，在保证了运算速度的提升下，该异构计算架构也有一定的通用性。
+
+使用了目前被广泛使用的 YOLO 算法，对其进行详细分析，部署到 FPGA 上，最终在 PYNQ-Z2 平台上获得了 30.15GOP/s 的性能，与 Intel i7-9700K CPU 相比，能效是其 120.4 倍、性能是其 7.3 倍；与双核 ARM-A9 CPU 相比，能效是其 86 倍，性能是其 112.9 倍。
+
+% 近年来，由于以卷积神经网络为代表的深度学习算法的发展，目标检测算法取得了巨大的突破，检测速度以及准确率得到了极大的提高。目标检测算法在嵌入式领域有着广泛的应用，比如自动驾驶、无人机图像识别等，这些应用场景不仅对准确度和速度有要求，对功耗也有限制。传统的目标检测算法通常运行在高功耗的 GPU 上，并不适合应用在这些嵌入式场景中。本文设计了一种运行在 FPGA 上的异构卷积神经网络算法加速系统，将 CNN 网络进行部分展开，展开程度可以根据具体 FPGA 芯片资源的丰富程度灵活调整，同时使用了一个 RISC-V 软核来完成一些不适合在 FPGA 上完成的计算任务。本文在 PYNQ-Z2 平台上实现了 YOLO V2 算法的加速，速度方面是 Intel i7-9700K CPU 的 6.3 倍；是四核 ARM-A53 CPU 的 361.1 倍，同时整个系统的功耗也保持在一个较低的水平。因此本设计的方法适用于嵌入式系统中的目标检测应用。
+
+{
+    \zihao{5}
+    \keywords{卷积神经网络 \quad FPGA \quad RISC-V \quad 硬件加速}% 中文关键词
+}
 %-
 %-> 英文摘要
 %-
-\intobmk\chapter*{Abstract}% 显示在书签但不显示在目录
+% \intobmk\chapter*{Abstract}% 显示在书签但不显示在目录
+\chapter[Abstract]{\MyTitleEn}\chaptermark{Abstract}
 
-This paper is a help documentation for the \LaTeX{} class ucasthesis, which is  a thesis template for the University of Chinese Academy of Sciences. The main content is about how to use the ucasthesis, as well as how to write thesis efficiently by using \LaTeX{}.
+\begin{center}
+\vspace{-0.3cm}
+\zihao{3} \songti Abstract
+\vspace{0.3cm}
+\end{center}
 
-\KEYWORDS{University of Chinese Academy of Sciences (UCAS), Thesis, \LaTeX{} Template}% 英文关键词
+In recent years，the frame object detection algorithm has made a great breakthrough in speed and accuracy for the development of deep learning algorithm, which represented by convolutional neural network. It has been widely used in the embedded systems, such as automatic driving, drones and so on. These application scenarios not only require the accuracy and speed, but also limit the power consumption. Traditional frame object detection usually run on high-power GPU, which is not suitable for these embedded systems. In this paper, a heterogeneous convolutional neural network algorithm accelerator running on FPGA is designed. The CNN network is partially expanded, whose expansion degree can be adjusted flexibly according to the resources of FPGA. At the same time, a risc-v soft core is used to complete some tasks that are not suitable for FPGA. We implemente the accelerator for YOLO V2 on the PYNQ-Z2 platform. Compared with the Intel i7-9700k CPU, the performance is its 6.3 times; compared with the quad core ARM-A53 CPU, the performance is its 361.1 times. At the same time, the power consumption of the whole system is kept at a low level. So our method is suitable for the application of frame object detection in embedded systems.
+
+\KEYWORDS{Convolutional neural network; FPAG; RISC-V; Hardware speedup}% 英文关键词
 %---------------------------------------------------------------------------%

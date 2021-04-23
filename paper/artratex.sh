@@ -90,6 +90,10 @@ fi
 #->> Postprocessing
 #---------------------------------------------------------------------------#
 #-
+#-> word count
+#
+texcount "$FileName".tex -inc -sum
+#-
 #-> Set PDF viewer
 #-
 System_Name=`uname`

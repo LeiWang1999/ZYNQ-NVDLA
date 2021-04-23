@@ -32,6 +32,10 @@
 %- this part adds normal packages
 \RequirePackage{chemfig}% draw 2D chemical structures
 \RequirePackage[version=4]{mhchem}% typeset chemical formulae [mhchem|chemformula]
+\RequirePackage[section]{placeins}% 避免浮动体跨过 \section 等章节标题
+\RequirePackage{booktabs}% 三线表
+\RequirePackage{longtable}% 长表格
+\RequirePackage{setspace}% 参考文献行距
 %- this part adds packages that should be loaded at the very end
 \AtEndPreamble{%
     %\RequirePackage{cleveref}% clever cross-referencing
@@ -61,6 +65,31 @@
 %- arguments, unless any of these arguments is intended to contain whole paragraphs
 %- of text. If you need to use the non-star form then you should ask whether that 
 %- argument better be treated as the contents of a suitably defined environment.
+\newcommand{\njheader}{南京工业大学本科生毕业设计（论文）} % 南京工业大学页眉
+\newcommand{\njlogo}{njtech_logo}
+\newcommand{\MyTitleCh}{\ucas@value@ch@title}
+\newcommand{\MyTitleEn}{\ucas@value@en@title}
+\renewcommand\thesubfigure{(\alph{subfigure})}
+
+% \titlecontents{chapter}
+%               [0cm]
+%               {\zihao{4} \sffamily}%
+%               {\contentslabel{2.5em}}%
+%               {}%
+%               {\titlerule*[0.5pc]{.}\contentspage\hspace*{0cm}}%
+% \titlecontents{section}
+%               [1cm]
+%               {\zihao{-4} \songti}%
+%               {\contentslabel{2.5em}}%
+%               {}%
+%               {\titlerule*[0.5pc]{.}\contentspage\hspace*{0cm}}%
+% \titlecontents{subsection}
+%               [2cm]
+%               {\zihao{-4} \songti}%
+%               {\contentslabel{2.5em}}%
+%               {}%
+%               {\titlerule*[0.5pc]{.}\contentspage\hspace*{0cm}}%
+
 %-
 %-> Math functions
 %-

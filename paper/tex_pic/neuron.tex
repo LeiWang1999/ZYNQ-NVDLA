@@ -1,0 +1,175 @@
+% Kalman filter system model
+% by Burkart Lingner
+% An example using TikZ/PGF 2.00
+%
+% Features: Decorations, Fit, Layers, Matrices, Styles
+% Tags: Block diagrams, Diagrams
+% Technical area: Electrical engineering
+
+%\documentclass[a4paper,10pt]{article}
+\documentclass[tikz,border=2pt]{standalone} 
+
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[ansinew]{inputenc}
+
+\usepackage{lmodern}    % font definition
+\usepackage{amsmath}    % math fonts
+\usepackage{amsthm}
+\usepackage{amsfonts}
+
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing} % noisy shapes
+\usetikzlibrary{fit}                            % fitting shapes to coordinates
+\usetikzlibrary{backgrounds}  % drawing the background after the foreground
+
+\begin{document}
+
+%\begin{figure}[htbp]
+%\centering
+% The state vector is represented by a blue circle.
+% "minimum size" makes sure all circles have the same size
+% independently of their contents.
+\tikzstyle{input1}=[circle,
+					label=left:$x_1$,
+					thick,
+					minimum size=0.2cm,
+					draw=blue!80,
+					fill=blue!20]
+\tikzstyle{input2}=[circle,
+					label=left:$x_2$,
+					thick,
+					minimum size=0.2cm,
+					draw=blue!80,
+					fill=blue!20]
+\tikzstyle{inputm}=[circle,
+					label=left:$x_m$,
+					thick,
+					minimum size=0.2cm,
+					draw=blue!80,
+					fill=blue!20]
+\tikzstyle{bio}=[thick]
+					
+\tikzstyle{state}=[circle,
+                                    thick,
+                                    minimum size=1.2cm,
+                                    draw=blue!80,
+                                    fill=blue!20]
+
+% The measurement vector is represented by an orange circle.
+\tikzstyle{measurement}=[circle,
+						label=below:{Sum},
+                         thick,
+                         minimum size=1.2cm,
+                         draw=orange!80,
+                         fill=orange!25]
+
+% The control input vector is represented by a purple circle.
+\tikzstyle{output}=[thick,
+					label=above:{Output}]
+
+% The input, state transition, and measurement matrices
+% are represented by gray squares.
+% They have a smaller minimal size for aesthetic reasons.
+\tikzstyle{matrx}=[rectangle,
+				label=above:{Activation},
+                                    thick,
+                                    minimum size=1cm,
+                                    draw=gray!80,
+                                    fill=gray!20]
+
+% The system and measurement noise are represented by yellow
+% circles with a "noisy" uneven circumference.
+% This requires the TikZ library "decorations.pathmorphing".
+\tikzstyle{noise}=[circle,
+                                    thick,
+                                    minimum size=1.2cm,
+                                    draw=yellow!85!black,
+                                    fill=yellow!40,
+                                    decorate,
+                                    decoration={random steps,
+                                                            segment length=2pt,
+                                                            amplitude=2pt}]
+
+% Everything is drawn on underlying gray rectangles with
+% rounded corners.
+\tikzstyle{background}=[rectangle,
+                                                fill=gray!10,
+                                                inner sep=0.2cm,
+                                                rounded corners=5mm]
+
+\begin{tikzpicture}[>=latex,text height=1.5ex,text depth=0.25ex]
+    % "text height" and "text depth" are required to vertically
+    % align the labels with and without indices.
+  
+  % The various elements are conveniently placed using a matrix:
+	\matrix[row sep=0.1cm,column sep=0.2cm] {
+        \node (Input) [auto]{Input}; &
+        &
+        &
+        \node (Bias) [auto]{Bias}; &
+        &
+        &
+        \\
+    	% First line
+    	\node (x_1)  [input1]{};    &
+        \node (w_k10) [auto]{};         &
+        \node (w_k1) [auto]{};         &
+        \node (b_k)  [bio]{$b_k$};    &
+		&
+		\\
+		% Second line
+        \node (x_2)  [input2]{};    &
+        \node (w_k20) [auto]{};         &
+        \node (w_k2) [auto]{};         &
+        &
+        &
+        \\
+        % Third line
+        \node (vdots1) [auto]{$\vdots$}; &
+        \node (vdots20) [auto]{$\vdots$}; & 
+        \node (vdots2) [auto]{}; & 
+        \node (sigma) [measurement]{$\Sigma$}; &
+        \node (varphi1) [matrx]{$\varphi (\dots)$}; &
+        \node (y_k) [output]{$y_k$};         &
+        \\
+        % Fourth line
+        \node (x_m)  [inputm]{};    &
+        \node (w_km0) [auto]{};         &
+        \node (w_km) [auto]{};         &
+        &
+        &
+        \\
+    };
+    
+    % The diagram elements are now connected through arrows:
+    \path[-]
+		(x_1) edge node[auto] {$w_{k_1}$} (w_k1.center)
+		(x_2) edge node[auto] {$w_{k_2}$} (w_k2.center)
+		(x_m) edge node[auto] {$w_{k_m}$} (w_km.center)
+        ;
+        
+    \path[->]
+		(w_k1.center) edge (sigma)
+		(w_k2.center) edge (sigma)
+		(w_km.center) edge (sigma)
+		(sigma) edge (varphi1)
+		(varphi1) edge (y_k)
+		(b_k) edge (sigma)
+        ;
+        
+    % Now that the diagram has been drawn, background rectangles
+    % can be fitted to its elements. This requires the TikZ
+    % libraries "fit" and "background".
+    % Control input and measurement are labeled. These labels have
+    % not been translated to English as "Measurement" instead of
+    % "Messung" would not look good due to it being too long a word.
+    % \begin{pgfonlayer}{background}
+    %     \node [fit=(x_1) (x_m),
+    %            label=above:{Input}] {};
+    % \end{pgfonlayer}
+\end{tikzpicture}
+
+%\end{figure}
+
+\end{document}
