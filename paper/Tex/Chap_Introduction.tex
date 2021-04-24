@@ -1,0 +1,130 @@
+\chapter{相关技术介绍}\label{chap:introduction}
+
+由于本硬件加速系统设包含了软件与硬件的协同设计，所以本章将对涉及到的关键技术，包括深度神经网络算法、ZYNQ 器件做基本的介绍。如第一章节所述，本章还会对不同类型的硬件加速体系结构进行基本概述，介绍对应的应用案例。
+
+
+\section{深度神经网络概述}
+
+\subsection{单层感知机模型}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{neuron}
+    \caption{神经元模型}
+    \label{fig:neuron}
+\end{figure}
+
+一个神经元的模型如图~\ref{fig:neuron}所示，该模型也被称为单层感知机，由输入信号、权值、偏置、加法器和激活函数共同构成，其中 $w_{kj}$ 下标的含义为：$k$ 表示第 $k$ 个神经元；$j$ 表示第 $j$ 个输入。因此，$w_{kj}$表示第 $k$ 个神经元的第 $j$ 个输入对应的权值。单个神经元的数学公式如公式~\eqref{eq:neuron} 所示：
+
+\begin{equation} \label{eq:neuron}
+% \adddotsbeforeeqnnum%
+\begin{cases}
+u_k = \sum_{j=1}^{m} w_{kj}x_j & \\
+v_k = u_k + b_k & \\
+y_k = \varphi(v_k) &
+\end{cases}
+\end{equation}
+
+其中 $x_j$ 表示第 $k$ 个神经元的第 $j$ 个输入，$w_{kj}$表示第 $k$ 个神经元的第 $j$ 个输入对应的权值，$b_k$ 表示第 $k$ 个神经元的偏置，$\varphi(\dots)$ 为激活函数，$y_k$ 为该神经元的输出。
+
+感知器模型于1958年，由美国心理学家Frank Rosenblatt提出，其中激活函数采用的一般是符号函数，如公式~\eqref{eq:sign}所示：
+
+\begin{equation} \label{eq:sign}
+    o = sgn(x_1w_1+x_2*w_2+b)
+\end{equation}
+
+进一步，为了简化问题分析本质，我们假设神经元只有两个输入: $x_1$ 和 $x_2$ ，则模型的公式进一步简化为:
+
+\begin{equation}
+    \begin{cases} 
+        1, & x_1w_1+x_2 * w_2+b>=0 \\
+        -1, & x_1w_1+x_2*w_2+b<0 
+    \end{cases}
+\end{equation}
+
+如果把$o$当作因变量、$x_1$ 和 $x_2$当作自变量，对于分界
+
+\begin{equation}
+    x_1w_1+x_2w_2+b=0
+\end{equation}
+
+可以抽象成三维空间里的一个分割面，能够对该面上下方的点进行分类，则该感知机能完成的任务是用简单的线性分类任务，比如可以完成逻辑“与”与逻辑“或”的分类，如表~\ref{tab:logic}所示，在这里，第三维度只有1和-1两个值，分别使用实心点和空心点来表征，这样就可以在二维平面上将问题可视化：
+
+\begin{table}[!htbp]
+    \caption{逻辑 真值表}
+    \label{tab:logic}
+    \centering
+    \footnotesize% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{lllllllll}
+    \toprule
+    \multicolumn{3}{c}{\textbf{逻辑与}}  & \multicolumn{3}{c}{\textbf{逻辑或}} & \multicolumn{3}{c}{\textbf{逻辑异或}}       \\
+    $x_1$ & $x_2$ & o & $x_1$ & $x_2$ & o & $x_1$ & $x_2$ & o   \\
+    \midrule
+    0              & 0              & 0              & 0              & 0              & 0              & 0              & 0              & 0              \\
+    0              & 1              & 0              & 0              & 1              & 1              & 0              & 1              & 1              \\
+    1              & 0              & 0              & 1              & 0              & 1              & 1              & 0              & 1              \\
+    1              & 1              & 1              & 1              & 1              & 1              & 1              & 1              & 0              \\
+    \bottomrule
+    \end{tabular}
+    \end{table}
+
+但是对于非线性问题，如异或问题，如图~\ref{fig:Nor}所示，单层感知机没有办法找到一条直线能够完成分类任务。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Nor}
+    \caption{异或平面}
+    \label{fig:Nor}
+\end{figure}
+
+\subsection{多层感知机模型}
+
+多层感知机模型是在单层感知机模型的基础上引入了一层或多层隐藏层，在图~\ref{fig:FNN}所示的多层感知机中，输入和输出的神经元个数分别为4和1，中间的隐藏层包含了5个神经元，隐藏层中的神经元和输入层中各个输入完全连接，输出层中的神经元和隐藏层中的各个神经元也完全连接。因此，多层感知机中的隐藏层和输出层都是全连接层。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{FNN}
+    \caption{前向神经网络结构}
+    \label{fig:FNN}
+\end{figure}
+
+但是不难发现，即便再添加更多的隐藏层，多层感知机的设计依然只能与仅含输出层的单层神经网络等价。上述问题的根源在于全连接层只是对数据做仿射变换（affine transformation），而多个仿射变换的叠加仍然是一个仿射变换。解决问题的一个方法是引入非线性变换，例如对隐藏变量使用按元素运算的非线性函数进行变换，然后再作为下一个全连接层的输入。这个非线性函数被称为激活函数（activation function），常用的激活函数包括了 Sigmoid、Relu、Tanh 等。
+
+理论上，深度神经网络，及多层感知机已经可以拟合任意的函数\citep{HORNIK1991251}。
+
+\subsection{卷积神经网络概述}
+
+卷积神经网络（Convolutional Neural Network, CNN）是目前最常用的深度神经网络，对于大型图像处理有出色表现。手写字体识别模型LeNet5诞生于1994年，是最早的卷积神经网络之一。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{CNN}
+    \caption{LeNet-5 \ 网络结构}
+    \label{fig:CNN}
+\end{figure}
+
+LeNet5通过巧妙的设计，利用卷积、参数共享、池化等操作提取特征，避免了大量的计算成本，最后再使用全连接神经网络进行分类识别，该网络也是最近大量神经网络架构的起点，LeNet5的网络结构如图~\ref{fig:CNN}所示。
+
+\subsection{Resnet 18 网络结构}
+
+\section{ZYNQ 器件}
+
+ZYNQ 器件是 Xilinx 公司研发的以 ARM 为主导，FPGA 为辅的嵌入式系统结构，其拥有集成度高的开发环境，支持高层次综合、Vivado 硬件逻辑设计、Simulink 协同设计、SDK 软件设计。对于一个不熟悉FPGA的软件工程师来说，也完全可以把ZYNQ器件当前简单的双核ARM来使用，利用 SDK 编写软件程序，如果软件调试过程中发现某些算法的速度太慢，这时候就可以使用 Verilog 硬件描述语言，或者使用高层次综合为这部分算法设计硬件加速器，ARM 处理器与加速器之间通过 AXI 标准总线协议进行通信，Xilinx 提供了若干免费的加速IP供用户使用，由于有了ARM处理器，我们甚至可以在 ZYNQ 器件上搭建 SOC 降低开发的难度。
+
+\section{硬件加速体系结构概述}
+
+\subsection{FPGA 介绍}
+
+FPGA 的全称为现场可编程逻辑门阵列（Field Programmable Gate Array, FPGA）,是一种半定制的集成电路（Integrated Circuit, IC）芯片。FPGA 包含了一组可编程逻辑门阵列（Programmable Logic Blocks, PLB）以及可重配置的互联层次结构，通过这种结构可以将 PLB 连接在一起。FPGA 可以通过重编程，实现不同逻辑特性，从而实现了可重构计算。因此理论上 FPGA 可以实现当前 CPU 上的所有算法，但是具体算法实现的效果会受制于 FPGA 的可用资源、时钟频率以及输入输出的带宽。
+
+\subsection{AXI4 总线协议}
+
+在 Xilinx 的设计工具中提供的 IP 核大多使用 AXI4 总线来实现各级之间的逻辑控制和数据传输。为了保证本设计中 SOC 的通用性，提高设计效率，因此使用 AXI4 总线作为 SOC 的片内总线，为此这里对 AXI4 总线做详细介绍。
+
+AXI4（Advanced eXtensible Interface）总线是由 ARM 公司提出的AMBA（Advanced Microcontroller Bus Architecture）协议中的一部分，Xilinx 公司在其基础上又发展出了 AXI Lite 和 AXI Stream 两种简化接口。因此目前 Xilinx 的 IP 中主要使用了 AXI Full、AXI Stream 和 AXI Lite 三种接口。在本设计中主要使用到的是 AXI Full 和 AXI Lite 总线。
+
+\section{本章小结}
+
+本章主要介绍的在设计过程中涉及到相关技术，包括了卷积神经网络、RISC-V 处理器、FPGA 等。其中在卷积神经网络介绍部分，对 YOLO V2 算法进行了详细的说明。由于在 SOC 设计的过程中，AXI4 总线也被大量使用，关系到 SOC 内部以及 CNN 加速器的效果，因此也对其进行了详细的介绍。
