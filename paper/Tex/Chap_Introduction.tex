@@ -96,7 +96,35 @@ y_k = \varphi(v_k) &
 
 \subsection{卷积神经网络概述}
 
-卷积神经网络（Convolutional Neural Network, CNN）是目前最常用的深度神经网络，对于大型图像处理有出色表现。手写字体识别模型LeNet5诞生于1994年，是最早的卷积神经网络之一。
+卷积神经网络（Convolutional Neural Network, CNN）是目前最常用的深度神经网络，对于大型图像处理有出色表现，卷积神经网络一般由卷积层、非线性激活函数、池化层组成。
+
+\begin{enumerate}
+    \item 卷积层（Convolution Layer）的本质是输入图像与权重矩阵的乘积累加运算(Multiply Accumulate, MAC)，如图~\ref{fig:Convolution}所示卷积核在输入特征图像上滑动，用来匹配局部的细节。一般来说，随着卷积的层数逐渐加深，卷积核的数目也会随之增加，所表征的细节也会更加抽象。
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=0.6\textwidth]{Convolotion.png}
+        \caption{卷积运算}
+        \label{fig:Convolution}
+    \end{figure}
+    \item 激活函数（Activation Function）是非线性单元，它的存在给深度神经网络体系增加了非线性元素，是深度神经网络能够拟合任意函数的基础。比较重要且常用的激活函数有 ReLU、Sigmoid 和 Tanh 。此外，其余常用的激活函数还有 PReLU, ELU 等，他们的函数图像与取值范围如图~\ref{fig:Activation}所示：
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=0.6\textwidth]{Activation.png}
+        \caption{常见的激活函数图像}
+        \label{fig:Activation}
+    \end{figure}
+    \item 池化层（Pooling Layer）的作用是对特征图进行下采样，从而可以达到增加感受野、增加卷积神经网络运算的平移不变性、降低优化难度，减少神经网络参数的目的。典型的池化层 Max Pooling 如图~\ref{fig:MaxPooling}所示，他会选择被池化矩阵选内最大的值作为输出得到新的特征图。Average Pooling 选取池化矩阵内的平均值，是另一种常用的池化层。
+    \begin{figure}[!htbp]
+        \centering
+        \includegraphics[width=0.6\textwidth]{MaxPooling.png}
+        \caption{Max Pooling}
+        \label{fig:MaxPooling}
+    \end{figure}
+\end{enumerate}
+
+\subsection{LeNet5 介绍}
+
+手写字体识别模型LeNet5诞生于1994年，是最早的卷积神经网络之一。
 
 \begin{figure}[!htbp]
     \centering
@@ -105,25 +133,33 @@ y_k = \varphi(v_k) &
     \label{fig:CNN}
 \end{figure}
 
-LeNet5通过巧妙的设计，利用卷积、参数共享、池化等操作提取特征，避免了大量的计算成本，最后再使用全连接神经网络进行分类识别，该网络也是最近大量神经网络架构的起点，LeNet5的网络结构如图~\ref{fig:CNN}所示。
+通过巧妙的设计，利用卷积、参数共享、池化等操作提取特征，LeNet5避免了大量的计算成本，最后再使用全连接神经网络进行分类识别，该网络也是最近大量神经网络架构的起点，LeNet5的网络结构如图~\ref{fig:CNN}所示。
 
 \subsection{Resnet 18 网络结构}
 
-\section{ZYNQ 器件}
+
+
+\section{FPGA 与 ZYNQ 器件}
+
+现场可编程逻辑门阵列（Field Programmable Gate Array, FPGA）,是一种半定制的集成电路（Integrated Circuit, IC）芯片。FPGA 包含了一组可编程逻辑门阵列（Programmable Logic Blocks, PLB）以及可重配置的互联层次结构，通过这种结构可以将 PLB 连接在一起。FPGA 可以通过重编程，实现不同逻辑特性，从而实现了可重构计算。因此理论上 FPGA 可以实现当前 CPU 上的所有算法，但是具体算法实现的效果会受制于 FPGA 的可用资源、时钟频率以及输入输出的带宽。
 
 ZYNQ 器件是 Xilinx 公司研发的以 ARM 为主导，FPGA 为辅的嵌入式系统结构，其拥有集成度高的开发环境，支持高层次综合、Vivado 硬件逻辑设计、Simulink 协同设计、SDK 软件设计。对于一个不熟悉FPGA的软件工程师来说，也完全可以把ZYNQ器件当前简单的双核ARM来使用，利用 SDK 编写软件程序，如果软件调试过程中发现某些算法的速度太慢，这时候就可以使用 Verilog 硬件描述语言，或者使用高层次综合为这部分算法设计硬件加速器，ARM 处理器与加速器之间通过 AXI 标准总线协议进行通信，Xilinx 提供了若干免费的加速IP供用户使用，由于有了ARM处理器，我们甚至可以在 ZYNQ 器件上搭建 SOC 降低开发的难度。
 
 \section{硬件加速体系结构概述}
 
-\subsection{FPGA 介绍}
+\subsection{众核处理器}
 
-FPGA 的全称为现场可编程逻辑门阵列（Field Programmable Gate Array, FPGA）,是一种半定制的集成电路（Integrated Circuit, IC）芯片。FPGA 包含了一组可编程逻辑门阵列（Programmable Logic Blocks, PLB）以及可重配置的互联层次结构，通过这种结构可以将 PLB 连接在一起。FPGA 可以通过重编程，实现不同逻辑特性，从而实现了可重构计算。因此理论上 FPGA 可以实现当前 CPU 上的所有算法，但是具体算法实现的效果会受制于 FPGA 的可用资源、时钟频率以及输入输出的带宽。
+众核处理器（Manycore Processor）由成百上千的简单分立的处理器核心组成。与传统的多核处理器所不同的是，其设计牺牲了单核运行的性能来换取多核处理时的吞吐量，减少多核处理时的能量损耗。典型的使用众核处理器设计是 Kalray MPPA-256 架构。
 
-\subsection{AXI4 总线协议}
+如图所示，使用众核处理器进行深度神经网络运算时，每个处理器核心都可以贡献出一部分性能进行神经网络的运算，之后通过 Router 决定在物理总线上数据传输的方向。
 
-在 Xilinx 的设计工具中提供的 IP 核大多使用 AXI4 总线来实现各级之间的逻辑控制和数据传输。为了保证本设计中 SOC 的通用性，提高设计效率，因此使用 AXI4 总线作为 SOC 的片内总线，为此这里对 AXI4 总线做详细介绍。
+众核处理器是一种通用处理器，这意味着他具有一定的灵活性，除了可以运用在神经网络运算上，还可以用在各种各样的领域，尤其是那些有高并行度要求的场景，例如 HPC。但如果仅针对深度神经网络的推理，通用处理器本身便会存在一些多余、不合适的设计。 
 
-AXI4（Advanced eXtensible Interface）总线是由 ARM 公司提出的AMBA（Advanced Microcontroller Bus Architecture）协议中的一部分，Xilinx 公司在其基础上又发展出了 AXI Lite 和 AXI Stream 两种简化接口。因此目前 Xilinx 的 IP 中主要使用了 AXI Full、AXI Stream 和 AXI Lite 三种接口。在本设计中主要使用到的是 AXI Full 和 AXI Lite 总线。
+\subsection{GPU}
+
+GPU 也可以看作是一种特殊的，针对向量运算的众核处理器。
+
+\subsection{专用硬件加速结构}
 
 \section{本章小结}
 
