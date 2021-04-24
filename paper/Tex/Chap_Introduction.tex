@@ -137,6 +137,16 @@ y_k = \varphi(v_k) &
 
 \subsection{Resnet 18 网络结构}
 
+纵观关机神经网络的发展脉络，我们可以看到研究者一直在不断尝试各种技术以加深神经网络的层数。从8层的 AlexNet，到十九层的 VGG，再到22层的 GoogLeNet，可以说，技术一直在进步。但是在突破神经网络深度的问题上真正最具有颠覆性的技术还是来自 ResNet。
+
+为了避免随着神经网络的深度加深从而带来的退化问题，ResNet 采用了一种不同于常规卷积神经网络的基础结构，其基本单元如图~\ref{fig:Residual}所示，增加了从输入到输出的直连通道。其卷积拟合的是输出与输入的差，及残差，所以这种结构又被称为残差结构。残差网络的响应小于常规网络\citep{DBLP:journals/corr/HeZRS15}。残差网络的优点是对数据波动更加灵敏，更容易求的最优解，能够改善深层网络的训练。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Residual.png}
+    \caption{Resnet 残差结构}
+    \label{fig:Residual}
+\end{figure}
 
 
 \section{FPGA 与 ZYNQ 器件}
@@ -151,7 +161,14 @@ ZYNQ 器件是 Xilinx 公司研发的以 ARM 为主导，FPGA 为辅的嵌入式
 
 众核处理器（Manycore Processor）由成百上千的简单分立的处理器核心组成。与传统的多核处理器所不同的是，其设计牺牲了单核运行的性能来换取多核处理时的吞吐量，减少多核处理时的能量损耗。典型的使用众核处理器设计是 Kalray MPPA-256 架构。
 
-如图所示，使用众核处理器进行深度神经网络运算时，每个处理器核心都可以贡献出一部分性能进行神经网络的运算，之后通过 Router 决定在物理总线上数据传输的方向。
+如图~\ref{fig:Manycore}所示，使用众核处理器进行深度神经网络运算时，每个处理器核心都可以贡献出一部分性能进行神经网络的运算，之后通过 Router 决定在物理总线上数据传输的方向。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Manycore}
+    \caption{Net work on Manycore Processor}
+    \label{fig:Manycore}
+\end{figure}
 
 众核处理器是一种通用处理器，这意味着他具有一定的灵活性，除了可以运用在神经网络运算上，还可以用在各种各样的领域，尤其是那些有高并行度要求的场景，例如 HPC。但如果仅针对深度神经网络的推理，通用处理器本身便会存在一些多余、不合适的设计。 
 
