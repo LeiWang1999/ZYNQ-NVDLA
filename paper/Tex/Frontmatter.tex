@@ -25,23 +25,13 @@
 \vspace{0.3cm}
 \end{center}
 
-近年来，卷积神经网络为代表的深度学习算法在许多领域中取得了巨大的突破，如模式识别、图像处理、计算机视觉等。由于 FPGA 低功耗、低延时、可重配置的特性，适合应用于一些对功耗有限制的小型流式应用场景。目前限制 FPGA 在深度学习领域无法大规模应用的主要有以下的两点：
+近年来，深度神经网络已经被证明在包括图像分类、目标检测和自然语言处理等任务上能够取得相当不错的效果。现如今，大量的应用程序都配备了与之相关的深度学习算法，但是对于手机、无人机等资源有限的嵌入式设备上，仅用软件方式加速深度神经网络已经不能满足日益增长的速度和功耗要求，如何利用硬件设计加速器已经成为学术领域的研究热点。
 
-\begin{enumerate}
-    \item 开发效率低。随着高层次综合技术（HLS）的不断成熟，已经可以使用 C、C++ 等高级语言进行 FPGA 算法开发，该问题正逐步被解决；
-
-    \item 通用性差，对硬件资源要求高。受制于 FPGA 芯片资源的限制，低成本的 FPGA 芯片往往无法实现一些复杂的算法。
-\end{enumerate}
-
-因此本文设计的一种使用 RISC-V 处理器的异构卷积神经网络算法加速系统，将 CNN 网络进行部分展开，展开程度可以根据具体 FPGA 芯片资源的丰富程度灵活调整，同时使用了一个 RISC-V 处理器来完成一些不适合放在 FPGA 上完成的计算任务，在保证了运算速度的提升下，该异构计算架构也有一定的通用性。
-
-使用了目前被广泛使用的 YOLO 算法，对其进行详细分析，部署到 FPGA 上，最终在 PYNQ-Z2 平台上获得了 30.15GOP/s 的性能，与 Intel i7-9700K CPU 相比，能效是其 120.4 倍、性能是其 7.3 倍；与双核 ARM-A9 CPU 相比，能效是其 86 倍，性能是其 112.9 倍。
-
-% 近年来，由于以卷积神经网络为代表的深度学习算法的发展，目标检测算法取得了巨大的突破，检测速度以及准确率得到了极大的提高。目标检测算法在嵌入式领域有着广泛的应用，比如自动驾驶、无人机图像识别等，这些应用场景不仅对准确度和速度有要求，对功耗也有限制。传统的目标检测算法通常运行在高功耗的 GPU 上，并不适合应用在这些嵌入式场景中。本文设计了一种运行在 FPGA 上的异构卷积神经网络算法加速系统，将 CNN 网络进行部分展开，展开程度可以根据具体 FPGA 芯片资源的丰富程度灵活调整，同时使用了一个 RISC-V 软核来完成一些不适合在 FPGA 上完成的计算任务。本文在 PYNQ-Z2 平台上实现了 YOLO V2 算法的加速，速度方面是 Intel i7-9700K CPU 的 6.3 倍；是四核 ARM-A53 CPU 的 361.1 倍，同时整个系统的功耗也保持在一个较低的水平。因此本设计的方法适用于嵌入式系统中的目标检测应用。
+本文首先给出了深度神经网络的概述，并介绍了几种当下主流的针对深度神经网络的硬件加速系统设计方案以及实际事例。在考虑了不同加速器设计之间的相似性和差异性之后，本文将对英伟达开源的深度学习加速器框架NVDLA的设计思路进行概述。然后，本文基于 ZYNQ 7000 器件，在 FPGA 端实现了 NVDLA 设计，通过 AXI 4 总线协议将 NVDLA 加速器挂载到 ARM A9 处理器，并为 ARM A9 处理器移植了 Ubuntu 16.04 操作系统，将加速器的驱动程序加载到 Linux 内核。在软件设计的前端，使用神经网络编译器接受预训练的深度神经网络模型，做算子融合、内存重用等硬件无关的优化，并且结合TensorRT完成了深度神经网络的量化，在软件设计的后端，由 Runtime 自动调度加速器驱动程序推理深度神经网络。
 
 {
     \zihao{5}
-    \keywords{卷积神经网络 \quad FPGA \quad RISC-V \quad 硬件加速}% 中文关键词
+    \keywords{深度神经网络 \quad FPGA \quad NVDLA \quad 硬件加速}% 中文关键词
 }
 %-
 %-> 英文摘要
@@ -55,7 +45,9 @@
 \vspace{0.3cm}
 \end{center}
 
-In recent years，the frame object detection algorithm has made a great breakthrough in speed and accuracy for the development of deep learning algorithm, which represented by convolutional neural network. It has been widely used in the embedded systems, such as automatic driving, drones and so on. These application scenarios not only require the accuracy and speed, but also limit the power consumption. Traditional frame object detection usually run on high-power GPU, which is not suitable for these embedded systems. In this paper, a heterogeneous convolutional neural network algorithm accelerator running on FPGA is designed. The CNN network is partially expanded, whose expansion degree can be adjusted flexibly according to the resources of FPGA. At the same time, a risc-v soft core is used to complete some tasks that are not suitable for FPGA. We implemente the accelerator for YOLO V2 on the PYNQ-Z2 platform. Compared with the Intel i7-9700k CPU, the performance is its 6.3 times; compared with the quad core ARM-A53 CPU, the performance is its 361.1 times. At the same time, the power consumption of the whole system is kept at a low level. So our method is suitable for the application of frame object detection in embedded systems.
+In recent years, deep neural networks have been proven to achieve quite good results in tasks including image classification, target detection, and natural language processing. Nowadays, a large number of applications are equipped with related deep learning algorithms. However, for embedded devices with limited resources such as mobile phones and drones, only using software to accelerate deep neural networks can no longer meet the increasing speed and Power consumption requirements, how to use hardware design accelerators have become a research hotspot in the academic field.
 
-\KEYWORDS{Convolutional neural network; FPAG; RISC-V; Hardware speedup}% 英文关键词
+This article first gives an overview of deep neural networks, and introduces several current mainstream hardware acceleration system design schemes and practical examples for deep neural networks. After considering the similarities and differences between different accelerator designs, this article will outline the design ideas of Nvidia's open source deep learning accelerator framework NVDLA. Then, based on the ZYNQ 7000 device, this article implements the NVDLA design on the FPGA side, mounts the NVDLA accelerator to the ARM processor through the AXI4 bus protocol, and transplants the Ubuntu 16.04 operating system for the ARM processor, and mounts the accelerator driver to The Linux kernel uses the Runtime automatic scheduling accelerator to infer the deep neural network. At the front end of the software design, the neural network compiler is used to accept the model trained by Caffe to perform hardware-independent optimizations such as operator fusion and memory reuse, and combined with TensorRT to complete the quantization of the neural network.
+
+\KEYWORDS{Deep neural network; FPGA; NVDLA; Hardware speedup}% 英文关键词
 %---------------------------------------------------------------------------%

@@ -1,0 +1,53 @@
+%---------------------------------------------------------------------------%
+%->> Frontmatter
+%---------------------------------------------------------------------------%
+%-
+%-> 生成封面
+%-
+\maketitle% 生成中文封面
+% \MAKETITLE% 生成英文封面
+%-
+%-> 作者声明
+%-
+% \makedeclaration% 生成声明页
+%-
+%-> 中文摘要
+%-
+% \intobmk\chapter*{摘要}% 显示在书签但不显示在目录
+% syntax: \chapter[目录]{标题}\chaptermark{页眉}
+\chapter[摘要]{\MyTitleCh}\chaptermark{摘要}
+\setcounter{page}{1}% 开始页码
+\pagenumbering{Roman}% 页码符号
+
+\begin{center}
+\vspace{-0.3cm}
+\zihao{3} \songti 摘要
+\vspace{0.3cm}
+\end{center}
+
+近年来，深度神经网络已经被证明在包括图像分类、目标检测和自然语言处理等任务上能够取得相当不错的效果。现如今，大量的应用程序都配备了与之相关的深度学习算法，但是对于手机、无人机等资源有限的嵌入式设备上，仅用软件方式加速深度神经网络已经不能满足日益增长的速度和功耗要求，如何利用硬件设计加速器已经成为学术领域的研究热点。
+
+本文首先给出了深度神经网络的概述，并介绍了几种当下主流的针对深度神经网络的硬件加速系统设计方案以及实际事例。在考虑了不同加速器设计之间的相似性和差异性之后，本文将对英伟达开源的深度学习加速器框架NVDLA的设计思路进行概述。然后，本文基于ZYNQ7000器件，在FPGA端实现了NVDLA设计，通过AXI4总线协议挂载到ARM处理器，并为ARM处理器移植Ubuntu16.04操作系统，将NVDLA的驱动程序挂载到Linux内核上，通过宿主机运行Compiler将
+
+本文
+
+{
+    \zihao{5}
+    \keywords{深度神经网络 \quad FPGA \quad NVDLA \quad 硬件加速}% 中文关键词
+}
+%-
+%-> 英文摘要
+%-
+% \intobmk\chapter*{Abstract}% 显示在书签但不显示在目录
+\chapter[Abstract]{\MyTitleEn}\chaptermark{Abstract}
+
+\begin{center}
+\vspace{-0.3cm}
+\zihao{3} \songti Abstract
+\vspace{0.3cm}
+\end{center}
+
+In recent years，the frame object detection algorithm has made a great breakthrough in speed and accuracy for the development of deep learning algorithm, which represented by convolutional neural network. It has been widely used in the embedded systems, such as automatic driving, drones and so on. These application scenarios not only require the accuracy and speed, but also limit the power consumption. Traditional frame object detection usually run on high-power GPU, which is not suitable for these embedded systems. In this paper, a heterogeneous convolutional neural network algorithm accelerator running on FPGA is designed. The CNN network is partially expanded, whose expansion degree can be adjusted flexibly according to the resources of FPGA. At the same time, a risc-v soft core is used to complete some tasks that are not suitable for FPGA. We implemente the accelerator for YOLO V2 on the PYNQ-Z2 platform. Compared with the Intel i7-9700k CPU, the performance is its 6.3 times; compared with the quad core ARM-A53 CPU, the performance is its 361.1 times. At the same time, the power consumption of the whole system is kept at a low level. So our method is suitable for the application of frame object detection in embedded systems.
+
+\KEYWORDS{Convolutional neural network; FPAG; RISC-V; Hardware speedup}% 英文关键词
+%---------------------------------------------------------------------------%
