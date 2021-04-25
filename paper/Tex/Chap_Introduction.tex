@@ -157,6 +157,8 @@ ZYNQ 器件是 Xilinx 公司研发的以 ARM 为主导，FPGA 为辅的嵌入式
 
 \section{硬件加速体系结构概述}
 
+在过去，深度神经网络算法往往被运行在通用体系结构里，如众核处理器与 GPU 设备，但是这些设备的特点是运行功耗大，并且会带来极高的内存使用率。当谈及深度神经网络，往往最让我们头疼的是训练过程，这个步骤一般在使用GPU完成加速，然后将预训练好的模型部署在目标平台，当平台对功耗和运算能力有要求的时候，传统的通用处理器的体系结构就不适合了，于是领域专用的，针对深度神经网络的硬件加速系统设计呼之欲出。本小节首先介绍两种典型的通用硬件加速体系结构，然后介绍三种面向深度神经网络运算的领域专用运算。
+
 \subsection{众核处理器}
 
 众核处理器（Manycore Processor）由成百上千的简单分立的处理器核心组成。与传统的多核处理器所不同的是，其设计牺牲了单核运行的性能来换取多核处理时的吞吐量，减少多核处理时的能量损耗。典型的使用众核处理器设计是 Kalray MPPA-256 架构。
@@ -180,17 +182,23 @@ VOLTA 架构是 NVIDIA 推出的新一代的 GPU 设计架构，基于该架构�
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=0.5\textwidth]{TESLA V100.jpeg}
+    \includegraphics[width=0.5\textwidth]{TESLA V100.jpg}
     \caption{TESLA V100}
     \label{fig:TESLA V100}
 \end{figure}
 
-\subsection{专用硬件加速结构}
+\subsection{Google TPU}
 
+张量处理单元（Tensor Processing Unit）是 Google 牵头设计的一款为深度神经网络运算定制的 ASIC 器件，事实上其也取得了非常瞩目的性能，2015年发布的29nm工艺的 TPUv1 版本，能够运行在700Mhz的频率，但功率只有28W \textasciitilde 40W。
+
+\subsection{DianNao 系列}
+
+为了能够实现大规模深度学习网络的专用硬件执行。2014年，中国科学院计算技术研究所研究团队提出了 DianNao 架构。DianNao 这篇文章是率先探索机器学习加速设计的先驱文章之一，开创了专用处理器实现深度学习的先河。这篇文章在65nm工艺，0.98Ghz的频率，面积为3.02mm2的 ASIC 芯片上针对机器学习算法（DNN，CNN）实现了一个高性能的Diannao处理器架构，相比于128bit 2GHz的4发射SIMD处理器，达到了117.87x的加速比，21.08x能耗比。
 
 \subsection{NVIDIA Deep Learning Accelerator}
 
+NVDLA 是 NVIDIA 公司开源出来的深度学习加速器框架，其结构与 DianNao 类似。DianNao 系列芯片每个周期最多能够计算16个神经元，NVDLA 能够计算64个，而 TPU 则能够计算256个。
 
-\section{本章小结}
+与前两个领域专用的硬件加速体系结构不同，NVDLA 完全开源，其不仅提供了 Verilog 硬件描述语言、CMOD 硬件仿真程序，还为硬件加速器设计了神经网络编译器与运行时，自上而下打通了硬件栈与软件栈，基本能够实现端到端的推理。虽然 NVDLA 自2018年以来已经没有人维护，但其系统设计思路仍然具有学习意义和指导意义。
 
-本章主要介绍的在设计过程中涉及到相关技术，包括了卷积神经网络、RISC-V 处理器、FPGA 等。其中在卷积神经网络介绍部分，对 YOLO V2 算法进行了详细的说明。由于在 SOC 设计的过程中，AXI4 总线也被大量使用，关系到 SOC 内部以及 CNN 加速器的效果，因此也对其进行了详细的介绍。
+因此，有关 NVDLA 的内容将在下一章节具体介绍。
