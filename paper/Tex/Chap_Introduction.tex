@@ -137,7 +137,7 @@ y_k = \varphi(v_k) &
 
 \subsection{Resnet 18 网络结构}
 
-纵观关机神经网络的发展脉络，我们可以看到研究者一直在不断尝试各种技术以加深神经网络的层数。从8层的 AlexNet，到十九层的 VGG，再到22层的 GoogLeNet，可以说，技术一直在进步。但是在突破神经网络深度的问题上真正最具有颠覆性的技术还是来自 ResNet。
+纵观神经网络的发展脉络，我们可以看到研究者一直在不断尝试各种技术以加深神经网络的层数。从8层的 AlexNet，到十九层的 VGG，再到22层的 GoogLeNet，可以说，技术一直在进步。但是在突破神经网络深度的问题上真正最具有颠覆性的技术还是来自 ResNet。
 
 为了避免随着神经网络的深度加深从而带来的退化问题，ResNet 采用了一种不同于常规卷积神经网络的基础结构，其基本单元如图~\ref{fig:Residual}所示，增加了从输入到输出的直连通道。其卷积拟合的是输出与输入的差，及残差，所以这种结构又被称为残差结构。残差网络的响应小于常规网络\citep{DBLP:journals/corr/HeZRS15}。残差网络的优点是对数据波动更加灵敏，更容易求的最优解，能够改善深层网络的训练。
 
@@ -174,9 +174,22 @@ ZYNQ 器件是 Xilinx 公司研发的以 ARM 为主导，FPGA 为辅的嵌入式
 
 \subsection{GPU}
 
-GPU 也可以看作是一种特殊的，针对向量运算的众核处理器。
+GPU 也可以看作是一种特殊的，针对向量运算的众核处理器。起初 GPU 被设计出来的目的是为了提高计算机对图像与视频的处理能力，但是当下，GPU 设备被广泛应用在深度学习应用的训练和推理加速中。并且对于 GPU 的调用，NVIDIA 还提供了软件支持，即 CUDA，方便了用户手动便携并行算子。
+
+VOLTA 架构是 NVIDIA 推出的新一代的 GPU 设计架构，基于该架构的显卡被广泛运用在深度学习领域。其中，TESLA V100 是第一款被设计出来专门针对深度神经网络训练和推理的 GPU 设备（如图~\ref{fig:TESLA V100}）。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{TESLA V100.jpeg}
+    \caption{TESLA V100}
+    \label{fig:TESLA V100}
+\end{figure}
 
 \subsection{专用硬件加速结构}
+
+
+\subsection{NVIDIA Deep Learning Accelerator}
+
 
 \section{本章小结}
 
