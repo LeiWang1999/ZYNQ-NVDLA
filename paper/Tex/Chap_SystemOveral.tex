@@ -40,7 +40,7 @@ NVDLA 在外侧暴露出四个接口，它们分别是 CSB 总线，主存储接
 
 \begin{itemize}
     \item 寄存器配置总线（Configuration Space Bus Interface，CSB） ，用来读写 NVDLA 的寄存器，对于 CSB 总线，我们不甚讲解，其在读写地址的时候需要做移位来压缩指令大小，NVDLA 提供了 csb2apb 转换电路，在读写的时候使用该电路包裹即可利用 APB 总线协议读写 NVDLA 的寄存器。
-    \item 主存储接口（Data Backbone interface，DBB），用来访存，该接口使用的协议为 AXI 总线协议，可以挂载在 AXI 接口的存储控制器上，在本文中，我们将其挂载到片上的 DDR 存储，与 ARM 处理器共享内存。
+    \item 主存储接口（Data Backbone interface，DBB），用来访存，该接口使用的协议为 AXI4 总线协议，可以挂载在 AXI4 接口的存储控制器上，在本文中，我们将其挂载到片上的 DDR 存储，与 ARM 处理器共享内存。
     \item 高速存储接口（high-bandwidth interface），可以外接第二块 SRAM 作为辅存储，存储中间数据，降低访存瓶颈。
     \item 中断接口（Interrupt interface），NVDLA 不仅支持通过寄存器查询的方式查询任务是否完成，也支持产生硬件中断，方便我们编写驱动程序。
 \end{itemize}
@@ -58,9 +58,9 @@ NVDLA 在外侧暴露出四个接口，它们分别是 CSB 总线，主存储接
     \item 不支持 Reshape 特征图。
 \end{enumerate}
 
-\subsection{NVDLA 软件栈}
+\subsection{NVDLA 软件工具链}
 
-如图~\ref{fig:Software Stack}，NVDLA 的软件栈分为 Compiler 和 Runtime 两个部分。
+如图~\ref{fig:Software Stack}，NVDLA 的软件工具链分为 Compiler 和 Runtime 两个部分。
 
 \begin{figure}[!htbp]
     \centering
@@ -82,4 +82,24 @@ Runtime 与硬件紧密结合，其负责接受 Compiler 生成的 Loadable 文�
 
 \section{验证平台}
 
-\section{NVDLA 与 ARM 互联}
+NVDLA 加速器设计需要挂载到 Linux 内核上，所以本设计需要一款通用处理器作为主控，并且移植 Linux 操作系统。并且，考虑到本设计采用的 small 配置需要7万以上的查找表资源。则可供选型的器件型号有：
+
+\begin{enumerate}
+    \item ZYNQ 7000 系列，该芯片集成了一块双核32位 ARM A9 处理器作为主控制器，而 FPGA 侧的资源随芯片的型号不同而不同，想要实现 NVDLA 至少需要使用到 ZYNQ 7045 器件。
+    \item ZYNQ MPSoc 系列，该芯片集成了一块多核的64位的 ARM A53 处理器作为主控制器，性能相较于 ZYNQ 7000 器件强，官方开发板卡的价格在2万左右。
+    \item 纯FPGA逻辑器件，如官方板卡 VCU118，有足够大的LUT资源，可以将 RISC-V 处理器与 NVDLA 一起实现，并在 RISC-V 处理器上移植 Riscv-Linux，但缺点是板卡价值近十万元，十分昂贵，由于使用了 RISC-V 处理器，开发周期较长。
+\end{enumerate}
+
+综合以上，本设计选用的器件型号为 XC7Z045-2FFG900I，开发板卡为如图~\ref{fig:ZYNQ 7045}的第三方板卡，价格为三千多元人民币。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{ZYNQ 7045.jpeg}
+    \caption{ZYNQ 7045 开发板}
+    \label{fig:ZYNQ 7045}
+\end{figure}
+
+\section{AXI4 总线互联}
+
+在 Xilinx 的设计工具中提供的 IP 核大多使用 AXI4 总线来实现各级之间的逻辑控制和数据传输。前文中提到，NVDLA 亦是使用 AXI4 总线访问存储，无疑极大方便了我们的设计，但是 NVDLA 的控制总线协议不是 AXI4 协议，在本设计中，其通过 csb2apb 电路将 CSB 协议转换为 APB 总线协议，在 Vivado 设计中，我们使用 Xilinx 官方提供给的 APB2AXI Bridge IP 将 APB 总线再转换为 AXI4 总线挂载到 ARM 处理器上。
+
