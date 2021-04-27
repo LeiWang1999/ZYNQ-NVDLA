@@ -1,0 +1,3 @@
+/home/lei/umd/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/lei/umd/cmake-build-debug/CMakeFiles/umd.dir
+/home/lei/umd/cmake-build-debug/CMakeFiles/edit_cache.dir
