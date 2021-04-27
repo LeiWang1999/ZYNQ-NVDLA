@@ -19,6 +19,7 @@
 !Img/*.pdf
 !Img/*.png
 !Img/*.jpg
+!Img/*.jpeg
 !Img/*.eps
 !Img/*.tif
 !Img/*.bmp
