@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,13 +26,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __OPENDLA_H_
-#define __OPENDLA_H_
+#ifndef __FIRMWARE_COMMON_H_
+#define __FIRMWARE_COMMON_H_
 
-#ifdef DLA_2_CONFIG
-#include <opendla_small.h>
-#else
-#include <opendla_initial.h>
-#endif
+#include <dla_interface.h>
 
-#endif
+#define DCUBE_MAX_WIDTH		8192
+#define DCUBE_MAX_HEIGHT	8192
+#define DCUBE_MAX_CHANNEL	8192
+
+void update_lut(uint32_t reg_base,
+		struct dla_lut_param *lut,
+		uint8_t precision);
+int32_t validate_data_cube(struct dla_data_cube src_data_cube,
+			struct dla_data_cube dst_data_cube,
+			uint8_t mem_type);
+int32_t validate_precision(uint8_t precision,
+			uint8_t map_precision);
+
+#endif /* __FIRMWARE_COMMON_H_ */
