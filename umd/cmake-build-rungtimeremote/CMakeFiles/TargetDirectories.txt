@@ -1,3 +1,0 @@
-/root/umd/cmake-build-rungtimeremote/CMakeFiles/edit_cache.dir
-/root/umd/cmake-build-rungtimeremote/CMakeFiles/rebuild_cache.dir
-/root/umd/cmake-build-rungtimeremote/CMakeFiles/umd.dir
