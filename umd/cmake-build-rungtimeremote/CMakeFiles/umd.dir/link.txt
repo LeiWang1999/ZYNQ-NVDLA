@@ -1,1 +1,0 @@
-/usr/bin/c++   -g   CMakeFiles/umd.dir/main.cpp.o  -o umd 
