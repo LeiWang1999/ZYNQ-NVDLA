@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="umd" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/root/umd/cmake-build-rungtimeremote" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 all" />
+            <CompileFile command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="edit_cache">
+         <Option working_dir="/root/umd/cmake-build-rungtimeremote" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 edit_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/root/umd/cmake-build-rungtimeremote" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="umd">
+         <Option output="/root/umd/cmake-build-rungtimeremote/umd" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/root/umd/cmake-build-rungtimeremote" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/arm-linux-gnueabihf" />
+            <Add directory="/usr/include/arm-linux-gnueabihf/c++/5" />
+            <Add directory="/usr/include/c++/5" />
+            <Add directory="/usr/include/c++/5/backward" />
+            <Add directory="/usr/lib/gcc/arm-linux-gnueabihf/5/include" />
+            <Add directory="/usr/lib/gcc/arm-linux-gnueabihf/5/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 umd" />
+            <CompileFile command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="umd/fast">
+         <Option output="/root/umd/cmake-build-rungtimeremote/umd" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/root/umd/cmake-build-rungtimeremote" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/arm-linux-gnueabihf" />
+            <Add directory="/usr/include/arm-linux-gnueabihf/c++/5" />
+            <Add directory="/usr/include/c++/5" />
+            <Add directory="/usr/include/c++/5/backward" />
+            <Add directory="/usr/lib/gcc/arm-linux-gnueabihf/5/include" />
+            <Add directory="/usr/lib/gcc/arm-linux-gnueabihf/5/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 umd/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/root/umd/cmake-build-rungtimeremote/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/root/umd/main.cpp">
+         <Option target="umd"/>
+      </Unit>
+      <Unit filename="/root/umd/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>
