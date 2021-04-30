@@ -397,7 +397,7 @@ NvDlaError runTest(const TestAppArgs* appArgs, TestInfo* i)
         ORIGINATE_ERROR(NvDlaError_BadParameter, "runtime->submit() failed");
 
     clock_gettime(CLOCK_MONOTONIC, &after);
-    NvDlaDebugPrintf("execution time = %f s\n", get_elapsed_time(&before,&after));
+    NvDlaDebugPrintf("execution time = %f us\n", get_elapsed_time(&before,&after));
 
     PROPAGATE_ERROR_FAIL(DlaBuffer2DIMG(&pOutputBuffer, i->outputImage));
 
