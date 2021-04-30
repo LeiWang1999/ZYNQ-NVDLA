@@ -1,0 +1,53 @@
+PetaLinux User Module Template
+===================================
+
+This directory contains a PetaLinux kernel module created from a template.
+
+If you are developing your module from scratch, simply start editing the
+file opendla.c.
+
+You can easily import any existing module code by copying it into this 
+directory, and editing the automatically generated Makefile as described below.
+
+The "all:" target in the Makefile template will compile compile the module.
+
+Before building the module, you will need to enable the module from
+PetaLinux menuconfig by running:
+    "petalinux-config -c rootfs"
+You will see your module in the "modules --->" submenu.
+
+To compile and install your module to the target file system copy on the host,
+simply run the command.
+    "petalinux-build -c kernel" to build kernel first, and then run
+    "petalinux-build -c opendla" to build the module
+
+You will also need to rebuild PetaLinux bootable images so that the images
+is updated with the updated target filesystem copy, run this command:
+    "petalinux-build -c rootfs"
+
+You can also run one PetaLinux command to compile the module, install it
+to the target filesystem host copy and update the bootable images as follows:
+    "petalinux-build"
+
+If OF(OpenFirmware) is configured, you need to add the device node to the
+DTS(Device Tree Source) file so that the device can be probed when the module is
+loaded. Here is an example of the device node in the device tree:
+
+	opendla_instance: opendla@XXXXXXXX {
+		compatible = "vendor,opendla";
+		reg = <PHYSICAL_START_ADDRESS ADDRESS_RANGE>;
+		interrupt-parent = <&INTR_CONTROLLER_INSTANCE>;
+		interrupts = < INTR_NUM INTR_SENSITIVITY >;
+	};
+Notes:
+ * "opendla@XXXXXXXX" is the label of the device node, it is usually the "DEVICE_TYPE@PHYSICAL_START_ADDRESS". E.g. "opendla@89000000".
+ * "compatible" needs to match one of the the compatibles in the module's compatible list.
+ * "reg" needs to be pair(s) of the physical start address of the device and the address range.
+ * If the device has interrupt, the "interrupt-parent" needs to be the interrupt controller which the interrupt connects to. and the "interrupts" need to be pair(s) of the interrupt ID and the interrupt sensitivity.
+
+For more information about the the DTS file, please refer to this document in the Linux kernel: linux-2.6.x/Documentation/powerpc/booting-without-of.txt
+
+
+To add extra source code files (for example, to split a large module into 
+multiple source files), add the relevant .o files to the list in the local 
+Makefile where indicated.  
