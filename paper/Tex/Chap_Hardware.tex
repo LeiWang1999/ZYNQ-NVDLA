@@ -20,17 +20,25 @@
 为了能够在不污染主机环境的情况下构建 \emph{make} 工具，本设计使用 Docker 容器技术搭建软件环境，基于 Ubuntu：16.04 容器，分别安装好如下环境：
 
 \begin{itemize}
-    \item 
-    \item 
-    \item 
-    \item 
-    \item 
+    \item GCC 4.8.5
+    \item OpenJDK 1.8.0
+    \item SystemC 2.3.0
+    \item Python 2.7.12
+    \item VCS 2016.06
+    \item Verilator 3.912
+    \item Clang 3.8.0
 \end{itemize}
 
-安装好环境之后，我们可以新建一个 spec 文件，修改NVDLA的配置。例如通过定义宏 FEATURE\_DATA\_TYPE\_INT8 可以指定 Feature Map 的数据格式为 INT8；通过定义宏 WINOGRAD\_DISABLE 来关闭 WINOGRAD 卷积电路。本设计采用的是官方提供的最小配置，及使用 small.spec 文件。
+安装好环境之后，我们可以通过新建一个 spec 文件来修改NVDLA的配置。例如通过定义宏 FEATURE\_DATA\_TYPE\_INT8 可以指定 Feature Map 的数据格式为 INT8；通过定义宏 WINOGRAD\_DISABLE 来关闭 WINOGRAD 卷积电路。本设计采用的是官方提供的最小配置，及使用 small.spec 文件。
 
 有关 small.spec 的详细内容详见附录，在使用 \emph{tmake} 之前，我们还需要在根目录通过 \emph{make} 命令选择 small.spec 为配置文件，并输入安装的软件生态的可执行文件路径，该 \emph{make} 命令最终会生成一个 tree.make 的文件，\emph{tmake} 工具的本质是根据与现实先定义好的宏，将模板文件夹 vmod 里的 RTL 代码进行文本预处理，将不需要的文本删除输出。
 
+\lstset{language=Bash}
+\begin{lstlisting}
+./tools/bin/tmake -build vmod
+\end{lstlisting}
+
+这样就可以生成可以被综合的RTL代码了。
 
 \subsection{csb2apb}
 
