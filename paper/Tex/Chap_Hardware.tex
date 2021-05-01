@@ -1,14 +1,42 @@
 \chapter{硬件设计实现}\label{chap:hardware}
 
+
 \section{Xilinx FPGA 设计套件}
+
+在上一章节中提到，本设计选用的芯片信号为 XC7Z045-2FFG900I，其为著名的 FPGA 供应厂商 Xilinx 研发。Xilinx 提供了非常完整的可编程逻辑开发软件工具链，及 Vivado 设计套件，使用该套件可以将我们的 Verilog 文件封装成知识产权 IP，进行硬件电路的仿真，生成比特流与硬件描述文件等功能。使用 ZYNQ 器件，也需要我们在 Vivado 的 BlockDesign 页面中分配 ARM 处理器使用到的资源。除此之外，Vivado 设计套件还包括了开发 ARM 裸机的 Vivado SDK、能够基于 LLVM 将 C$\backslash$C++ 程序转换为底层逻辑电路的 Vivado HLS 等应用。
+
+本章节将说明如何使用 Vivado 设计套件完成 NVDLA IP 的打包，Block Design 设计，查看资源利用、时序、功耗等报告，最后生成比特流文件与硬件描述文件。 
 
 \section{NVDLA IP 生成描述}
 
-\subsection{基于 tmake 的 RTL 生成}
+这一小节将详细介绍如何修改 NVDLA 的配置文件，以及根据配置文件生成 NVDLA 的 RTL 代码，并将 NVDLA 的接口进行封装，打包成 IP。
+
+总的来说，生成 NVDLA 的 RTL 代码有两个路径，其一是英伟达官方提供的 hw 项目，可以根据预先定义好的 spec 文件生成，但是这个工作流程需要预先构建好官方提供的 \emph{make} 工具，该工具又依赖 GCC、Java、Perl、Verilator、Python 等，稍显复杂。第二条路径是使用一名由伯克利大学的研究生使用 Chisel 语言编写的 NVDLA 项目，其也是可以生成 RTL 代码的，但是由 Chisel 生成的 RTL 代码会被压缩在一个文件之内，NVDLA 的代码输出高达数万行，不利于阅读与分析。
+
+综合以上，本文使用 \emph{make} 进行 RTL 生成，并且使用 Docker 容器技术分离环境解决 \emph{make} 软件依赖过复杂的问题。
+
+\subsection{基于 \emph{make} 的 RTL 生成}
+
+为了能够在不污染主机环境的情况下构建 \emph{make} 工具，本设计使用 Docker 容器技术搭建软件环境，基于 Ubuntu：16.04 容器，分别安装好如下环境：
+
+\begin{itemize}
+    \item 
+    \item 
+    \item 
+    \item 
+    \item 
+\end{itemize}
+
+安装好环境之后，我们可以新建一个 spec 文件，修改NVDLA的配置。例如通过定义宏 FEATURE\_DATA\_TYPE\_INT8 可以指定 Feature Map 的数据格式为 INT8；通过定义宏 WINOGRAD\_DISABLE 来关闭 WINOGRAD 卷积电路。本设计采用的是官方提供的最小配置，及使用 small.spec 文件。
+
+有关 small.spec 的详细内容详见附录，在使用 \emph{tmake} 之前，我们还需要在根目录通过 \emph{make} 命令选择 small.spec 为配置文件，并输入安装的软件生态的可执行文件路径，该 \emph{make} 命令最终会生成一个 tree.make 的文件，\emph{tmake} 工具的本质是根据与现实先定义好的宏，将模板文件夹 vmod 里的 RTL 代码进行文本预处理，将不需要的文本删除输出。
+
 
 \subsection{csb2apb}
 
 \subsection{关闭 Clock Gating}
+
+\subsection{增加 Address Block}
 
 \subsection{IP Package 封装AXI总线}
 
