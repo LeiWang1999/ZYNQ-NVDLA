@@ -75,7 +75,7 @@ Runtime 与硬件紧密结合，其负责接受 Compiler 生成的 Loadable 文�
 
 \begin{itemize}
     \item 用户态驱动程序（USER MODE DRIVER，UMD）由 C++ 编写，负责解析 Loadable 文件，分配内存，并将上下文封装成一个 Task，最后发送给底层的 KMD 程序执行。
-    \item 内核态驱动程序（e KERNEL MODE DRIVER）由 C 语言编写，是 NVDLA 固件的驱动程序，他是真正与 NVDLA 进行交互的部分。
+    \item 内核态驱动程序（KERNEL MODE DRIVER）由 C 语言编写，是 NVDLA 固件的驱动程序，他是真正与 NVDLA 进行交互的部分。
 \end{itemize}
 
 软件栈设计的详细内容，我们将在软件实现这一章详细讨论。
