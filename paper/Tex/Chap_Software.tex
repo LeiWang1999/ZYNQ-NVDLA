@@ -13,20 +13,26 @@
 
 Compiler 是软件工具链的前端，与硬件无关，Compiler 能够接受的参数如下：
 
-\lstset{language=Bash}
 \begin{lstlisting}
 ./nvdla_compiler -h
 Usage: ./nvdla_compiler [-options] --prototxt <prototxt_file> --caffemodel <caffemodel_file>
 where options include:
     -h                                                 print this help message
-    -o <outputpath>                                    outputs wisdom files in 'outputpath' directory
-    --profile <basic|default|performance|fast-math>    computation profile(fast-math by default)
-    --cprecision <fp16|int8>                           compute precision(fp16 by default)
-    --configtarget <nv_full|nv_large|nv_small>         target platform(opendla-full by default)
-    --calibtable <int8 calib file>                     calibration table for INT8 networks
-    --quantizationMode <per-kernel|per-filter>         quantization mode for INT8(per-kernel by default)
-
+    -o <outputpath>                                    
+    --profile <basic|default|performance|fast-math>    computation profile
+    --cprecision <fp16|int8>                           compute precision
+    --configtarget <nv_full|nv_large|nv_small>         target platform
+    --calibtable <int8 calib file>                     
+    --quantizationMode <per-kernel|per-filter>         
 \end{lstlisting}
+
+\begin{itemize}
+    \item profile 指定了优化方案，在 Compiler 内部提供了四种优化方案，能够支持一些硬件无关的网络优化，例如算子融合、内存重用等，本设计使用默认的 fast-math，启用全部的优化选项。
+    \item cprecision 指定了精度，在这里我们需要选择 int8，并且可以结合 TensorRT 生成 calibtabel 文件，如果不给出 calibtabel 参数，Compiler 内部会使用简单的量化方案，实测效果很差。
+    \item configtarget 本设计选择 nv\_small，匹配本设计的 small 配置。
+    \item calibtabel 需由 TensorRT 生成，将在下一小节详细介绍。
+    \item quantizationMode 有两个选项，per-kernel 选项是对每一层卷积使用相同的量化参数，per-filter 则是对每一层卷积使用不同的量化参数，这需要结合 calibtabel 文件选择，在本设计中使用 per-kernel。
+\end{itemize}
 
 最终，Compiler 生成 Loadable 文件，交给 Runtime 进行加速器的调度。
 
@@ -34,7 +40,6 @@ Loadable 文件是 Compiler 与 Runtime 之间通信的媒介，其由 Google �
 
 Runtime 与硬件紧密贴合，其又分为 UMD 和 KMD 两个部分：UMD 是用户应用，需要我们在 Linux 上编译运行，其接受 Loadable 文件并解析，最后递交一个推理任务到 KMD；KMD 是内核驱动，需要我们在构建 Linux 的时候编译，运行 Linux 的时候挂载，接受推理任务之后负责调度网络，配置寄存器，处理中断等任务。Runtime 能够接受的参数如下：
 
-\lstset{language=Bash}
 \begin{lstlisting}
 ./nvdla_runtime -h
 Usage: ./nvdla_runtime [-options] --loadable <loadable_file>
@@ -45,17 +50,29 @@ where options include:
     --normalize <value>   normalize value for input image
     --mean <value>        comma separated mean value for input image
     --rawdump             dump raw dimg data
-
 \end{lstlisting}
 
-Compiler 的编译过程较简单，本设计不多介绍，Runtime 的编译过程非常复杂，将在后面的章节详细介绍。
+Compiler 的编译过程较简单，本设计不多介绍，Runtime 的构建过程非常复杂，将在后面的章节详细介绍。
 
 \section{TensorRT 与模型量化}
 
-本设计使用的 small 配置，仅支持 INT8 推理，而 Caffe 框架天生仅支持 Float32 类型的训练，所以我们需要进行模型的量化。
+本设计使用的 small 配置，仅支持 INT8 的推理，而 Caffe 框架仅支持 Float32 类型的训练，所以我们必须进行模型的量化。前文提到，在 Compiler 中量化需要结合英伟达公司的 TensorRT 框架。
+
+\subsection{TensorRT 量化原理}
+
+将高精度的浮点型转化为八比特的定点类型的量化方法，都遵循如下的公式:
+
+$$ FP32 Tensor (T) = scale\_factor(sf) * 8-bit Tensor(t) + FP32\_bias (b) $$
+
+通过实验测得，bias去掉对精度的影响不是很大，最终变为：
+
+$$ T = sf * t $$
+
+\subsection{量化步骤与精度损失}
+
+\subsection{calibtabel 生成}
 
 \section{Petalinux 工具介绍}
-
 
 \section{Ubuntu 16.04 根文件系统移植}
 
