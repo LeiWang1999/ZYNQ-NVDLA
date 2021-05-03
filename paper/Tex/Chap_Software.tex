@@ -16,6 +16,16 @@ Compiler 是软件工具链的前端，与硬件无关，Compiler 能够接受�
 \lstset{language=Bash}
 \begin{lstlisting}
 ./nvdla_compiler -h
+Usage: ./nvdla_compiler [-options] --prototxt <prototxt_file> --caffemodel <caffemodel_file>
+where options include:
+    -h                                                 print this help message
+    -o <outputpath>                                    outputs wisdom files in 'outputpath' directory
+    --profile <basic|default|performance|fast-math>    computation profile(fast-math by default)
+    --cprecision <fp16|int8>                           compute precision(fp16 by default)
+    --configtarget <nv_full|nv_large|nv_small>         target platform(opendla-full by default)
+    --calibtable <int8 calib file>                     calibration table for INT8 networks
+    --quantizationMode <per-kernel|per-filter>         quantization mode for INT8(per-kernel by default)
+
 \end{lstlisting}
 
 最终，Compiler 生成 Loadable 文件，交给 Runtime 进行加速器的调度。
@@ -27,6 +37,15 @@ Runtime 与硬件紧密贴合，其又分为 UMD 和 KMD 两个部分：UMD 是�
 \lstset{language=Bash}
 \begin{lstlisting}
 ./nvdla_runtime -h
+Usage: ./nvdla_runtime [-options] --loadable <loadable_file>
+where options include:
+    -h                    print this help message
+    -s                    launch test in server mode
+    --image <file>        input jpg/pgm file
+    --normalize <value>   normalize value for input image
+    --mean <value>        comma separated mean value for input image
+    --rawdump             dump raw dimg data
+
 \end{lstlisting}
 
 Compiler 的编译过程较简单，本设计不多介绍，Runtime 的编译过程非常复杂，将在后面的章节详细介绍。

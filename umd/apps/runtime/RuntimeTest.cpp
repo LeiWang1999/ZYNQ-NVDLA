@@ -401,7 +401,7 @@ NvDlaError runTest(const TestAppArgs* appArgs, TestInfo* i)
 
     PROPAGATE_ERROR_FAIL(DlaBuffer2DIMG(&pOutputBuffer, i->outputImage));
 
-    //i->outputImage->printBuffer(true);   /* Print the output buffer */
+    i->outputImage->printBuffer(true);   /* Print the output buffer */
 
     /* Dump output dimg to a file */
     PROPAGATE_ERROR_FAIL(DIMG2DIMGFile(i->outputImage,

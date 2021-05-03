@@ -16,72 +16,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4cdc0539-3d18-421c-bbc7-f26ecf8c014f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/.vscode/settings.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/bdma.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/cache.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/cdp.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/common.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/common.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/conv.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/dla_debug.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/dla_engine.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/dla_engine_internal.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/dla_err.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/dla_fw_version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/dla_interface.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/dla_sched.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/engine.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/engine_data.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/engine_debug.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/engine_debug.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/engine_isr.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/nvdla_core_callbacks.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/nvdla_gem.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/nvdla_interface.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/nvdla_ioctl.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/nvdla_linux.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/opendla.bb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/opendla.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/opendla_initial.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/opendla_small.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/pdp.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/rubik.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/scheduler.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_32/sdp.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/bdma.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/cache.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/cdp.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/common.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/common.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/conv.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/dla_debug.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/dla_engine.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/dla_engine_internal.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/dla_err.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/dla_fw_version.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/dla_interface.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/dla_sched.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/engine.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/engine_data.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/engine_debug.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/engine_debug.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/engine_isr.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/nvdla_core_callbacks.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/nvdla_gem.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/nvdla_interface.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/nvdla_ioctl.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/nvdla_linux.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/opendla.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/opendla_initial.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/opendla_small.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/pdp.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/rubik.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/scheduler.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../kmd/opendla_64/sdp.c" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/runtime/RuntimeTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/apps/runtime/RuntimeTest.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/runtime/TestUtils.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/apps/runtime/TestUtils.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -190,6 +126,7 @@
       <workItem from="1619588274087" duration="3587000" />
       <workItem from="1619703473381" duration="51000" />
       <workItem from="1619753917485" duration="1222000" />
+      <workItem from="1619788793831" duration="1140000" />
     </task>
     <servers />
   </component>
@@ -210,9 +147,14 @@
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/apps/runtime/DlaImageUtils.cpp</url>
-          <line>253</line>
-          <option name="timeStamp" value="9" />
+          <url>file://$PROJECT_DIR$/apps/runtime/RuntimeTest.cpp</url>
+          <line>395</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/core/src/runtime/Runtime.cpp</url>
+          <line>636</line>
+          <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
