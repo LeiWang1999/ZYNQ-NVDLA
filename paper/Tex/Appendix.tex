@@ -1,46 +1,216 @@
-\chapter{中国科学院大学学位论文撰写要求}
+\chapter{}
 
-学位论文是研究生科研工作成果的集中体现，是评判学位申请者学术水平、授予其学位的主要依据，是科研领域重要的文献资料。根据《科学技术报告、学位论文和学术论文的编写格式》（GB/T 7713-1987）、《学位论文编写规则》（GB/T 7713.1-2006）和《文后参考文献著录规则》（GB7714—87）等国家有关标准，结合中国科学院大学（以下简称“国科大”）的实际情况，特制订本规定。
+\section{\emph{small.spec}}
 
-\section{论文无附录者无需附录部分}
+\lstset{language=C++}
+\begin{lstlisting}
+#define FEATURE_DATA_TYPE_INT8
+#define WEIGHT_DATA_TYPE_INT8
+#define WEIGHT_COMPRESSION_DISABLE
+#define WINOGRAD_DISABLE 
+#define BATCH_DISABLE
+#define SECONDARY_MEMIF_DISABLE
+#define SDP_LUT_DISABLE
+#define SDP_BS_ENABLE
+#define SDP_BN_ENABLE
+#define SDP_EW_DISABLE
+#define BDMA_DISABLE
+#define RUBIK_DISABLE
+#define RUBIK_CONTRACT_DISABLE
+#define RUBIK_RESHAPE_DISABLE
+#define PDP_ENABLE
+#define CDP_ENABLE
+#define RETIMING_DISABLE
+#define MAC_ATOMIC_C_SIZE_8
+#define MAC_ATOMIC_K_SIZE_8
+#define MEMORY_ATOMIC_SIZE_8
+#define MAX_BATCH_SIZE_x
+#define CBUF_BANK_NUMBER_32
+#define CBUF_BANK_WIDTH_8
+#define CBUF_BANK_DEPTH_512
+#define SDP_BS_THROUGHPUT_1
+#define SDP_BN_THROUGHPUT_1
+#define SDP_EW_THROUGHPUT_x
+#define PDP_THROUGHPUT_1
+#define CDP_THROUGHPUT_1
+#define PRIMARY_MEMIF_LATENCY_64
+#define SECONDARY_MEMIF_LATENCY_x
+#define PRIMARY_MEMIF_MAX_BURST_LENGTH_1
+#define PRIMARY_MEMIF_WIDTH_64
+#define SECONDARY_MEMIF_MAX_BURST_LENGTH_x
+#define SECONDARY_MEMIF_WIDTH_x
+#define MEM_ADDRESS_WIDTH_32
+#define NUM_DMA_READ_CLIENTS_7
+#define NUM_DMA_WRITE_CLIENTS_3
 
-\section{测试公式编号 \texorpdfstring{$\Lambda,\lambda,\theta,\bar{\Lambda},\sqrt{S_{NN}}$}{$\textLambda,\textlambda,\texttheta,\bar{\textLambda},\sqrt{S_{NN}}$}} \label{sec:testmath}
+#include "projects.spec"
 
-\begin{equation} \label{eq:appedns}
-    \adddotsbeforeeqnnum%
-    \begin{cases}
-        \frac{\partial \rho}{\partial t} + \nabla\cdot(\rho\Vector{V}) = 0\\
-        \frac{\partial (\rho\Vector{V})}{\partial t} + \nabla\cdot(\rho\Vector{V}\Vector{V}) = \nabla\cdot\Tensor{\sigma}\\
-        \frac{\partial (\rho E)}{\partial t} + \nabla\cdot(\rho E\Vector{V}) = \nabla\cdot(k\nabla T) + \nabla\cdot(\Tensor{\sigma}\cdot\Vector{V})
-    \end{cases}
-\end{equation}
-\begin{equation}
-    \adddotsbeforeeqnnum%
-    \frac{\partial }{\partial t}\int\limits_{\Omega} u \, \mathrm{d}\Omega + \int\limits_{S} \unitVector{n}\cdot(u\Vector{V}) \, \mathrm{d}S = \dot{\phi}
-\end{equation}
-\[
-    \begin{split}
-        \mathcal{L} \{f\}(s) &= \int _{0^{-}}^{\infty} f(t) e^{-st} \, \mathrm{d}t, \ 
-        \mathscr{L} \{f\}(s) = \int _{0^{-}}^{\infty} f(t) e^{-st} \, \mathrm{d}t\\
-        \mathcal{F} {\bigl (} f(x+x_{0}) {\bigr )} &= \mathcal{F} {\bigl (} f(x) {\bigr )} e^{2\pi i\xi x_{0}}, \ 
-        \mathscr{F} {\bigl (} f(x+x_{0}) {\bigr )} = \mathscr{F} {\bigl (} f(x) {\bigr )} e^{2\pi i\xi x_{0}}
-    \end{split}
-\]
+\end{lstlisting}
 
-mathtext: $A,F,L,2,3,5,\sigma$, mathnormal: $A,F,L,2,3,5,\sigma$, mathrm: $\mathrm{A,F,L,2,3,5,\sigma}$.
 
-mathbf: $\mathbf{A,F,L,2,3,5,\sigma}$, mathit: $\mathit{A,F,L,2,3,5,\sigma}$, mathsf: $\mathsf{A,F,L,2,3,5,\sigma}$.
+\section{\emph{Nv\_nvdla\_wrapper.v}}
 
-mathtt: $\mathtt{A,F,L,2,3,5,\sigma}$, mathfrak: $\mathfrak{A,F,L,2,3,5,\sigma}$, mathbb: $\mathbb{A,F,L,2,3,5,\sigma}$.
+\lstset{language=Verilog}
+\begin{lstlisting}
+module NV_nvdla_wrapper(
+    input core_clk,
+    input csb_clk,
+    input rstn,
+    input csb_rstn,
 
-mathcal: $\mathcal{A,F,L,2,3,5,\sigma}$, mathscr: $\mathscr{A,F,L,2,3,5,\sigma}$, boldsymbol: $\boldsymbol{A,F,L,2,3,5,\sigma}$.
+    output dla_intr,
+    // dbb AXI
+    output nvdla_core2dbb_aw_awvalid,
+    input nvdla_core2dbb_aw_awready,
+    output [7:0] nvdla_core2dbb_aw_awid,
+    output [3:0] nvdla_core2dbb_aw_awlen,
+    output [2:0] nvdla_core2dbb_aw_awsize,
+    output [64 -1:0] nvdla_core2dbb_aw_awaddr,
+    output nvdla_core2dbb_w_wvalid,
+    input nvdla_core2dbb_w_wready,
+    output [64 -1:0] nvdla_core2dbb_w_wdata,
+    output [64/8-1:0] nvdla_core2dbb_w_wstrb,
+    output nvdla_core2dbb_w_wlast,
+    output nvdla_core2dbb_ar_arvalid,
+    input nvdla_core2dbb_ar_arready,
+    output [7:0] nvdla_core2dbb_ar_arid,
+    output [3:0] nvdla_core2dbb_ar_arlen,
+    output [2:0] nvdla_core2dbb_ar_arsize,
+    output [64 -1:0] nvdla_core2dbb_ar_araddr,
+    input nvdla_core2dbb_b_bvalid,
+    output nvdla_core2dbb_b_bready,
+    input [7:0] nvdla_core2dbb_b_bid,
+    input nvdla_core2dbb_r_rvalid,
+    output nvdla_core2dbb_r_rready,
+    input [7:0] nvdla_core2dbb_r_rid,
+    input nvdla_core2dbb_r_rlast,
+    input [64 -1:0] nvdla_core2dbb_r_rdata,
+    output [1:0] m_axi_awburst,
+    output  m_axi_awlock, 
+    output [3:0] m_axi_awcache,
+    output [2:0] m_axi_awprot, 
+    output [3:0] m_axi_awqos,  
+    output  m_axi_awuser, 
+    output  m_axi_wuser,  
+    input  [1:0] m_axi_bresp,
+    input   m_axi_buser,
+    output [1:0] m_axi_arburst,
+    output  m_axi_arlock, 
+    output [3:0] m_axi_arcache,
+    output [2:0] m_axi_arprot, 
+    output [3:0] m_axi_arqos,  
+    output  m_axi_aruser, 
+    input  [1:0] m_axi_rresp,
+    input   m_axi_ruser,
+    // cfg APB
+    input psel,
+    input penable,
+    input pwrite,
+    input [31:0] paddr,
+    input [31:0] pwdata,
+    output [31:0] prdata,
+    output pready,
+    output pslverr
+    );
 
-vector: $\Vector{\sigma, T, a, F, n}$, unitvector: $\unitVector{\sigma, T, a, F, n}$
+    wire        m_csb2nvdla_valid;
+    wire        m_csb2nvdla_ready;
+    wire [15:0] m_csb2nvdla_addr;
+    wire [31:0] m_csb2nvdla_wdat;
+    wire        m_csb2nvdla_write;
+    wire        m_csb2nvdla_nposted;
+    wire        m_nvdla2csb_valid;
+    wire [31:0] m_nvdla2csb_data;
 
-matrix: $\Matrix{\sigma, T, a, F, n}$, unitmatrix: $\unitMatrix{\sigma, T, a, F, n}$
 
-tensor: $\Tensor{\sigma, T, a, F, n}$, unittensor: $\unitTensor{\sigma, T, a, F, n}$ 
+    NV_NVDLA_apb2csb apb2csb (
+        .pclk                  (csb_clk)
+        ,.prstn                 (csb_rstn)
+        ,.csb2nvdla_ready       (m_csb2nvdla_ready)
+        ,.nvdla2csb_data        (m_nvdla2csb_data)
+        ,.nvdla2csb_valid       (m_nvdla2csb_valid)
+        ,.paddr                 (paddr)
+        ,.penable               (penable)
+        ,.psel                  (psel)
+        ,.pwdata                (pwdata)
+        ,.pwrite                (pwrite)
+        ,.csb2nvdla_addr        (m_csb2nvdla_addr)
+        ,.csb2nvdla_nposted     (m_csb2nvdla_nposted)
+        ,.csb2nvdla_valid       (m_csb2nvdla_valid)
+        ,.csb2nvdla_wdat        (m_csb2nvdla_wdat)
+        ,.csb2nvdla_write       (m_csb2nvdla_write)
+        ,.prdata                (prdata)
+        ,.pready                (pready)
+    );
 
-\section{测试生僻字}
 
-霜蟾盥薇曜灵霜颸妙鬘虚霩淩澌菀枯菡萏泬寥窅冥毰毸濩落霅霅便嬛岧峣瀺灂姽婳愔嫕飒纚棽俪緸冤莩甲摛藻卮言倥侗椒觞期颐夜阑彬蔚倥偬澄廓簪缨陟遐迤逦缥缃鹣鲽憯懔闺闼璀错媕婀噌吰澒洞阛闠覼缕玓瓑逡巡諓諓琭琭瀌瀌踽踽叆叇氤氲瓠犀流眄蹀躞赟嬛茕頔璎珞螓首蘅皋惏悷缱绻昶皴皱颟顸愀然菡萏卑陬纯懿犇麤掱暒 墌墍墎墏墐墒墒墓墔墕墖墘墖墚墛坠墝增墠墡墢墣墤墥墦墧墨墩墪樽墬墭堕墯墰墱墲坟墴墵垯墷墸墹墺墙墼墽垦墿壀壁壂壃壄壅壆坛壈壉壊垱壌壍埙壏壐壑壒压壔壕壖壗垒圹垆壛壜壝垄壠壡坜壣壤壥壦壧壨坝塆圭嫶嫷嫸嫹嫺娴嫼嫽嫾婳妫嬁嬂嬃嬄嬅嬆嬇娆嬉嬊娇嬍嬎嬏嬐嬑嬒嬓嬔嬕嬖嬗嬘嫱嬚嬛嬜嬞嬟嬠嫒嬢嬣嬥嬦嬧嬨嬩嫔嬫嬬奶嬬嬮嬯婴嬱嬲嬳嬴嬵嬶嬷婶嬹嬺嬻嬼嬽嬾嬿孀孁孂娘孄孅孆孇孆孈孉孊娈孋孊孍孎孏嫫婿媚嵭嵮嵯嵰嵱嵲嵳嵴嵵嵶嵷嵸嵹嵺嵻嵼嵽嵾嵿嶀嵝嶂嶃崭嶅嶆岖嶈嶉嶊嶋嶌嶍嶎嶏嶐嶑嶒嶓嵚嶕嶖嶘嶙嶚嶛嶜嶝嶞嶟峤嶡峣嶣嶤嶥嶦峄峃嶩嶪嶫嶬嶭崄嶯嶰嶱嶲嶳岙嶵嶶嶷嵘嶹岭嶻屿岳帋巀巁巂巃巄巅巆巇巈巉巊岿巌巍巎巏巐巑峦巓巅巕岩巗巘巙巚帠帡帢帣帤帨帩帪帬帯帰帱帲帴帵帷帹帺帻帼帽帾帿幁幂帏幄幅幆幇幈幉幊幋幌幍幎幏幐幑幒幓幖幙幚幛幜幝幞帜幠幡幢幤幥幦幧幨幩幪幭幮幯幰幱庍庎庑庖庘庛庝庠庡庢庣庤庥庨庩庪庬庮庯庰庱庲庳庴庵庹庺庻庼庽庿廀厕廃厩廅廆廇廋廌廍庼廏廐廑廒廔廕廖廗廘廙廛廜廞庑廤廥廦廧廨廭廮廯廰痈廲廵廸廹廻廼廽廿弁弅弆弇弉弖弙弚弜弝弞弡弢弣弤弨弩弪弫弬弭弮弰弲弪弴弶弸弻弼弽弿彖彗彘彚彛彜彝彞彟彴彵彶彷彸役彺彻彽彾佛徂徃徆徇徉后徍徎徏径徒従徔徕徖徙徚徛徜徝从徟徕御徢徣徤徥徦徧徨复循徫旁徭微徯徰徱徲徳徴徵徶德徸彻徺忁忂惔愔忇忈忉忔忕忖忚忛応忝忞忟忪挣挦挧挨挩挪挫挬挭挮挰掇授掉掊掋掍掎掐掑排掓掔掕挜掚挂掜掝掞掟掠采探掣掤掦措掫掬掭掮掯掰掱掲掳掴掵掶掸掹掺掻掼掽掾掿拣揁揂揃揅揄揆揇揈揉揊揋揌揍揎揑揓揔揕揖揗揘揙揤揥揦揧揨揫捂揰揱揲揳援揵揶揷揸揻揼揾揿搀搁搂搃搄搅搇搈搉搊搋搌搎搏搐搑搒摓摔摕摖摗摙摚摛掼摝摞摠摡斫斩斮斱斲斳斴斵斶斸旪旫旮旯晒晓晔晕晖晗晘晙晛晜晞晟晠晡晰晣晤晥晦晧晪晫晬晭晰晱晲晳晴晵晷晸晹晻晼晽晾晿暀暁暂暃暄暅暆暇晕晖暊暋暌暍暎暏暐暑暒暓暔暕暖暗旸暙暚暛暜暝暞暟暠暡暣暤暥暦暧暨暩暪暬暭暮暯暰昵暲暳暴暵
+    NV_nvdla nvdla_top (
+        .dla_core_clk                    (core_clk)
+        ,.dla_csb_clk                     (csb_clk)
+        ,.global_clk_ovr_on               (1'b0)
+        ,.tmc2slcg_disable_clock_gating   (1'b0)
+        ,.dla_reset_rstn                  (rstn)
+        ,.direct_reset_                   (1'b1)
+        ,.test_mode                       (1'b0)
+        ,.csb2nvdla_valid                 (m_csb2nvdla_valid)
+        ,.csb2nvdla_ready                 (m_csb2nvdla_ready)
+        ,.csb2nvdla_addr                  (m_csb2nvdla_addr)
+        ,.csb2nvdla_wdat                  (m_csb2nvdla_wdat)
+        ,.csb2nvdla_write                 (m_csb2nvdla_write)
+        ,.csb2nvdla_nposted               (m_csb2nvdla_nposted)
+        ,.nvdla2csb_valid                 (m_nvdla2csb_valid)
+        ,.nvdla2csb_data                  (m_nvdla2csb_data)
+        ,.nvdla2csb_wr_complete           () //FIXME: no such port in apb2csb
+        ,.nvdla_core2dbb_aw_awvalid       (nvdla_core2dbb_aw_awvalid)
+        ,.nvdla_core2dbb_aw_awready       (nvdla_core2dbb_aw_awready)
+        ,.nvdla_core2dbb_aw_awaddr        (nvdla_core2dbb_aw_awaddr)
+        ,.nvdla_core2dbb_aw_awid          (nvdla_core2dbb_aw_awid)
+        ,.nvdla_core2dbb_aw_awlen         (nvdla_core2dbb_aw_awlen)
+        ,.nvdla_core2dbb_w_wvalid         (nvdla_core2dbb_w_wvalid)
+        ,.nvdla_core2dbb_w_wready         (nvdla_core2dbb_w_wready)
+        ,.nvdla_core2dbb_w_wdata          (nvdla_core2dbb_w_wdata)
+        ,.nvdla_core2dbb_w_wstrb          (nvdla_core2dbb_w_wstrb)
+        ,.nvdla_core2dbb_w_wlast          (nvdla_core2dbb_w_wlast)
+        ,.nvdla_core2dbb_b_bvalid         (nvdla_core2dbb_b_bvalid)
+        ,.nvdla_core2dbb_b_bready         (nvdla_core2dbb_b_bready)
+        ,.nvdla_core2dbb_b_bid            (nvdla_core2dbb_b_bid)
+        ,.nvdla_core2dbb_ar_arvalid       (nvdla_core2dbb_ar_arvalid)
+        ,.nvdla_core2dbb_ar_arready       (nvdla_core2dbb_ar_arready)
+        ,.nvdla_core2dbb_ar_araddr        (nvdla_core2dbb_ar_araddr)
+        ,.nvdla_core2dbb_ar_arid          (nvdla_core2dbb_ar_arid)
+        ,.nvdla_core2dbb_ar_arlen         (nvdla_core2dbb_ar_arlen)
+        ,.nvdla_core2dbb_r_rvalid         (nvdla_core2dbb_r_rvalid)
+        ,.nvdla_core2dbb_r_rready         (nvdla_core2dbb_r_rready)
+        ,.nvdla_core2dbb_r_rid            (nvdla_core2dbb_r_rid)
+        ,.nvdla_core2dbb_r_rlast          (nvdla_core2dbb_r_rlast)
+        ,.nvdla_core2dbb_r_rdata          (nvdla_core2dbb_r_rdata)
+        ,.dla_intr                        (dla_intr)
+        ,.nvdla_pwrbus_ram_c_pd           (32'b0)
+        ,.nvdla_pwrbus_ram_ma_pd          (32'b0)
+        ,.nvdla_pwrbus_ram_mb_pd          (32'b0)
+        ,.nvdla_pwrbus_ram_p_pd           (32'b0)
+        ,.nvdla_pwrbus_ram_o_pd           (32'b0)
+        ,.nvdla_pwrbus_ram_a_pd           (32'b0)
+    ); // nvdla_top
+
+assign nvdla_core2dbb_aw_awsize = 3'b011;
+assign nvdla_core2dbb_ar_arsize = 3'b011;
+
+assign m_axi_awburst = 2'b01;
+assign m_axi_awlock  = 1'b0;
+assign m_axi_awcache = 4'b0010;
+assign m_axi_awprot  = 3'h0;
+assign m_axi_awqos   = 4'h0;
+assign m_axi_awuser  = 'b1;
+assign m_axi_wuser   = 'b0;
+assign m_axi_arburst = 2'b01;
+assign m_axi_arlock  = 1'b0;
+assign m_axi_arcache = 4'b0010;
+assign m_axi_arprot  = 3'h0;
+assign m_axi_arqos   = 4'h0;
+assign m_axi_aruser  = 'b1;
+
+assign pslverr = 1'b0;
+
+endmodule
+\end{lstlisting}
