@@ -154,11 +154,13 @@ Xilinx Petalinux 是一个定制版的 Yocto 工具，包括了Linux Kernel、u-
 
 本设计将基于 Petalinux 2019.1 （Linux Kernel 版本为 4.19）完成 KMD 环境的移植与 UMD 应用的编译，由于 NVDLA 官方仓库的代码是针对 Linux Kernel 4.13 与 64位架构处理器的，其有一些函数已经在本内核函数中被废弃，还有一些操作在本设计采用的 32位 处理器上不被允许，这些问题都将在本章得到解决。
 
-此外，Petalinux 不具备包管理工具，为了更方便开发与调试，本章将介绍 Ubuntu 16.04 的根文件系统替换方法，为板卡移植 Ubuntu 操作系统。
-
 \section{Ubuntu 16.04 根文件系统移植}
 
+Petalinux 不具备包管理工具，为了更方便开发与调试，本章将介绍 Ubuntu 16.04 的根文件系统替换方法，为板卡移植 Ubuntu 操作系统，并且在这个过程中阐述 Petalinux 的构建方法。
+
 \subsection{读取 Block Design 配置信息}
+
+由于本设计需要将根文件系统替换为 Ubuntu 16.04，首先需要做的是将根文件系统与
 
 \subsection{Linux 内核裁剪}
 
