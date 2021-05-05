@@ -34,7 +34,6 @@
 
 有关 small.spec 的详细内容详见附录，在使用 \emph{tmake} 之前，我们还需要在根目录通过 \emph{make} 命令选择 small.spec 为配置文件，并输入安装的软件生态的可执行文件路径，该 \emph{make} 命令最终会生成一个 tree.make 的文件，\emph{tmake} 工具的本质是根据与现实先定义好的宏，将模板文件夹 vmod 里的 Verilog 代码进行文本预处理，将不需要的文本删除输出。
 
-\lstset{language=Bash}
 \begin{lstlisting}
 ./tools/bin/tmake -build vmod
 \end{lstlisting}
