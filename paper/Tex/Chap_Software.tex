@@ -168,15 +168,43 @@ Petalinux 不具备包管理工具，为了更方便开发与调试，本章将�
 petalinux-config --get-hw-description=./PathOfhdf
 \end{lstlisting}
 
+修改此处后，linux 根文件系统 rootfs 将配置到 SD 中，而非默认的  raminitfs，后者是将根目录系统镜像在 boot 阶段加载到内存中，一旦裁剪的kernel较大（大概超过120M），那么系统 boot 不起来。
 
 \subsection{Linux 内核裁剪}
 
-\subsection{新增 Linux 设备树节点}
+由于我们已经将 rootfs 配置到 SD 中，那么就要取消掉 kernel 的 RAM intial，否则在 boot 阶段，kernel 在内存中找不到 rootfs 的符号镜像。
+
+\begin{lstlisting}
+petalinux-config -c kernel
+\end{lstlisting}
+
+使用该命令配置取消 \emph{Initial RAM filesystem and RAM disk support} 。
 
 \subsection{生成 Boot 和 Image 文件}
 
+这样我们就可以进行编译，生成适配板卡的 BOOT 和 Image 文件，已经 rootfs 文件系统了，使用以下命令进行编译与生成，注意，这里我们还没有挂载 NVDLA 的硬件驱动，仅移植 Ubuntu 文件系统。
+
+\begin{lstlisting}
+petalinux-build
+petalinux-package --boot --fsbl images/linux/zynq_fsbl.elf --fpga --u-boot --force
+\end{lstlisting}
+
+这样，BOOT.BIN 与 IMAGE.ub 文件以及 ROOTFS 将会在目录下生成。
+
+\subsection{SD 卡分区}
+
+本设计使用了一张 32 GB 大小的 SD 卡，因为前文配置了 rootfs 从 SD 卡启动，所以我们需要对 SD 卡进行分区，分区情况如表所示。
+
+
+
+
+
 \subsection{替换根文件系统}
 
+
+
 \section{KMD 内核程序挂载}
+
+\subsection{新增 Linux 设备树节点}
 
 \section{UMD 应用程序编译}
