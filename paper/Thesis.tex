@@ -74,12 +74,7 @@
 %-
 \mainmatter% initialize the environment
 \input{Tex/Mainmatter}% main content
-%-
-%-> Appendix
-%-
-\cleardoublepage%
-\appendix% initialize the environment
-\input{Tex/Appendix}% appendix content
+
 %-
 %-> Backmatter: bibliography, glossary, index
 %-
@@ -91,6 +86,12 @@
 \end{spacing}
 }
 \input{Tex/Backmatter}% other information
+%-
+%-> Appendix
+%-
+\cleardoublepage%
+\appendix% initialize the environment
+\input{Tex/Appendix}% appendix content
 \end{document}
 %---------------------------------------------------------------------------%
 

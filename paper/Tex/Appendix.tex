@@ -214,3 +214,29 @@ assign pslverr = 1'b0;
 
 endmodule
 \end{lstlisting}
+
+\section{\emph{system-user.dtsi}}
+
+\begin{lstlisting}
+/include/ "system-conf.dtsi"
+/ {
+    reserved-memory {
+        #address-cells = <1>;
+        #size-cells = <1>;
+        ranges;
+    
+        nvdla_reserved: buffer@0x30000000 {
+            compatible = "shared-dma-pool";
+            no-map;
+            reg = <0x30000000 0x10000000>;
+        };
+    };
+};
+
+&NV_nvdla_wrapper_0{
+    compatible = "nvidia,nv_small";
+    memory-region = <&nvdla_reserved>;
+};
+\end{lstlisting}
+
+

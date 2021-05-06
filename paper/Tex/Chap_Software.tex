@@ -193,18 +193,123 @@ petalinux-package --boot --fsbl images/linux/zynq_fsbl.elf --fpga --u-boot --for
 
 \subsection{SD 卡分区}
 
-本设计使用了一张 32 GB 大小的 SD 卡，因为前文配置了 rootfs 从 SD 卡启动，所以我们需要对 SD 卡进行分区，分区情况如表所示。
+本设计使用了一张 32 GB 大小的 SD 卡，因为前文配置了 rootfs 从 SD 卡启动，所以我们需要对 SD 卡进行分区，分区情况如表~\ref{tab:SD Card Partition}所示。
 
+\begin{table}[!htbp]
+    \caption{SD 卡分区}
+    \label{tab:SD Card Partition}
+    \centering
+    \footnotesize% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Volume Name} & \multicolumn{1}{l}{\textbf{Type}} & \multicolumn{1}{l}{\textbf{Device}} & \multicolumn{1}{l}{\textbf{Space GB}} \\
+        \midrule
+        BOOT                 & FAT32                             & /dev/sdc1                                & 4                                \\
+        ROOTFS               & EXT4                              & /dev/sdc2                                & 20                               \\
+        WorkSpace            & EXT4                              & /dev/sdc3                                & 8                                \\
+        \bottomrule                   
+    \end{tabular}
+\end{table}
 
-
-
+其中，BOOT 分区格式为 FAT32，用来存储 BOOT.BIN 和 IMAGE.ub 文件，ROOTFS 需要的空间较大，用来存储根文件系统，WorkSpace 可有可无，我们使用他作为一个外置的存储，来存储一些数据。根据 Petalinux 的用户手册，BOOT 和 ROOTFS 需要严格在第一分区与第二分区。
 
 \subsection{替换根文件系统}
 
-
+本设计不采用 Petalinux 自己生成的根文件系统，使用 \emph{ubuntu-16.04.2-minimal-armhf-2017-06-18} 作为根文件系统，将其解压到 rootfs 分区，再将 BOOT.BIN 与 IMAGE.ub 文件拷贝到 BOOT 分区，将 SD 卡插入开发板则移植成功。
 
 \section{KMD 内核程序挂载}
 
+在上一小节，本文讲解了如何利用 Petalinux 为 ZYNQ 器件移植 Ubuntu 的操作系统，在这一小节，我们将为 Ubuntu 增加 NVDLA 的内核驱动程序。
+
 \subsection{新增 Linux 设备树节点}
 
+使用 Petalinux 构建操作系统的时候会自动为我们生成设备树文件，但是他只包括了一些基本的硬件属性。本设计考虑到 NVDLA 的内核驱动程序，对设备树文件做以下更改：
+
+\begin{enumerate}
+    \item 为 NVDLA 保留 256 MB 内存，因为在内核驱动程序中使用 DMA 搬移数据加快访存速度。
+    \item 将原本 PL 侧的 NVDLA 的设备树的 compatible 属性修改以适应内核驱动程序。
+\end{enumerate}
+
+更改后的设备树文件详见附录 \emph{system-user.dtsi}。
+
+\subsection{Petalinux 内核应用添加}
+
+使用 Petalinux 内建的工具即可新增内核应用，本设计创建了一个名为 opendla 的子模块：
+
+\begin{lstlisting}
+petalinux-create -t modules -n opendla --enable
+\end{lstlisting}
+
+将 NVDLA 官方的 KMD 内核应用程序进行移植，首先需要对源代码做如下更改。
+
+\begin{enumerate}
+    \item 在\emph{nvdla\_gem.c}里面，将\emph{dma\_declare\_coherent\_memory}函数所分配的内存大小更改为设备树中为 NVDLA 保留的内存。
+    \item \emph{DMA\_MEMORY\_MAP } 标志已经在 Linux kernel 4.19 版本中被废弃，删除即可。
+    \item 在\emph{nvdla\_core\_callbacks.c}中，求解运算时间使用到了64位除法，这在32位处理器的内核程序上是不被允许的，需要做一些改动。
+\end{enumerate}
+
+对 KMD 的源代码改动完毕之后，还需要重新组织文件结构，使其适应 Petalinux 的模块构建方案，此外还需要重新编写 opendla 模块目录下的 \emph{Makefile} 与 \emph{opendla.bb} 文件，这两个文件的详细内容见附录。
+
+修改完成后，重新进行编译，生成的内核驱动文件会在 Linux 根文件系统的 \emph{/lib/modules} 目录下，该文件会生成在 Petalinux 自己的根文件系统中，我们需要将其解压到 Ubuntu 的根文件系统的相同目录下。
+
+\subsection{驱动程序加载}
+
+启动系统之后，即可在 Ubuntu 中进行驱动程序的挂载：
+
+\begin{lstlisting}
+insmod /lib/modules/4.19.0-xilinx-v2019.1/extra/opendla.ko 
+\end{lstlisting}
+
+加载成功之后，可以看到系统设备中会多出 NVDLA 的中断信号和驱动。
+
 \section{UMD 应用程序编译}
+
+内核驱动挂载成功之后，我们的 UMD 程序才可以正确运行，而 UMD 也可分为两个主要部分：
+
+\begin{itemize}
+    \item 第一部分负责解析提前编译好的 Loadable 文件，将权重、输入图像等数据导入内存，并指定输出图像的地址。
+    \item 第二部分负责把任务发送给 KMD 执行。
+\end{itemize}
+
+在本小节将介绍如何在开发板卡上进行 UMD 应用程序的编译。
+
+\subsection{LIBJPEG 链接库编译}
+
+NVDLA 的 Runtime 可以接受 jpeg 格式文件的图片，但是需要提前编译好 LIBJPEG 的链接库。
+
+官方提供的64位处理器的 LIBJPEG 链接库无法在32位处理器上链接所以我们需要自行编译，本设计使用最新发行的 libjpeg9，还需要更改 \emph{jconfig.h} 中的 \emph{JPEG\_LIB\_VERSION}的值为 90。
+
+\subsection{UMD 构建}
+
+将自行编译的 libjpeg.a 文件拷贝到项目中来，则可以进行 UMD 应用的编译，将 UMD 文件都拷贝到开发板卡的 Ubuntu 上，执行以下命令即可完成编译：
+
+\begin{lstlisting}
+cd ~/umd
+export TOP=${PWD}
+make runtime TOOLCHAIN_PREFIX=/usr/bin/
+\end{lstlisting}
+
+完成编译后，会生成两个目录文件，分别为 runtime 的链接库与 runtime 的可执行文件。将 runtime 的链接库拷贝到 runtime 可执行文件路径下，runtime可执行文件才能被正常运行。
+
+\subsection{Runtime 测试}
+
+一切准备完毕之后，可以使用 resnet-18 推理一副小猫的照片进行测试：
+
+\begin{lstlisting}
+./nvdla_runtime --loadable ~/resnet18-cifar10-caffe/loadables/fast-math.nvdla --image ~/resnet18-cifar10-caffe/Image/cat_32.jpg --rawdump
+creating new runtime context...
+Emulator starting
+dlaimg height: 32 x 32 x 3: LS: 256 SS: 0 Size: 8192
+submitting tasks...
+Work Found!
+Work Done
+execution time = 295854.000000 us
+Shutdown signal received, exiting
+Test pass
+cat output.dimg 
+0 0 0 99 26 0 0 0 0 0 
+\end{lstlisting}
+
+类别猫在 CIFAR10 数据集中的序号是3，分类正确，耗时 300 毫秒，这代表着软件栈能够正常工作。
