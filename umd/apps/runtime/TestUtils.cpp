@@ -261,9 +261,9 @@ NvDlaError createImageCopy(const TestAppArgs* appArgs, const NvDlaImage* in, con
                 else if (outTensorDesc->dataType == NVDLA_DATA_TYPE_INT8)
                 {
                     char* outp = reinterpret_cast<char*>(obuf + ooffset);
-                    *outp = char(*inp); // no normalization happens
+//                    *outp = char(*inp); // no normalization happens
                     // compress the image from [0-255] to [0-127]
-//                    *outp = static_cast<NvS8>(std::floor((*inp * 127.0/255.0) + 0.5f));
+                    *outp = static_cast<NvS8>(std::floor((*inp * 127.0/255.0) + 0.5f));
                 }
             }
         }
