@@ -215,6 +215,85 @@ assign pslverr = 1'b0;
 endmodule
 \end{lstlisting}
 
+\section{\emph{Lenet5 量化关键代码}}
+
+\lstset{language=Python}
+\begin{lstlisting}
+# Returns a numpy buffer of shape (num_images, 1, 28, 28)
+def load_data(filepath):
+    test_imgs = []
+    global fileList
+    fileList = os.listdir(filepath)
+    mean = np.ones([3, 224, 224], dtype=np.float)
+    mean[0,:,:] = 104
+    mean[1,:,:] = 117
+    mean[2,:,:] = 123
+    for img_path in fileList:
+        img_path = filepath +'/'+ img_path
+        img = cv.imread(img_path)
+        img = crop_img(img, [224, 224])
+        img = img.transpose((2, 0, 1))
+        img = img - mean
+        test_imgs.append(img)
+    # Need to scale all values to the range of [0, 1]
+    return np.ascontiguousarray(test_imgs).astype(np.float32)
+
+# Returns a numpy buffer of shape (num_images)
+def load_labels(filepath):
+    global fileList
+    test_labels = []
+    labels_mapping = {}
+    with open(filepath, 'r') as f:
+        lines = f.readlines()
+        for each in lines:
+            imageName, labels = each.strip('\n').split(' ')
+            labels_mapping[imageName] = int(labels)
+    for each in fileList:
+        test_labels.append(labels_mapping[each])
+    return np.ascontiguousarray(test_labels)
+\end{lstlisting}
+
+\section{\emph{Cache to Json}}
+
+\lstset{language=Python}
+\begin{lstlisting}
+import json
+from collections import OrderedDict
+from google.protobuf import text_format
+import caffe.proto.caffe_pb2 as caffe_pb2      # 载入caffe.proto编译生成的caffe_pb2文件
+
+
+caffeprototxt_path = "./deploy.prototxt"
+calibletable_json_path = "./resnet18-cifar10-int8.json"
+# load deploy.prototxt
+net = caffe_pb2.NetParameter()
+text_format.Merge(open(caffeprototxt_path).read(), net)
+# load jsonfile
+with open(calibletable_json_path, "r") as f:
+    calible = json.load(f, object_pairs_hook=OrderedDict)
+_scales = []
+_mins = []
+_maxs = []
+_offsets = []
+_new = OrderedDict()
+items = calible.items()
+for key, value in items:
+    _scales.append(value['scale'])
+    _mins.append(value['min'])
+    _maxs.append(value['max'])
+    _offsets.append(value['offset'])
+for idx, _layer in enumerate(net.layer):
+    _tempDict =  OrderedDict({
+        "scale": _scales[idx],
+        "min": _mins[idx],
+        "max": _maxs[idx],
+        "offset": _offsets[idx],
+    }) 
+    _new[_layer.name] =_tempDict
+with open('resnet18-cifar10-int8-fixed.json', 'w') as f:
+    json.dump(_new, f)
+\end{lstlisting}
+
 \section{\emph{system-user.dtsi}}
 
 \begin{lstlisting}
@@ -239,4 +318,75 @@ endmodule
 };
 \end{lstlisting}
 
+\section{\emph{Makefile}}
 
+\begin{lstlisting}
+obj-m := opendla.o
+
+###append all of sources###
+opendla-objs := nvdla_core_callbacks.o nvdla_gem.o scheduler.o engine.o bdma.o conv.o sdp.o cdp.o pdp.o rubik.o cache.o common.o engine_data.o engine_isr.o engine_debug.o
+###########################
+
+
+SRC := $(shell pwd)
+
+all:
+    $(MAKE) -C $(KERNEL_SRC) M=$(SRC)
+
+modules_install:
+    $(MAKE) -C $(KERNEL_SRC) M=$(SRC) modules_install
+
+clean:
+    rm -f *.o *~ core .depend .*.cmd *.ko *.mod.c
+    rm -f Module.markers Module.symvers modules.order
+    rm -rf .tmp_versions Modules.symvers
+\end{lstlisting}
+
+\section{\emph{opendla.bb}}
+
+\begin{lstlisting}
+SUMMARY = "Recipe for  build an external opendla Linux kernel module"
+SECTION = "PETALINUX/modules"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e"
+
+inherit module
+
+SRC_URI = "file://Makefile \
+            file://nvdla_core_callbacks.c \
+            file://nvdla_gem.c \
+            file://scheduler.c \
+            file://engine.c \
+            file://bdma.c \
+            file://conv.c \
+            file://sdp.c \
+            file://cdp.c \
+            file://pdp.c \
+            file://rubik.c \
+            file://cache.c \
+            file://common.c \
+            file://engine_data.c \
+            file://engine_isr.c \
+            file://engine_debug.c \
+            file://common.h \
+            file://dla_debug.h \
+            file://dla_fw_version.h \
+            file://dla_engine.h \
+            file://dla_engine_internal.h \
+            file://dla_err.h \
+            file://dla_interface.h \
+            file://dla_sched.h \
+            file://engine_debug.h \
+            file://nvdla_interface.h \
+            file://nvdla_linux.h \
+            file://opendla.h \
+            file://opendla_initial.h \
+            file://opendla_small.h \
+            file://nvdla_ioctl.h \
+            file://COPYING \
+        "
+S = "${WORKDIR}"
+
+# The inherit of module.bbclass will automatically name module packages with
+# "kernel-module-" prefix as required by the oe-core build environment.
+\end{lstlisting}
