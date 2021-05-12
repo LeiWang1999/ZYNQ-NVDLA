@@ -1,5 +1,67 @@
 \chapter{测试与分析}\label{chap:result}
 
+\section{最大工作频率分析}
+
+本设计在分析 NVDLA 最大工作时钟时，选取了几个典型的时钟值，分别是 25 Mhz、50Mhz、75Mhz、100Mhz，他们的 Timing 报告如表~\ref{tab:25-100 Mhz Timing}所示，可以发现当时钟频率不断增加的时候，关键路径的 Slack 值不断在变小，影响 NVDLA 工作的主要问题是 Setup 时间不足，在 100Mhz 的时候已经不足 1 ns。
+
+\begin{table}[!htbp]
+    \caption{25 50 75 100 Mhz Timing报告}
+    \label{tab:25-100 Mhz Timing}
+    \centering
+    \footnotesize% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{cccc}
+        \toprule
+        \multicolumn{1}{l}{\textbf{Frequency}} & \multicolumn{1}{l}{\textbf{Worst Setup Slack}} & \multicolumn{1}{l}{\textbf{Worst Hold Slack}} & \multicolumn{1}{l}{\textbf{Total Negative Slack}} \\
+        \midrule
+        25Mhz                                  & 29.048 ns                                      & 0.021 ns                                      & 0.000 ns                                          \\
+        50Mhz                                  & 9.959 ns                                       & 0.007 ns                                      & 0.000 ns                                          \\
+        75Mhz                                  & 3.832 ns                                       & 0.028 ns                                      & 0.000 ns                                          \\
+        100Mhz                                 & 0.751 ns                                       & 0.030 ns                                      & 0.000 ns                                          \\
+        \bottomrule                   
+    \end{tabular}
+\end{table}
+
+如表~\ref{tab:150 Mhz Timing}所示，将时钟再提升至 150Mhz，则时钟已经出现了为例，具体表现为最差路径的 Slack 为负值，电路无法正常工作。如果此时强行上板会导致时序混乱，造成读写相关的寄存器失败。
+
+\begin{table}[!htbp]
+    \caption{150 Mhz Timing报告}
+    \label{tab:150 Mhz Timing}
+    \centering
+    \footnotesize% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{llll}
+        \toprule
+        \textbf{Frequency}         & \textbf{Worst Setup Slack}    & \textbf{Worst Hold Slack}    & \textbf{Total Negative Slack} \\
+        \midrule
+        \multicolumn{1}{c}{150Mhz} & \multicolumn{1}{c}{-0.324 ns} & \multicolumn{1}{c}{0.033 ns} & \multicolumn{1}{c}{-9.728 ns} \\
+        \bottomrule                   
+    \end{tabular}
+\end{table}
+
+如表~\ref{tab:25-100 Mhz Power}，本文还给出了 25Mhz、50Mhz、75Mhz、100Mhz 时钟下的功耗报告，当时钟频率增加的时候，系统的功耗不断增加，其中静态功耗占比较小，约为 10\%，动态功耗的占比较大，约为 90\%。
+
+\begin{table}[!htbp]
+    \caption{25 50 75 100 Mhz Power报告}
+    \label{tab:25-100 Mhz Power}
+    \centering
+    \footnotesize% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{cccc}
+        \toprule
+        \multicolumn{1}{l}{\textbf{Frequency}} & \multicolumn{1}{l}{\textbf{Total Power}} & \multicolumn{1}{l}{\textbf{Static Power}} & \multicolumn{1}{l}{\textbf{Dynamic Power}} \\
+        \midrule
+        25 Mhz                                 & 1.921W                                   & 0.221W(11.5\%)                            & 1.700W(88.5\%)                             \\
+        50 Mhz                                 & 2.129W                                   & 0.223W(10.5\%)                            & 1.906W(89.5\%)                             \\
+        75 Mhz                                 & 2.325W                                   & 0.224W(9.6\%)                             & 2.101W(90.4\%)                             \\
+        100 Mhz                                & 2.528W                                   & 0.226W(8.9\%)                             & 2.302W(91.9\%)                             \\
+        \bottomrule                   
+    \end{tabular}
+\end{table}
+
 \section{LeNet5 性能分析}
 
 对比上学期用 PYNQ 实现的加速器做分析比对，逐步提高工作频率做分析比对。
