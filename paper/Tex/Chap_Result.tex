@@ -23,7 +23,7 @@
     \end{tabular}
 \end{table}
 
-如表~\ref{tab:150 Mhz Timing}所示，将时钟再提升至 150Mhz，则时钟已经出现了为例，具体表现为最差路径的 Slack 为负值，电路无法正常工作。如果此时强行上板会导致时序混乱，造成读写相关的寄存器失败。
+如表~\ref{tab:150 Mhz Timing}所示，将时钟再提升至 150Mhz，则时钟已经出现了违例，具体表现为最差路径的 Slack 为负值，电路无法正常工作。如果此时强行上板会导致时序混乱，造成读写相关的寄存器失败。
 
 \begin{table}[!htbp]
     \caption{150 Mhz Timing报告}
@@ -62,12 +62,26 @@
     \end{tabular}
 \end{table}
 
-\section{LeNet5 性能分析}
+\section{精度对比分析}
 
-对比上学期用 PYNQ 实现的加速器做分析比对，逐步提高工作频率做分析比对。
+在这一小节，我们将 TensorRT 为了量化而采样的一千张图像再次使用 NVDLA 进行推理并验证精度是否存在损失。
 
-\section{ResNet18 性能分析}
+\begin{table}[!htbp]
+    \caption{精度对比}
+    \label{tab:Qualifications Report}
+    \centering
+    \footnotesize% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Network}      & \multicolumn{1}{l}{\textbf{Valiadation Accuracy \%}} & \multicolumn{1}{l}{\textbf{Calibration Accuracy \%}}  & \multicolumn{1}{l}{\textbf{NVDLA Accuracy \%}} \\
+        \midrule
+        Lenet5-MNIST          & 99.7                                                 & 99.5                                                 & 97.5                                                 \\  
+        Resnet18-CIFAR10      & 90.2                                                 & 86.7                                                 & 80.7                                                 \\
+        Resnet18-IMAGENET2012 & 60.2(Top5)                                           & 50.5(Top5)                                           & 47.5(Top5)                                           \\
+        \bottomrule                   
+    \end{tabular}
+\end{table}
 
-\section{基于 NVDLA 的图像风格迁移应用}
-
-如果时间够的话，这里可以做一个图像风格迁移的DEMO，用Caffe训练一个VGG16，然后在屏幕上显示一下。
+理论上，NVDLA 的精度应该与 TensorRT 量化之后的精度一致，但是实际测试中，NVDLA的量化精度稍微低一些。经过分析，是因为 Caffe 训练的模型内部使用 OpenCV 进行图像读取操作，而 OpenCV 读取的图像为 BGR 格式，在 NVDLA 的 Runtime 阶段，由于 BGR 转 RGB 的操作会引发一系列错误，所以本设计将该操作去除，影响了部分精度。

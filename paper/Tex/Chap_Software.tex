@@ -112,7 +112,7 @@ TensorRT 选择的量化方法是 KL-divergence，即转化为最小化相对熵
         \midrule
         Lenet5-MNIST          & 99.7                                                 & 99.5                                                 \\
         Resnet18-CIFAR10      & 90.2                                                 & 86.7                                                 \\
-        Resnet18-IMAGENET2012 & 60.2                                                 & 50.5                                                 \\
+        Resnet18-IMAGENET2012 & 60.2(Top5)                                           & 50.5(Top5)                                           \\
         \bottomrule                   
     \end{tabular}
 \end{table}
@@ -135,7 +135,9 @@ TensorRT 选择的量化方法是 KL-divergence，即转化为最小化相对熵
 
 这样，我们就可以生成针对 small 配置的 Loadable 文件，只要将 Loadable 与输入 Image 准备好，就可以使用 Runtime 自动调度加速器进行推理，接下来介绍 Runtime 的上板编译过程。
 
-\section{Petalinux 工具介绍}
+\section{Ubuntu 16.04 根文件系统移植}
+
+\subsection{Petalinux 工具介绍}
 
 Xilinx Petalinux 是一个定制版的 Yocto 工具，包括了Linux Kernel、u-boot、device-tree、rootfs等源码、库，可以让客户很方便的生成、配置、编译及自定义。Petalinux支持Zynq UltraScale+ MPSoC、Zynq-7000全可编程SoC，以及MicroBlaze，可与Xilinx硬件设计工具Vivado协同工作，大大简化了Linux系统的开发工作。
 
@@ -154,13 +156,11 @@ Xilinx Petalinux 是一个定制版的 Yocto 工具，包括了Linux Kernel、u-
 
 本设计将基于 Petalinux 2019.1 （Linux Kernel 版本为 4.19）完成 KMD 环境的移植与 UMD 应用的编译，由于 NVDLA 官方仓库的代码是针对 Linux Kernel 4.13 与 64位架构处理器的，其有一些函数已经在本内核函数中被废弃，还有一些操作在本设计采用的 32位 处理器上不被允许，这些问题都将在本章得到解决。
 
-\section{Ubuntu 16.04 根文件系统移植}
-
 Petalinux 不具备包管理工具，为了更方便开发与调试，本章将介绍 Ubuntu 16.04 的根文件系统替换方法，为板卡移植 Ubuntu 操作系统，并且在这个过程中阐述 Petalinux 的构建方法。
 
 \subsection{读取 Block Design 配置信息}
 
-由于本设计需要将根文件系统替换为 Ubuntu 16.04，首先需要做的是将根文件系统与 Boot 文件分离，在 Petalinux 项目构建时，需要配置从 SD 卡中读取跟文件系统。
+由于本设计需要将根文件系统替换为 Ubuntu 16.04，首先需要做的是将根文件系统与 Boot 文件分离，在 Petalinux 项目构建时，需要配置从 SD 卡中读取根文件系统。
 
 使用 \emph{petalinux-config} 命令,指定上一章节生成的硬件描述文件的路径，在 \emph{Image Packaging Configuration|Root Filesystem Type}，选中SD card，然后进行编译。
 
