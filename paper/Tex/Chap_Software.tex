@@ -1,14 +1,16 @@
 \chapter{软件设计实现}\label{chap:software}
 
+硬件设计不是唯一的难点，本章节将详细概述 NVDLA 的软件栈的构建，首先我们需要为 ZYNQ 器件移植 Linux 操作系统，其次需要将 NVDLA 的驱动程序挂载到 Linux 内核中，然后需要编译出用户程序，最后，由于 NVDLA 的 small 配置仅支持 INT8 格式的数据，本章还将介绍结合 TensorRT 的模型量化方法。
+
 \section{NVDLA 软件工具链概述}
 
-如图~\ref{fig:Software Stack}，NVDLA 的软件工具链分为 Compiler 和 Runtime 两个部分。
+如图~\ref{fig:NVDLA Software}，NVDLA 的软件工具链分为 Compiler 和 Runtime 两个部分。
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{Software Stack.png}
-    \caption{NVDLA 软件栈}
-    \label{fig:Software Stack}
+    \includegraphics[width=0.7\textwidth]{software_package.png}
+    \caption{NVDLA Software}
+    \label{fig:NVDLA Software}
 \end{figure}
 
 Compiler 与硬件无关，可以在主机运行。它可以接受其他深度神经网络训练框架训练完成的模型，完成一些硬件无关的优化，例如算子融合、数据重用等，并且使用 FlatBuffers 将处理结果封装成 Loadable 数据流文件。
@@ -22,12 +24,6 @@ Runtime 与硬件紧密结合，其负责接受 Compiler 生成的 Loadable 文�
 
 在这一小节，我们将详细的介绍 NVDLA 的软件工具链。如图~\ref{fig:NVDLA Software}，英伟达官方提供了完整的软件生态。
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=0.7\textwidth]{software_package.png}
-    \caption{NVDLA Software}
-    \label{fig:NVDLA Software}
-\end{figure}
 
 Compiler 是软件工具链的前端，与硬件无关，Compiler 能够接受的参数如下：
 
@@ -297,7 +293,7 @@ insmod /lib/modules/4.19.0-xilinx-v2019.1/extra/opendla.ko
 
 NVDLA 的 Runtime 可以接受 jpeg 格式文件的图片，但是需要提前编译好 LIBJPEG 的链接库。
 
-官方提供的64位处理器的 LIBJPEG 链接库无法在32位处理器上链接所以我们需要自行编译，本设计使用最新发行的 libjpeg9，还需要更改 \emph{jconfig.h} 中的 \emph{JPEG\_LIB\_VERSION}的值为 90。
+官方提供的64位处理器的 LIBJPEG 链接库无法在32位处理器上链接所以我们需要自行编译，本设计使用最新发行的 libjpeg9b，还需要更改 \emph{jconfig.h} 中的 \emph{JPEG\_LIB\_VERSION}的值为 90。
 
 \subsection{UMD 构建}
 

@@ -66,6 +66,8 @@
 
 \section{精度对比分析}
 
+前文中提到，本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，仅将 Lenet5 的 prototxt 文件放在附录，全部的 prototxt 文件与 loadables 文件详见 Github\cite{nvdla_loadables}。
+
 在这一小节，我们将 TensorRT 为了量化而采样的一千张图像再次使用 NVDLA 进行推理并验证精度是否存在损失。
 
 \begin{table}[!htbp]

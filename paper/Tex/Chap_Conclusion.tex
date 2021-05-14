@@ -8,4 +8,6 @@
     \item NVDLA 内部运算的核心是 MAC 阵列，但是由于其是面向 ASIC 设计，MAC 阵列为行为及描述，在 FPGA 上映射到了 LUT 查找表资源，这会导致 MAC 阵列的运行效率低下。
     \item 基于现有的研究\cite{祁琛2018应用于神经网络的高效能计算单元的研究与实现}，优化 NVDLA 的 MAC 阵列。
     \item 针对不支持的算子，例如目标检测网络中的 RPN 算子、反卷积算子，NVDLA 不会工作，可以自行增加软件栈的特性，使这些不被硬件加速器支持的算子由软件实现。
+    \item 软件栈的应用程序是由 C++ 编写，不易开发后端，本设计未对接到由 Bootstrap 开发的前端应用中。
+    \item 官方开源的 NVDLA 软件栈仅支持 Caffemodel，而 ONNC 可以支持 ONNX 生成 Loadable 文件，极大增加了灵活性。
 \end{enumerate}
