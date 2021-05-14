@@ -2,7 +2,25 @@
 
 \section{NVDLA 软件工具链概述}
 
-在前面的章节，我们略微提到过 NVDLA 的软件栈。但是在这一小节，我们将详细的介绍 NVDLA 的软件工具链。如图~\ref{fig:NVDLA Software}，英伟达官方提供了完整的软件生态。
+如图~\ref{fig:Software Stack}，NVDLA 的软件工具链分为 Compiler 和 Runtime 两个部分。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Software Stack.png}
+    \caption{NVDLA 软件栈}
+    \label{fig:Software Stack}
+\end{figure}
+
+Compiler 与硬件无关，可以在主机运行。它可以接受其他深度神经网络训练框架训练完成的模型，完成一些硬件无关的优化，例如算子融合、数据重用等，并且使用 FlatBuffers 将处理结果封装成 Loadable 数据流文件。
+
+Runtime 与硬件紧密结合，其负责接受 Compiler 生成的 Loadable 文件，调度加速器程序，自动分配内存，自动配置寄存器，自动处理中断。而 Runtime 内部又被划分为两个部分，UMD 和 KMD吗，分别对应了 Linux 的用户态驱动与内核驱动。
+
+\begin{itemize}
+    \item 用户态驱动程序（USER MODE DRIVER，UMD）由 C++ 编写，负责解析 Loadable 文件，分配内存，并将上下文封装成一个 Task，最后发送给底层的 KMD 程序执行。
+    \item 内核态驱动程序（KERNEL MODE DRIVER）由 C 语言编写，是 NVDLA 固件的驱动程序，他是真正与 NVDLA 进行交互的部分。
+\end{itemize}
+
+在这一小节，我们将详细的介绍 NVDLA 的软件工具链。如图~\ref{fig:NVDLA Software}，英伟达官方提供了完整的软件生态。
 
 \begin{figure}[!htbp]
     \centering
@@ -75,7 +93,7 @@ $$ SF = \frac{|W|_{max}}{128} $$
 
 将权重数据根据绝对值的最大值作为阈值，归一化到 -128 到 127之间，该方法针对分布均匀的权重数据是很有效果的。但是很明显，如果权重数据分布不均匀，该方法带来的精度损失很大。
 
-TensorRT 选择的量化方法是 KL-divergence，即转化为最小化相对熵的问题。相对熵表述的就是两个分布的差异程度，在量化问题上表述的是量化前后两个分布的差异程度，而我们的问题自然而然就代表着差异最小。关于求解的算法本设计不阐述，实际上英伟达也只是公开了解决方案，但是软件算法实现并没有开源，在 TensorRT 中我们也是只能调用其封装好的链接库。
+TensorRT 选择的量化方法是 KL-divergence，即转化为最小化相对熵的问题\cite{shen2019highly}。相对熵表述的就是两个分布的差异程度，在量化问题上表述的是量化前后两个分布的差异程度，而我们的问题自然而然就代表着差异最小。关于求解的算法本设计不阐述，实际上英伟达也只是公开了解决方案，但是软件算法实现并没有开源，在 TensorRT 中我们也是只能调用其封装好的链接库。
 
 \subsection{量化步骤与精度损失}
 

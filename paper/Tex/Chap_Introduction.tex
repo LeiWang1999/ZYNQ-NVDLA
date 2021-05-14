@@ -27,7 +27,7 @@ y_k = \varphi(v_k) &
 
 其中 $x_j$ 表示第 $k$ 个神经元的第 $j$ 个输入，$w_{kj}$表示第 $k$ 个神经元的第 $j$ 个输入对应的权值，$b_k$ 表示第 $k$ 个神经元的偏置，$\varphi(\dots)$ 为激活函数，$y_k$ 为该神经元的输出。
 
-感知器模型于1958年，由美国心理学家Frank Rosenblatt提出，其中激活函数采用的一般是符号函数，如公式~\eqref{eq:sign}所示：
+感知器模型于1958年，由美国心理学家Frank Rosenblatt提出\cite{10.5555/1074100.1074686}，其中激活函数采用的一般是符号函数，如公式~\eqref{eq:sign}所示：
 
 \begin{equation} \label{eq:sign}
     o = sgn(x_1w_1+x_2*w_2+b)
@@ -124,7 +124,7 @@ y_k = \varphi(v_k) &
 
 \subsection{LeNet5 介绍}
 
-手写字体识别模型LeNet5诞生于1994年，是最早的卷积神经网络之一。
+手写字体识别模型LeNet5\cite{726791}诞生于1994年，是最早的卷积神经网络之一。
 
 \begin{figure}[!htbp]
     \centering
@@ -137,9 +137,9 @@ y_k = \varphi(v_k) &
 
 \subsection{Resnet 18 网络结构}
 
-纵观神经网络的发展脉络，我们可以看到研究者一直在不断尝试各种技术以加深神经网络的层数。从8层的 AlexNet，到十九层的 VGG，再到22层的 GoogLeNet，可以说，技术一直在进步。但是在突破神经网络深度的问题上真正最具有颠覆性的技术还是来自 ResNet。
+纵观神经网络的发展脉络，我们可以看到研究者一直在不断尝试各种技术以加深神经网络的层数。从8层的 AlexNet，到十九层的 VGG，再到22层的 GoogLeNet，可以说，技术一直在进步。但是在突破神经网络深度的问题上真正最具有颠覆性的技术还是来自 ResNet\citep{DBLP:journals/corr/HeZRS15}。
 
-为了避免随着神经网络的深度加深从而带来的退化问题，ResNet 采用了一种不同于常规卷积神经网络的基础结构，其基本单元如图~\ref{fig:Residual}所示，增加了从输入到输出的直连通道。其卷积拟合的是输出与输入的差，及残差，所以这种结构又被称为残差结构。残差网络的响应小于常规网络\citep{DBLP:journals/corr/HeZRS15}。残差网络的优点是对数据波动更加灵敏，更容易求的最优解，能够改善深层网络的训练。
+为了避免随着神经网络的深度加深从而带来的退化问题，ResNet 采用了一种不同于常规卷积神经网络的基础结构，其基本单元如图~\ref{fig:Residual}所示，增加了从输入到输出的直连通道。其卷积拟合的是输出与输入的差，及残差，所以这种结构又被称为残差结构。残差网络的响应小于常规网络。残差网络的优点是对数据波动更加灵敏，更容易求的最优解，能够改善深层网络的训练。
 
 \begin{figure}[!htbp]
     \centering
@@ -163,7 +163,6 @@ ZYNQ 器件是 Xilinx 公司研发的以 ARM 为主导，FPGA 为辅的嵌入式
 
 众核处理器（Manycore Processor）由成百上千的简单分立的处理器核心组成。与传统的多核处理器所不同的是，其设计牺牲了单核运行的性能来换取多核处理时的吞吐量，减少多核处理时的能量损耗。典型的使用众核处理器设计是 Kalray MPPA-256 架构。
 如图~\ref{fig:Manycore}所示，使用众核处理器进行深度神经网络运算时，每个处理器核心都可以贡献出一部分性能进行神经网络的运算，之后通过 Router 决定在物理总线上数据传输的方向。
-
 
 \begin{figure}[!htbp]
     \centering
@@ -189,7 +188,7 @@ VOLTA 架构是 NVIDIA 推出的新一代的 GPU 设计架构，基于该架构�
 
 \subsection{Google TPU}
 
-张量处理单元（Tensor Processing Unit）是 Google 牵头设计的一款为深度神经网络运算定制的 ASIC 器件，事实上其也取得了非常瞩目的性能，2015年发布的29nm工艺的 TPUv1 版本，能够运行在700Mhz的频率，但功率只有28W \textasciitilde 40W。
+张量处理单元（Tensor Processing Unit）是 Google 牵头设计的一款为深度神经网络运算定制的 ASIC 器件，事实上其也取得了非常瞩目的性能，2015年发布的29nm工艺的 TPUv1 版本，能够运行在700Mhz的频率，但功率只有28W \textasciitilde 40W \cite{DBLP:journals/corr/JouppiYPPABBBBB17}。
 
 \subsection{DianNao 系列}
 
@@ -201,7 +200,6 @@ NVDLA 是 NVIDIA 公司开源出来的深度学习加速器框架，其结构与
 
 NVIDIA 在2019年12月发布了 Jetson Xavier NX 套件，如图~\ref{fig:Xavier NX}所示，该套件上集成了已经流片的 NVDLA 为深度神经网络推理提供硬件加速支持。
 
-
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.5\textwidth]{Xavier.png}
@@ -209,6 +207,6 @@ NVIDIA 在2019年12月发布了 Jetson Xavier NX 套件，如图~\ref{fig:Xavier
     \label{fig:Xavier NX}
 \end{figure}
 
-与前两个领域专用的硬件加速体系结构不同，NVDLA 完全开源，其不仅提供了 Verilog 硬件描述语言、CMOD 硬件仿真程序，还为硬件加速器设计了神经网络编译器与运行时，自上而下打通了硬件栈与软件栈，基本能够实现端到端的推理，非常规范。虽然 NVDLA 自2018年以来已经没有人维护，但其系统设计思路仍然具有学习意义和指导意义。除了英伟达官方将 NVDLA 进行流片并嵌入到 Jetson 内以外，还有不少研究机构、商业公司也将 NVDLA 研究并成功流片，但是在 FPGA 端进行验证设计官方没有公开的项目做指导，本设计将原本面向 ASIC 设计的 NVDLA 映射到 FPGA 器件进行验证与设计。
+与前两个领域专用的硬件加速体系结构不同，NVDLA 完全开源，其不仅提供了 Verilog 硬件描述、CMOD 硬件仿真程序，还为硬件加速器设计了神经网络编译器与运行时，自上而下打通了硬件栈与软件栈，基本能够实现端到端的推理，非常规范。虽然 NVDLA 自2018年以来已经没有人维护，但其系统设计思路仍然具有学习意义和指导意义。除了英伟达官方将 NVDLA 进行流片并嵌入到 Jetson 内以外，还有不少研究机构、商业公司也将 NVDLA 研究并成功流片，但是在 FPGA 端进行验证设计官方没有公开的项目做指导，本设计将原本面向 ASIC 设计的 NVDLA 映射到 FPGA 器件进行验证与设计。
 
-有关 NVDLA 的内容将在下一章节具体介绍。
+有关 NVDLA 的内容将在之后的章节具体介绍。
