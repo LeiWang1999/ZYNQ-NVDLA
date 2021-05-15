@@ -1,0 +1,148 @@
+\begin{thebibliography}{17}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{#1}
+\expandafter\ifx\csname urlstyle\endcsname\relax\relax\else
+  \urlstyle{same}\fi
+\providecommand{\href}[2]{\url{#2}}
+\providecommand{\doi}[1]{\href{https://doi.org/#1}{#1}}
+
+\bibitem[{Holler {\bibetal}(1989)Holler, Tam, Castro, and Benson}]{118698}
+HOLLER, TAM, CASTRO, et~al.
+\newblock An electrically trainable artificial neural network (etann) with
+  10240 'floating gate' synapses\allowbreak[C/OL]//\allowbreak
+International 1989 Joint Conference on Neural Networks.
+\newblock 1989: 191-196 vol.2.
+\newblock DOI: \doi{10.1109/IJCNN.1989.118698}.
+
+\bibitem[{Hammerstrom(1990)}]{5726581}
+HAMMERSTROM~D.
+\newblock A vlsi architecture for high-performance, low-cost, on-chip
+  learning\allowbreak[C/OL]//\allowbreak
+1990 IJCNN International Joint Conference on Neural Networks.
+\newblock 1990: 537-544 vol.2.
+\newblock DOI: \doi{10.1109/IJCNN.1990.137621}.
+
+\bibitem[{Viredaz {\biband} Ienne(1993)Viredaz and Ienne}]{714364}
+VIREDAZ~M, IENNE~P.
+\newblock Mantra i: a systolic neuro-computer\allowbreak[C/OL]//\allowbreak
+Proceedings of 1993 International Conference on Neural Networks
+  (IJCNN-93-Nagoya, Japan): volume~3.
+\newblock 1993: 3054-3057 vol.3.
+\newblock DOI: \doi{10.1109/IJCNN.1993.714364}.
+
+\bibitem[{王守觉陈向东~曾玉娟(1997)}]{人工神经网络硬件化途径与神经计算机研究}
+王守觉陈向东~曾玉娟.
+\newblock
+  人工神经网络硬件化途径与神经计算机研究\allowbreak[J].
+\newblock 深圳大学学报, 1997, 1\penalty0 (6):\penalty0 8-13.
+
+\bibitem[{Chen {\bibetal}(2014{\natexlab{a}})Chen, Du, Sun, Wang, Wu, Chen, and
+  Temam}]{10.1145/2654822.2541967}
+CHEN~T, DU~Z, SUN~N, et~al.
+\newblock Diannao: A small-footprint high-throughput accelerator for ubiquitous
+  machine-learning\allowbreak[J/OL].
+\newblock SIGARCH Comput. Archit. News, 2014, 42\penalty0 (1):\penalty0
+  269–284.
+\newblock \url{https://doi.org/10.1145/2654822.2541967}.
+
+\bibitem[{Chen {\bibetal}(2014{\natexlab{b}})Chen, Luo, Liu, Zhang, He, Wang,
+  Li, Chen, Xu, Sun, and Temam}]{7011421}
+CHEN~Y, LUO~T, LIU~S, et~al.
+\newblock Dadiannao: A machine-learning
+  supercomputer\allowbreak[C/OL]//\allowbreak
+2014 47th Annual IEEE/ACM International Symposium on Microarchitecture.
+\newblock 2014{\natexlab{b}}: 609-622.
+\newblock DOI: \doi{10.1109/MICRO.2014.58}.
+
+\bibitem[{Liu {\bibetal}(2015)Liu, Chen, Liu, Zhou, Zhou, Teman, Feng, Zhou,
+  and Chen}]{10.1145/2786763.2694358}
+LIU~D, CHEN~T, LIU~S, et~al.
+\newblock Pudiannao: A polyvalent machine learning
+  accelerator\allowbreak[J/OL].
+\newblock SIGARCH Comput. Archit. News, 2015, 43\penalty0 (1):\penalty0
+  369–381.
+\newblock \url{https://doi.org/10.1145/2786763.2694358}.
+
+\bibitem[{Liu {\bibetal}(2016)Liu, Du, Tao, Han, Luo, Xie, Chen, and
+  Chen}]{7551409}
+LIU~S, DU~Z, TAO~J, et~al.
+\newblock Cambricon: An instruction set architecture for neural
+  networks\allowbreak[C/OL]//\allowbreak
+2016 ACM/IEEE 43rd Annual International Symposium on Computer Architecture
+  (ISCA).
+\newblock 2016: 393-405.
+\newblock DOI: \doi{10.1109/ISCA.2016.42}.
+
+\bibitem[{Kanal(2003)}]{10.5555/1074100.1074686}
+KANAL~L~N.
+\newblock Perceptron\allowbreak[M].
+\newblock GBR: John Wiley and Sons Ltd., 2003: 1383–1385.
+
+\bibitem[{Hornik(1991)}]{HORNIK1991251}
+HORNIK~K.
+\newblock Approximation capabilities of multilayer feedforward
+  networks\allowbreak[J/OL].
+\newblock Neural Networks, 1991, 4\penalty0 (2):\penalty0 251-257.
+\newblock
+  \url{https://www.sciencedirect.com/science/article/pii/089360809190009T}.
+\newblock DOI: \doi{https://doi.org/10.1016/0893-6080(91)90009-T}.
+
+\bibitem[{Lecun {\bibetal}(1998)Lecun, Bottou, Bengio, and Haffner}]{726791}
+LECUN~Y, BOTTOU~L, BENGIO~Y, et~al.
+\newblock Gradient-based learning applied to document
+  recognition\allowbreak[J/OL].
+\newblock Proceedings of the IEEE, 1998, 86\penalty0 (11):\penalty0 2278-2324.
+\newblock DOI: \doi{10.1109/5.726791}.
+
+\bibitem[{He {\bibetal}(2015)He, Zhang, Ren, and
+  Sun}]{DBLP:journals/corr/HeZRS15}
+HE~K, ZHANG~X, REN~S, et~al.
+\newblock Deep residual learning for image recognition\allowbreak[J/OL].
+\newblock CoRR, 2015, abs/1512.03385.
+\newblock \url{http://arxiv.org/abs/1512.03385}.
+
+\bibitem[{Shen {\bibetal}(2019)Shen, Gong, Liu, Zhang, Jin, , and
+  Lin}]{shen2019highly}
+SHEN~H, GONG~J, LIU~X, et~al.
+\newblock {HIGHLY} {EFFICIENT} 8-{BIT} {LOW} {PRECISION} {INFERENCE} {OF}
+  {CONVOLUTIONAL} {NEURAL} {NETWORKS}\allowbreak[EB/OL].
+\newblock 2019.
+\newblock \url{https://openreview.net/forum?id=SklzIjActX}.
+
+\bibitem[{Jouppi {\bibetal}(2017)Jouppi, Young, Patil, Patterson, Agrawal,
+  Bajwa, Bates, Bhatia, Boden, Borchers, Boyle, Cantin, Chao, Clark, Coriell,
+  Daley, Dau, Dean, Gelb, Ghaemmaghami, Gottipati, Gulland, Hagmann, Ho,
+  Hogberg, Hu, Hundt, Hurt, Ibarz, Jaffey, Jaworski, Kaplan, Khaitan, Koch,
+  Kumar, Lacy, Laudon, Law, Le, Leary, Liu, Lucke, Lundin, MacKean, Maggiore,
+  Mahony, Miller, Nagarajan, Narayanaswami, Ni, Nix, Norrie, Omernick,
+  Penukonda, Phelps, Ross, Salek, Samadiani, Severn, Sizikov, Snelham, Souter,
+  Steinberg, Swing, Tan, Thorson, Tian, Toma, Tuttle, Vasudevan, Walter, Wang,
+  Wilcox, and Yoon}]{DBLP:journals/corr/JouppiYPPABBBBB17}
+JOUPPI~N~P, YOUNG~C, PATIL~N, et~al.
+\newblock In-datacenter performance analysis of a tensor processing
+  unit\allowbreak[J/OL].
+\newblock CoRR, 2017, abs/1704.04760.
+\newblock \url{http://arxiv.org/abs/1704.04760}.
+
+\bibitem[{Feng {\bibetal}(2019)Feng, Wu, Zhou, and Li}]{9040769}
+FENG~S, WU~J, ZHOU~S, et~al.
+\newblock The implementation of lenet-5 with nvdla on risc-v
+  soc\allowbreak[C/OL]//\allowbreak
+2019 IEEE 10th International Conference on Software Engineering and Service
+  Science (ICSESS).
+\newblock 2019: 39-42.
+\newblock DOI: \doi{10.1109/ICSESS47205.2019.9040769}.
+
+\bibitem[{LeiWang1999(2021)}]{nvdla_loadables}
+LEIWANG1999.
+\newblock Nvdla loadables\allowbreak[EB/OL].
+\newblock 2021.
+\newblock \url{https://github.com/LeiWang1999/nvdla_loadables/}.
+
+\bibitem[{祁琛(2018)}]{祁琛2018应用于神经网络的高效能计算单元的研究与实现}
+祁琛.
+\newblock
+  应用于神经网络的高效能计算单元的研究与实现\allowbreak[D].
+\newblock 东南大学, 2018.
+
+\end{thebibliography}
