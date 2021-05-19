@@ -42,7 +42,7 @@ where options include:
 
 \begin{itemize}
     \item profile 指定了优化方案，在 Compiler 内部提供了四种优化方案，能够支持一些硬件无关的网络优化，例如算子融合、内存重用等，本设计使用默认的 fast-math，启用全部的优化选项。
-    \item cprecision 指定了精度，在这里我们需要选择 int8，并且可以结合 TensorRT 生成 calibtabel 文件，如果不给出 calibtabel 参数，Compiler 内部会使用简单的量化方案，实测效果很差。
+    \item cprecision 指定了精度，在这里我们需要选择 int8，并且可以结合 TensorRT 生成 calibtabel 文件，如果不给出 calibtabel 参数，Compiler 内部会使用简单的量化方案，但在实际测试情况下，效果并不理想。
     \item configtarget 本设计选择 nv\_small，匹配本设计的 small 配置。
     \item calibtabel 需由 TensorRT 生成，将在下一小节详细介绍。
     \item quantizationMode 有两个选项，per-kernel 选项是对每一层卷积使用相同的量化参数，per-filter 则是对每一层卷积使用不同的量化参数，这需要结合 calibtabel 文件选择，在本设计中使用 per-kernel。

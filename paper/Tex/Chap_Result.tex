@@ -25,7 +25,7 @@
 
 如表~\ref{tab:150 Mhz Timing}所示，将时钟再提升至 150Mhz，则时钟已经出现了违例，具体表现为最差路径的 Slack 为负值，电路无法正常工作。如果此时强行上板会导致时序混乱，造成读写相关的寄存器失败。
 
-由以上分析，在本设计中给 NVDLA 的输入时钟为 100Mhz，但是在 FPGA 上工作的最大时钟不代表进行 ASIC 设计能够工作的最大时钟，例如 Jetson Xavier NX 板卡上的 NVDLA 的工作时钟为 600 Mhz，根据中国科学院信息工程研究所的流片经验，其工作时钟为 800Mhz，根据中国科学院自动化研究所的研究，在 600 Mhz 的工作频率下，Lenet5 的推理速度可以达到 0.2 us \cite{9040769}。
+由以上分析，在本设计中给 NVDLA 的输入时钟为 100Mhz，但是在 FPGA 上工作的最大时钟不代表进行 ASIC 设计能够工作的最大时钟，例如 Jetson Xavier NX 板卡上的 NVDLA 的工作时钟为 600 Mhz，根据中国科学院信息工程研究所的流片经验，其工作时钟为 800Mhz。
 
 \begin{table}[!htbp]
     \caption{150 Mhz Timing报告}
@@ -94,7 +94,7 @@
 
 \section{推理速度分析}
 
-硬件加速系统设计，我们往往关心其推理速度如何，如表~\ref{tab:Execution Time}所示，其中 Resnet18-IMAGENET2012 因为无法在板卡上运行，所以本设计没有对运行速度进行评估。
+硬件加速系统设计，我们往往关心其推理速度如何，如表~\ref{tab:Execution Time}所示，其中 Resnet18-IMAGENET2012 因为需要分配的内存过大，而无法在板卡上运行，所以本设计没有对运行速度进行评估，其余两个模型，分别推理了一千张图像观察推理的平均耗时。此外，为了对比 CPU 的运行时间，本设计还在 ARM A9 处理器上进行了 Caffe 框架的移植与编译，对预训练的 Caffemodel 进行 CPU 侧的推理，迭代五十次后取推理时间的平均值。
 
 \begin{table}[!htbp]
     \caption{运行速度}
@@ -103,12 +103,22 @@
     \footnotesize% fontsize
     \setlength{\tabcolsep}{4pt}% column separation
     \renewcommand{\arraystretch}{1.2}%row space 
-    \begin{tabular}{lccc}
+    \begin{tabular}{lcccc}
         \toprule
-        \textbf{Network}                              & \multicolumn{1}{l}{\textbf{1000 Images Execution Time}} & \multicolumn{1}{l}{\textbf{Execution Time Per Image}} & \textbf{Frames} \\
+        \textbf{Network}                                   & \multicolumn{1}{l}{\textbf{1000 Images Execution Time}} & \multicolumn{1}{l}{\textbf{Time Per Image}} & \textbf{FPS}     & \multicolumn{1}{l}{\textbf{Time ARM A9 (666 Mhz)}} \\
         \midrule
-        \textbf{Lenet5-MNIST}                         & 288129ms                                                & 288.13ms                                              & 3.47            \\
-        \multicolumn{1}{c}{\textbf{Resnet18-CIFAR10}} & 287145ms                                                & 287.15ms                                              & 3.48            \\
+        \textbf{Lenet5-MNIST}          & 288129 ms                                               & 288.13 ms                                   & 3.47             & 23.55 ms                                            \\
+        \textbf{Resnet18-CIFAR10}      & 287145 ms                                               & 287.15 ms                                   & 3.48             & 342.24 ms                                          \\
+        \textbf{Resnet18-IMAGENET2012} & \textbackslash{}                                        & \textbackslash{}                            & \textbackslash{} & 6169.63 ms                                         \\
         \bottomrule                   
     \end{tabular}
 \end{table}
+
+虽然根据图表所示，对于 Lenet5，CPU 侧的推理仅需要 20ms，其速度比设计的硬件加速器还要快 10 倍，究其原因如下：
+
+\begin{enumerate}
+    \item CPU 是集成在 ZYNQ 器件上的硬核处理器，主频可达到 666 Mhz、而 NVDLA 因为其在 FPGA 上运行导致最高运行频率收到限制，仅可达到 100 Mhz。
+    \item 对于 NVDLA，因其在 FPGA 上实现，所以功能验证正确是最主要的，对于运行速度需要通过 ASIC 流程得出，根据中国科学院自动化研究所的研究，在 600 Mhz 的工作频率下，Lenet5 的推理速度可以达到 0.2 us \cite{9040769}。 
+\end{enumerate}
+
+其次，Resnet18-CIFAR10 在 CPU 侧推理的速度是 Lenet5 的 14.5 倍，可知其网络比 Lenet5 复杂许多，但是在 NVDLA 侧，推理速度仍然与 Lenet5 不相上下，说明在这两个网络的推理过程中，网络的复杂程度不是影响推理速度的关键因素，可能是访存等其他原因。
