@@ -49,7 +49,6 @@
     \end{tabular}
 \end{table}
 
-
 \section{最大工作频率分析}
 
 静态时序分析（Static Timing Analysis，STA）的基本功能是对设计电路的时序进行检查。如图~\ref{fig:Setup and Hold}所示，时序检查是指建立时间与保持时间检查：
@@ -71,7 +70,7 @@
 首先将 10Mhz 的时钟接入 NVDLA，实现之后的 Timing 报告如表~\ref{tab:10Mhz Timing}所示，其中 Slack 指的是建立时间与到达时间的差值，如果整个设计的 Slack 存在负值，则就存在部分寄存器无法获取到数据，电路无法正常工作。从该表中可以看出，对于 Setup Slack，设计的关键路径保有 88.126 ns 的余量，而关键路径的 Hold Slack 只有 0.030 ns 的余量，不存在负数，电路可以正常工作。
 
 \begin{table}[!htbp]
-    \caption{10 Mhz Timing}
+    \caption{10 Mhz 情况下的关键路径时序情况}
     \label{tab:10Mhz Timing}
     \centering
     \footnotesize% fontsize
@@ -86,10 +85,10 @@
     \end{tabular}
 \end{table}
 
-本设计在分析 NVDLA 最大工作时钟时，选取了几个典型的时钟值，分别是 25Mhz、50Mhz、75Mhz、100Mhz，他们的 Timing 情况如表~\ref{tab:25-100 Mhz Timing}所示，可以发现当时钟频率不断增加的时候，关键路径的 Slack 值不断在变小，影响 NVDLA 工作的主要问题是 Setup 时间不足，在 100Mhz 的时候已经不足 1 ns。
+本设计在分析 NVDLA 最大工作时钟时，选取了几个典型的时钟值，分别是 25Mhz、50Mhz、75Mhz、100Mhz，他们的关键路径的时钟情况如表~\ref{tab:25-100 Mhz Timing}所示，可以发现当时钟频率不断增加的时候，关键路径的 Slack 值不断在变小，影响 NVDLA 工作的主要问题是 Setup 时间不足，在 100Mhz 的时候已经不足 1 ns。
 
 \begin{table}[!htbp]
-    \caption{25 50 75 100 Mhz Timing}
+    \caption{不同时钟下的关键路径时序情况}
     \label{tab:25-100 Mhz Timing}
     \centering
     \footnotesize% fontsize
@@ -107,12 +106,12 @@
     \end{tabular}
 \end{table}
 
-如表~\ref{tab:150 Mhz Timing}所示，将时钟再提升至 150Mhz，则时钟已经出现了违例，具体表现为最差路径的 Slack 为负值，电路无法正常工作。如果此时强行上板会导致时序混乱，造成读写相关的寄存器失败。
+如表~\ref{tab:150 Mhz Timing}所示，将时钟再提升至 150Mhz，则时钟已经出现了违例，具体表现为最差路径的 Slack 为负值，电路无法正常工作。此时强行上板会导致时序混乱，造成读写相关的寄存器失败。
 
 由以上分析，在本设计中给 NVDLA 的输入时钟为 100Mhz，但是在 FPGA 上工作的最大时钟不代表进行 ASIC 设计能够工作的最大时钟，例如 Jetson Xavier NX 板卡上的 NVDLA 的工作时钟为 600 Mhz，根据中国科学院信息工程研究所的流片经验，其工作时钟为 800Mhz。
 
 \begin{table}[!htbp]
-    \caption{150 Mhz Timing}
+    \caption{150 Mhz 情况下的关键路径时序情况}
     \label{tab:150 Mhz Timing}
     \centering
     \footnotesize% fontsize
@@ -149,11 +148,22 @@
     \end{tabular}
 \end{table}
 
-\section{精度对比分析}
+\section{基于 NVDLA 的硬件加速系统性能评估}
 
-前文中提到，本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，全部的 prototxt 文件与 loadables 文件详见 Github\cite{nvdla_loadables}。
+\subsection{实验配置}
 
-在这一小节，我们将 TensorRT 为了量化而采样的一千张图像再次使用 NVDLA 进行推理并验证精度是否存在损失。
+前文中提到，本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，全部的 prototxt 文件与 loadables 文件详见 Github\cite{nvdla_loadables}。此外，为了对比 CPU 的运行时间，本设计还在 ARM A9 处理器上进行了 Caffe 框架的移植与编译，对预训练的 Caffemodel 进行 CPU 侧的推理，由于 CPU 的访存特性，Caffe 在进行推理的时候速度会由慢到快，最终趋于稳定，所以本设计取迭代五十次后取推理时间的平均值。如图~\ref{fig:BootStrap}所示，本节还在主机端基于 Bootstrap 与 JQuery 等 Web 应用技术开发了的网页服务，并通过 Ajax 向后端发送推理请求，运行在 ZYNQ 7000+ 芯片上的 Ubuntu 操作系统里，使用 Flask 框架接受请求并且调度。但是在实际测试过程中，如进行数据集级别的推理以及与 Caffe 进行比较，均不在该网页服务里完成。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{bootstrap}
+    \caption{用户友好的输入页面}
+    \label{fig:BootStrap}
+\end{figure}
+
+\subsection{精度对比分析}
+
+本节将 TensorRT 为了量化而采样的一千张图像再次使用 NVDLA 进行推理并验证精度是否存在损失。其中，Resnet18-IMAGENET2012 网络参数较多，而本设计仅有 500MB 左右的片上存储，使得该网络无法在开发板卡上正常推理，精度的得出是使用的 QEMU 虚拟环境，经过 HPC 模拟硬件加速器调度得出。
 
 \begin{table}[!htbp]
     \caption{精度对比}
@@ -173,13 +183,12 @@
     \end{tabular}
 \end{table}
 
-其中，Resnet18-IMAGENET2012 网络参数较多，而本设计仅有 500MB 左右的片上存储，使得该网络无法在开发板卡上正常推理，精度的得出是使用的 QEMU 虚拟环境，经过 HPC 模拟硬件加速器调度得出。
+\textbf{实验结论：}理论上，NVDLA 的精度应该与 TensorRT 量化之后的精度一致，但是实际测试中，NVDLA的量化精度稍微低一些。经过分析，是因为 Caffe 训练的模型内部使用 OpenCV 进行图像读取操作，而 OpenCV 读取的图像为 BGR 格式，在 NVDLA 的 Runtime 阶段，由于 BGR 转 RGB 的操作会引发一系列错误，所以本设计将该操作去除，影响了部分精度，而 Resnet18-IMAGENET2012 未进行该处理，精度保持一致。
 
-理论上，NVDLA 的精度应该与 TensorRT 量化之后的精度一致，但是实际测试中，NVDLA的量化精度稍微低一些。经过分析，是因为 Caffe 训练的模型内部使用 OpenCV 进行图像读取操作，而 OpenCV 读取的图像为 BGR 格式，在 NVDLA 的 Runtime 阶段，由于 BGR 转 RGB 的操作会引发一系列错误，所以本设计将该操作去除，影响了部分精度，而 Resnet18-IMAGENET2012 未进行该处理，精度保持一致。
+\subsection{推理速度分析}
 
-\section{推理速度分析}
+本节针对设计的三个模型统计 NVDLA 的推理速度，其中Resnet18-IMAGENET2012 因为需要分配的内存过大，而无法在板卡上运行，所以本设计没有对运行速度进行评估，其余两个模型，分别推理了一千张图像观察推理的平均耗时。
 
-硬件加速系统设计，我们往往关心其推理速度如何，如表~\ref{tab:Execution Time}所示，其中 Resnet18-IMAGENET2012 因为需要分配的内存过大，而无法在板卡上运行，所以本设计没有对运行速度进行评估，其余两个模型，分别推理了一千张图像观察推理的平均耗时。此外，为了对比 CPU 的运行时间，本设计还在 ARM A9 处理器上进行了 Caffe 框架的移植与编译，对预训练的 Caffemodel 进行 CPU 侧的推理，迭代五十次后取推理时间的平均值。
 
 \begin{table}[!htbp]
     \caption{运行速度}
@@ -199,6 +208,7 @@
     \end{tabular}
 \end{table}
 
+\textbf{实验结论：}如表~\ref{tab:Execution Time}所示，
 虽然根据图表所示，对于 Lenet5，CPU 侧的推理仅需要 20ms，其速度比设计的硬件加速器还要快 10 倍，究其原因如下：
 
 \begin{enumerate}
