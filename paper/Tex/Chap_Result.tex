@@ -66,7 +66,7 @@
 
 \section{精度对比分析}
 
-前文中提到，本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，仅将 Lenet5 的 prototxt 文件放在附录，全部的 prototxt 文件与 loadables 文件详见 Github\cite{nvdla_loadables}。
+前文中提到，本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，全部的 prototxt 文件与 loadables 文件详见 Github\cite{nvdla_loadables}。
 
 在这一小节，我们将 TensorRT 为了量化而采样的一千张图像再次使用 NVDLA 进行推理并验证精度是否存在损失。
 
@@ -118,7 +118,7 @@
 
 \begin{enumerate}
     \item CPU 是集成在 ZYNQ 器件上的硬核处理器，主频可达到 666 Mhz、而 NVDLA 因为其在 FPGA 上运行导致最高运行频率收到限制，仅可达到 100 Mhz。
-    \item 对于 NVDLA，因其在 FPGA 上实现，所以功能验证正确是最主要的，对于运行速度需要通过 ASIC 流程得出，根据中国科学院自动化研究所的研究，在 600 Mhz 的工作频率下，Lenet5 的推理速度可以达到 0.2 us \cite{9040769}。 
+    \item 对于 NVDLA，因其在 FPGA 上实现，所以功能验证正确是最主要的，对于运行速度需要通过 ASIC 流程得出，根据中国科学院自动化研究所的研究，在 600 Mhz 的工作频率下，Lenet5 的推理速度可以达到 0.2 ms \cite{9040769}。 
 \end{enumerate}
 
 其次，Resnet18-CIFAR10 在 CPU 侧推理的速度是 Lenet5 的 14.5 倍，可知其网络比 Lenet5 复杂许多，但是在 NVDLA 侧，推理速度仍然与 Lenet5 不相上下，说明在这两个网络的推理过程中，网络的复杂程度不是影响推理速度的关键因素，可能是访存等其他原因。

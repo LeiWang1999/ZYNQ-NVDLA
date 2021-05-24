@@ -1,6 +1,13 @@
 \chapter{软件设计实现}\label{chap:software}
 
-硬件设计不是唯一的难点，本章节将详细概述 NVDLA 的软件栈的构建，首先我们需要为 ZYNQ 器件移植 Linux 操作系统，其次需要将 NVDLA 的驱动程序挂载到 Linux 内核中，然后需要编译出用户程序，最后，由于 NVDLA 的 small 配置仅支持 INT8 格式的数据，本章还将介绍结合 TensorRT 的模型量化方法。
+硬件设计不是唯一的难点，本章节将详细概述软件设计实现。流程如图~\ref{fig:Software Transplant}所示，首先在服务端，本设计使用 Caffe 框架针对 MNIST、CIFAR10 和 IMAGENET2012 三个数据集训练了三个分类模型，其次由于 NVDLA 的 small 配置仅支持 INT8 格式的数据，本章还将介绍结合 TensorRT 的模型量化方法；经过量化的模型将在主机端通过深度神经网络编译器进行硬件无关的优化与压缩，主机端还需要使用 Xilinx Petalinux 工具为 ARM 处理器移植 Linux 操作系统，完成驱动程序的编译，为深度神经网络运行时准备环境；在 ARM 处理器上，由深度神经网络运行时进行反序列化与加速器的调度。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{SoftwareTrans.pdf}
+    \caption{软件设计流程}
+    \label{fig:Software Transplant}
+\end{figure}
 
 \section{NVDLA 软件工具链概述}
 
@@ -13,9 +20,9 @@
     \label{fig:NVDLA Software}
 \end{figure}
 
-Compiler 与硬件无关，可以在主机运行。它可以接受其他深度神经网络训练框架训练完成的模型，完成一些硬件无关的优化，例如算子融合、数据重用等，并且使用 FlatBuffers 将处理结果封装成 Loadable 数据流文件。
+Compiler,即深度神经网络编译器，与硬件无关，可以在主机运行。它可以接受其他深度神经网络训练框架训练完成的模型，完成一些硬件无关的优化，例如算子融合、数据重用等，并且使用 FlatBuffers 将处理结果经过序列化，生成 Loadable 数据流文件。
 
-Runtime 与硬件紧密结合，其负责接受 Compiler 生成的 Loadable 文件，调度加速器程序，自动分配内存，自动配置寄存器，自动处理中断。而 Runtime 内部又被划分为两个部分，UMD 和 KMD吗，分别对应了 Linux 的用户态驱动与内核驱动。
+Runtime，即深度神经网络运行时，与硬件紧密结合，其负责接受 Compiler 生成的 Loadable 文件，进行反序列化，调度加速器程序，自动分配内存，自动配置寄存器，自动处理中断。而 Runtime 内部又被划分为两个部分，UMD 和 KMD吗，分别对应了 Linux 的用户态驱动与内核驱动。
 
 \begin{itemize}
     \item 用户态驱动程序（USER MODE DRIVER，UMD）由 C++ 编写，负责解析 Loadable 文件，分配内存，并将上下文封装成一个 Task，最后发送给底层的 KMD 程序执行。
@@ -23,7 +30,6 @@ Runtime 与硬件紧密结合，其负责接受 Compiler 生成的 Loadable 文�
 \end{itemize}
 
 在这一小节，我们将详细的介绍 NVDLA 的软件工具链。如图~\ref{fig:NVDLA Software}，英伟达官方提供了完整的软件生态。
-
 
 Compiler 是软件工具链的前端，与硬件无关，Compiler 能够接受的参数如下：
 
@@ -67,6 +73,28 @@ where options include:
 \end{lstlisting}
 
 Compiler 的编译过程较简单，本设计不多介绍，Runtime 的构建过程非常复杂，将在后面的章节详细介绍。
+
+\section{Caffe 与模型训练}
+
+本设计使用 Caffe 在服务器端训练了三个深度神经网络，其验证精度如表~\ref{tab:Vertification}所示。
+
+\begin{table}[!htbp]
+    \caption{Caffe 模型验证精度}
+    \label{tab:Vertification}
+    \centering
+    \footnotesize% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{lc}
+        \toprule
+        \textbf{Network}      & \multicolumn{1}{l}{\textbf{Valiadation Accuracy \%}}\\
+        \midrule
+        Lenet5-MNIST          & 99.7                                                \\
+        Resnet18-CIFAR10      & 90.2                                                \\
+        Resnet18-IMAGENET2012 & 60.2(Top5)                                          \\
+        \bottomrule                   
+    \end{tabular}
+\end{table}
 
 \section{TensorRT 与模型量化}
 
@@ -133,7 +161,7 @@ TensorRT 选择的量化方法是 KL-divergence，即转化为最小化相对熵
 
 \subsection{calibtabel 生成}
 
-使用 TensorRT 量化会生成 cache 文件，内部每一行代表每一个 layer 的 Scale Factor ，但是 NVDLA 的 Compiler 在进行量化时需要接受 Json 格式的文件，其结构如下：
+使用 TensorRT 量化会生成 cache 文件，内部每一行代表每一个 layer 的 Scale Factor，但是 NVDLA 的 Compiler 在进行量化时需要接受 Json 格式的文件，其结构如下：
 
 \begin{lstlisting}
     {"first_conv":
@@ -145,34 +173,34 @@ TensorRT 选择的量化方法是 KL-divergence，即转化为最小化相对熵
     },
 \end{lstlisting}
 
-其中 first\_conv 是 Layer 的 name，遗憾的是，英伟达官方没有提供正常可用的 Cache 到 Json 转换的脚本，本设计使用 Python3 结合 PyCaffe 自行编写了 Cache 文件到 Json 文件转化的脚本，该脚本的内容详见附录。
+其中 first\_conv 是 Layer 的 name，本设计使用 Python3 结合 PyCaffe 自行编写了 Cache 文件到 Json 文件转化的脚本，该脚本的内容详见附录。
 
-这样，我们就可以生成针对 small 配置的 Loadable 文件，只要将 Loadable 与输入 Image 准备好，就可以使用 Runtime 自动调度加速器进行推理，接下来介绍 Runtime 的上板编译过程。
+% 这样，我们就可以生成针对 small 配置的 Loadable 文件，只要将 Loadable 与输入 Image 准备好，就可以使用 Runtime 自动调度加速器进行推理，接下来介绍 Runtime 的上板编译过程。
+ 
+\section{Ubuntu 16.04 嵌入式操作系统移植}
 
-\section{Ubuntu 16.04 根文件系统移植}
+在主机端，使用深度神经网络编译器接受训练好的 Caffemodel 与本章节生成的 Json 文件，即可生成适用于 small 版本的 NVDLA 的 Loadable 文件。为了解析 Loadable 文件，即进行反序列化，需要在 ARM 处理器上编译出深度神经网络运行时，而在这之前又需要为 ARM 处理器移植操作系统。
+
+为此，本小节将介绍基于 Xilinx Petalinux 的 Linux 操作系统移植方法，而 Petalinux 不具备包管理工具，为了更方便开发与调试，本小节还将介绍 Ubuntu 16.04 的根文件系统替换方法。
 
 \subsection{Petalinux 工具介绍}
 
-Xilinx Petalinux 是一个定制版的 Yocto 工具，包括了Linux Kernel、u-boot、device-tree、rootfs等源码、库，可以让客户很方便的生成、配置、编译及自定义。Petalinux支持Zynq UltraScale+ MPSoC、Zynq-7000全可编程SoC，以及MicroBlaze，可与Xilinx硬件设计工具Vivado协同工作，大大简化了Linux系统的开发工作。
+Xilinx Petalinux 是一个定制版的 Yocto 工具，包括了 Linux Kernel、u-boot、device-tree、rootfs等源码、库，可以让客户很方便的生成、配置、编译及自定义。Petalinux支持Zynq UltraScale+ MPSoC、Zynq-7000全可编程SoC，以及MicroBlaze，可与Xilinx硬件设计工具Vivado协同工作，大大简化了Linux系统的开发工作。
 
-使用PetaLinux工具，开发人员可以定制u-boot、Linux内核或Linux应用，开发者还可以通过网络或JTAG在随附的全系统仿真器 (QEMU) 或物理硬件上添加新的内核、器件驱动程序、应用和库，以及启动并测试软件协议栈，完成从系统启动到执行的所有操作。在主机端提供的PetaLinux工具包括：
+使用 PetaLinux 工具，开发人员可以定制 u-boot、Linux 内核或 Linux 应用，开发者还可以通过网络或 JTAG 在随附的全系统仿真器 (QEMU) 或物理硬件上添加新的内核、器件驱动程序、应用和库，以及启动并测试软件协议栈，完成从系统启动到执行的所有操作。在主机端提供的 PetaLinux 工具包括：
 
 \begin{itemize}
     \item 命令行界面
     \item 应用、器件驱动程序、库生成器以及开发模板
     \item 可引导的系统镜像生成器
     \item 调试代理程序
-    \item GCC工具集
-    \item 集成的QEMU全系统仿真器
+    \item GCC 工具集
+    \item 集成的 QEMU 全系统仿真器
     \item 自动化工具
-    \item 支持Xilinx系统调试器
+    \item 支持 Xilinx 系统调试器
 \end{itemize}
 
-本设计将基于 Petalinux 2019.1 （Linux Kernel 版本为 4.19）完成 KMD 环境的移植与 UMD 应用的编译，由于 NVDLA 官方仓库的代码是针对 Linux Kernel 4.13 与 64位架构处理器的，其有一些函数已经在本内核函数中被废弃，还有一些操作在本设计采用的 32位 处理器上不被允许，这些问题都将在本章得到解决。
-
-Petalinux 不具备包管理工具，为了更方便开发与调试，本章将介绍 Ubuntu 16.04 的根文件系统替换方法，为板卡移植 Ubuntu 操作系统，并且在这个过程中阐述 Petalinux 的构建方法。
-
-\subsection{读取 Block Design 配置信息}
+\subsection{针对硬件设计的启动文件制作}
 
 由于本设计需要将根文件系统替换为 Ubuntu 16.04，首先需要做的是将根文件系统与 Boot 文件分离，在 Petalinux 项目构建时，需要配置从 SD 卡中读取根文件系统。
 
@@ -182,9 +210,7 @@ Petalinux 不具备包管理工具，为了更方便开发与调试，本章将�
 petalinux-config --get-hw-description=./PathOfhdf
 \end{lstlisting}
 
-修改此处后，linux 根文件系统 rootfs 将配置到 SD 中，而非默认的  raminitfs，后者是将根目录系统镜像在 boot 阶段加载到内存中，一旦裁剪的kernel较大（大概超过120M），那么系统 boot 不起来。
-
-\subsection{Linux 内核裁剪}
+修改此处后，linux 根文件系统 rootfs 将配置到 SD 中，而非默认的  raminitfs，后者是将根目录系统镜像在 boot 阶段加载到内存中，一旦裁剪的kernel较大（大概超过120M），那么系统无法 boot。
 
 由于我们已经将 rootfs 配置到 SD 中，那么就要取消掉 kernel 的 RAM intial，否则在 boot 阶段，kernel 在内存中找不到 rootfs 的符号镜像。
 
@@ -194,18 +220,16 @@ petalinux-config -c kernel
 
 使用该命令配置取消 \emph{Initial RAM filesystem and RAM disk support} 。
 
-\subsection{生成 Boot 和 Image 文件}
-
-这样我们就可以进行编译，生成适配板卡的 BOOT 和 Image 文件，已经 rootfs 文件系统了，使用以下命令进行编译与生成，注意，这里我们还没有挂载 NVDLA 的硬件驱动，仅移植 Ubuntu 文件系统。
+裁剪之后，进行编译即可生成适配板卡的 BOOT 和 Image 文件，以及 rootfs 文件系统，使用以下命令进行编译与生成：
 
 \begin{lstlisting}
 petalinux-build
 petalinux-package --boot --fsbl images/linux/zynq_fsbl.elf --fpga --u-boot --force
 \end{lstlisting}
 
-这样，BOOT.BIN 与 IMAGE.ub 文件以及 ROOTFS 将会在目录下生成。
+BOOT.BIN 与 IMAGE.ub 文件以及 ROOTFS 将会在目录下生成。
 
-\subsection{SD 卡分区}
+\subsection{替换根文件系统}
 
 本设计使用了一张 32 GB 大小的 SD 卡，因为前文配置了 rootfs 从 SD 卡启动，所以我们需要对 SD 卡进行分区，分区情况如表~\ref{tab:SD Card Partition}所示。
 
@@ -218,7 +242,7 @@ petalinux-package --boot --fsbl images/linux/zynq_fsbl.elf --fpga --u-boot --for
     \renewcommand{\arraystretch}{1.2}%row space 
     \begin{tabular}{lccc}
         \toprule
-        \textbf{Volume Name} & \multicolumn{1}{l}{\textbf{Type}} & \multicolumn{1}{l}{\textbf{Device}} & \multicolumn{1}{l}{\textbf{Space GB}} \\
+        \textbf{Volume Name} & \multicolumn{1}{l}{\textbf{Type}} & \multicolumn{1}{l}{\textbf{Device}} & \multicolumn{1}{l}{\textbf{Space (GB)}} \\
         \midrule
         BOOT                 & FAT32                             & /dev/sdc1                                & 4                                \\
         ROOTFS               & EXT4                              & /dev/sdc2                                & 20                               \\
@@ -229,15 +253,13 @@ petalinux-package --boot --fsbl images/linux/zynq_fsbl.elf --fpga --u-boot --for
 
 其中，BOOT 分区格式为 FAT32，用来存储 BOOT.BIN 和 IMAGE.ub 文件，ROOTFS 需要的空间较大，用来存储根文件系统，WorkSpace 可有可无，我们使用他作为一个外置的存储，来存储一些数据。根据 Petalinux 的用户手册，BOOT 和 ROOTFS 需要严格在第一分区与第二分区。
 
-\subsection{替换根文件系统}
-
-本设计不采用 Petalinux 自己生成的根文件系统，使用 \emph{ubuntu-16.04.2-minimal-armhf-2017-06-18} 作为根文件系统，将其解压到 rootfs 分区，再将 BOOT.BIN 与 IMAGE.ub 文件拷贝到 BOOT 分区，将 SD 卡插入开发板则移植成功。
+本设计不采用 Petalinux 自己生成的根文件系统，使用 \emph{ubuntu-16.04.2-minimal-armhf-2017-06-18} 作为根文件系统，将其解压到 rootfs 分区，再将 BOOT.BIN 与 IMAGE.ub 文件拷贝到 BOOT 分区，将 SD 卡插入开发板则 Linux 操作系统移植过程结束。
 
 \section{KMD 内核程序挂载}
 
-在上一小节，本文讲解了如何利用 Petalinux 为 ZYNQ 器件移植 Ubuntu 的操作系统，在这一小节，我们将为 Ubuntu 增加 NVDLA 的内核驱动程序。
+在上一小节，本文讲解了如何利用 Petalinux 为 ZYNQ 器件移植 Ubuntu 的操作系统，在这一小节，我们将为 Ubuntu 增加 NVDLA 的内核驱动程序。由于本设计基于 Petalinux 2019.1 （Linux Kernel 版本为 4.19）完成 KMD 环境的移植与 UMD 应用的编译，而 NVDLA 官方仓库的代码针对 Linux Kernel 4.13 与 64位架构处理器，其有一些函数已经在本内核版本中已经被废弃，还有一些操作在本设计采用的 32位 处理器上不被允许，这些问题都将在本章得到解决。
 
-\subsection{新增 Linux 设备树节点}
+\subsection{Linux 设备树新增节点}
 
 使用 Petalinux 构建操作系统的时候会自动为我们生成设备树文件，但是他只包括了一些基本的硬件属性。本设计考虑到 NVDLA 的内核驱动程序，对设备树文件做以下更改：
 
@@ -248,7 +270,7 @@ petalinux-package --boot --fsbl images/linux/zynq_fsbl.elf --fpga --u-boot --for
 
 更改后的设备树文件详见附录 \emph{system-user.dtsi}。
 
-\subsection{Petalinux 内核应用添加}
+\subsection{Petalinux 内核添加应用}
 
 使用 Petalinux 内建的工具即可新增内核应用，本设计创建了一个名为 opendla 的子模块：
 
@@ -276,28 +298,28 @@ petalinux-create -t modules -n opendla --enable
 insmod /lib/modules/4.19.0-xilinx-v2019.1/extra/opendla.ko 
 \end{lstlisting}
 
-加载成功之后，可以看到系统设备中会多出 NVDLA 的中断信号和驱动。
+加载成功之后，系统设备信息中会多出 NVDLA 的中断信号和驱动。
 
 \section{UMD 应用程序编译}
 
-内核驱动挂载成功之后，我们的 UMD 程序才可以正确运行，而 UMD 也可分为两个主要部分：
+内核驱动挂载成功之后，UMD 程序才可以正确运行，而 UMD 也可分为两个主要部分：
 
 \begin{itemize}
     \item 第一部分负责解析提前编译好的 Loadable 文件，将权重、输入图像等数据导入内存，并指定输出图像的地址。
     \item 第二部分负责把任务发送给 KMD 执行。
 \end{itemize}
 
-在本小节将介绍如何在开发板卡上进行 UMD 应用程序的编译。
+在本小节将介绍在开发板卡上进行的 UMD 应用程序的改动与编译。
 
 \subsection{LIBJPEG 链接库编译}
 
 NVDLA 的 Runtime 可以接受 jpeg 格式文件的图片，但是需要提前编译好 LIBJPEG 的链接库。
 
-官方提供的64位处理器的 LIBJPEG 链接库无法在32位处理器上链接所以我们需要自行编译，本设计使用最新发行的 libjpeg9b，还需要更改 \emph{jconfig.h} 中的 \emph{JPEG\_LIB\_VERSION}的值为 90。
+官方提供的64位处理器的 LIBJPEG 链接库无法在32位处理器上链接，所以需要自行编译，本设计使用最新发行的 libjpeg9b，还需要更改 \emph{jconfig.h} 中的 \emph{JPEG\_LIB\_VERSION}的值为 90。
 
 \subsection{UMD 构建}
 
-将自行编译的 libjpeg.a 文件拷贝到项目中来，则可以进行 UMD 应用的编译，将 UMD 文件都拷贝到开发板卡的 Ubuntu 上，执行以下命令即可完成编译：
+将自行编译的 libjpeg.a 文件拷贝到项目中来，则可以进行 UMD 应用的编译，将源代码都拷贝到 Ubuntu 操作系统上，执行以下命令即可完成编译：
 
 \begin{lstlisting}
 cd ~/umd
@@ -305,11 +327,11 @@ export TOP=${PWD}
 make runtime TOOLCHAIN_PREFIX=/usr/bin/
 \end{lstlisting}
 
-完成编译后，会生成两个目录文件，分别为 runtime 的链接库与 runtime 的可执行文件。将 runtime 的链接库拷贝到 runtime 可执行文件路径下，runtime可执行文件才能被正常运行。
+完成编译后，会生成两个目录文件，分别为 runtime 的链接库与 runtime 的可执行文件。将 runtime 的链接库拷贝到 runtime 可执行文件路径下，runtime 可执行文件才能被正常运行。
 
 \subsection{Runtime 测试}
 
-一切准备完毕之后，可以使用 resnet-18 推理一副小猫的照片进行测试：
+使用 Resnet18-CIFAR10 推理一张小猫的照片进行测试，其输出信息如下：
 
 \begin{lstlisting}
 ./nvdla_runtime --loadable ~/resnet18-cifar10-caffe/loadables/fast-math.nvdla --image ~/resnet18-cifar10-caffe/Image/cat_32.jpg --rawdump
@@ -326,4 +348,4 @@ cat output.dimg
 0 0 0 99 26 0 0 0 0 0 
 \end{lstlisting}
 
-类别猫在 CIFAR10 数据集中的序号是3，分类正确，耗时 300 毫秒，这代表着软件栈能够正常工作。
+类别猫在 CIFAR10 数据集中的序号是3，分类正确，耗时 295 毫秒，这代表着软件设计能够正常工作。

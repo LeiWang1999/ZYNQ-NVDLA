@@ -52,77 +52,6 @@
 
 \lstset{language=Verilog}
 \begin{lstlisting}
-module NV_nvdla_wrapper(
-    input core_clk,
-    input csb_clk,
-    input rstn,
-    input csb_rstn,
-
-    output dla_intr,
-    // dbb AXI
-    output nvdla_core2dbb_aw_awvalid,
-    input nvdla_core2dbb_aw_awready,
-    output [7:0] nvdla_core2dbb_aw_awid,
-    output [3:0] nvdla_core2dbb_aw_awlen,
-    output [2:0] nvdla_core2dbb_aw_awsize,
-    output [64 -1:0] nvdla_core2dbb_aw_awaddr,
-    output nvdla_core2dbb_w_wvalid,
-    input nvdla_core2dbb_w_wready,
-    output [64 -1:0] nvdla_core2dbb_w_wdata,
-    output [64/8-1:0] nvdla_core2dbb_w_wstrb,
-    output nvdla_core2dbb_w_wlast,
-    output nvdla_core2dbb_ar_arvalid,
-    input nvdla_core2dbb_ar_arready,
-    output [7:0] nvdla_core2dbb_ar_arid,
-    output [3:0] nvdla_core2dbb_ar_arlen,
-    output [2:0] nvdla_core2dbb_ar_arsize,
-    output [64 -1:0] nvdla_core2dbb_ar_araddr,
-    input nvdla_core2dbb_b_bvalid,
-    output nvdla_core2dbb_b_bready,
-    input [7:0] nvdla_core2dbb_b_bid,
-    input nvdla_core2dbb_r_rvalid,
-    output nvdla_core2dbb_r_rready,
-    input [7:0] nvdla_core2dbb_r_rid,
-    input nvdla_core2dbb_r_rlast,
-    input [64 -1:0] nvdla_core2dbb_r_rdata,
-    output [1:0] m_axi_awburst,
-    output  m_axi_awlock, 
-    output [3:0] m_axi_awcache,
-    output [2:0] m_axi_awprot, 
-    output [3:0] m_axi_awqos,  
-    output  m_axi_awuser, 
-    output  m_axi_wuser,  
-    input  [1:0] m_axi_bresp,
-    input   m_axi_buser,
-    output [1:0] m_axi_arburst,
-    output  m_axi_arlock, 
-    output [3:0] m_axi_arcache,
-    output [2:0] m_axi_arprot, 
-    output [3:0] m_axi_arqos,  
-    output  m_axi_aruser, 
-    input  [1:0] m_axi_rresp,
-    input   m_axi_ruser,
-    // cfg APB
-    input psel,
-    input penable,
-    input pwrite,
-    input [31:0] paddr,
-    input [31:0] pwdata,
-    output [31:0] prdata,
-    output pready,
-    output pslverr
-    );
-
-    wire        m_csb2nvdla_valid;
-    wire        m_csb2nvdla_ready;
-    wire [15:0] m_csb2nvdla_addr;
-    wire [31:0] m_csb2nvdla_wdat;
-    wire        m_csb2nvdla_write;
-    wire        m_csb2nvdla_nposted;
-    wire        m_nvdla2csb_valid;
-    wire [31:0] m_nvdla2csb_data;
-
-
     NV_NVDLA_apb2csb apb2csb (
         .pclk                  (csb_clk)
         ,.prstn                 (csb_rstn)
@@ -142,8 +71,6 @@ module NV_nvdla_wrapper(
         ,.prdata                (prdata)
         ,.pready                (pready)
     );
-
-
     NV_nvdla nvdla_top (
         .dla_core_clk                    (core_clk)
         ,.dla_csb_clk                     (csb_clk)
@@ -192,10 +119,8 @@ module NV_nvdla_wrapper(
         ,.nvdla_pwrbus_ram_o_pd           (32'b0)
         ,.nvdla_pwrbus_ram_a_pd           (32'b0)
     ); // nvdla_top
-
 assign nvdla_core2dbb_aw_awsize = 3'b011;
 assign nvdla_core2dbb_ar_arsize = 3'b011;
-
 assign m_axi_awburst = 2'b01;
 assign m_axi_awlock  = 1'b0;
 assign m_axi_awcache = 4'b0010;
@@ -209,9 +134,7 @@ assign m_axi_arcache = 4'b0010;
 assign m_axi_arprot  = 3'h0;
 assign m_axi_arqos   = 4'h0;
 assign m_axi_aruser  = 'b1;
-
 assign pslverr = 1'b0;
-
 endmodule
 \end{lstlisting}
 
@@ -392,136 +315,3 @@ S = "${WORKDIR}"
 \end{lstlisting}
 
 \section{Lenet5-MNIST.prototxt}
-
-\begin{lstlisting}
-name: "LeNet"
-layer {
-  name: "data"
-  type: "Input"
-  top: "data"
-  input_param { shape: { dim: 1 dim: 1 dim: 28 dim: 28 } }
-}
-layer {
-  name: "conv1"
-  type: "Convolution"
-  bottom: "data"
-  top: "conv1"
-  param {
-    lr_mult: 1
-  }
-  param {
-    lr_mult: 2
-  }
-  convolution_param {
-    num_output: 20
-    kernel_size: 5
-    stride: 1
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
-  }
-}
-layer {
-  name: "pool1"
-  type: "Pooling"
-  bottom: "conv1"
-  top: "pool1"
-  pooling_param {
-    pool: MAX
-    kernel_size: 2
-    stride: 2
-  }
-}
-layer {
-  name: "conv2"
-  type: "Convolution"
-  bottom: "pool1"
-  top: "conv2"
-  param {
-    lr_mult: 1
-  }
-  param {
-    lr_mult: 2
-  }
-  convolution_param {
-    num_output: 50
-    kernel_size: 5
-    stride: 1
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
-  }
-}
-layer {
-  name: "pool2"
-  type: "Pooling"
-  bottom: "conv2"
-  top: "pool2"
-  pooling_param {
-    pool: MAX
-    kernel_size: 2
-    stride: 2
-  }
-}
-layer {
-  name: "ip1"
-  type: "InnerProduct"
-  bottom: "pool2"
-  top: "ip1"
-  param {
-    lr_mult: 1
-  }
-  param {
-    lr_mult: 2
-  }
-  inner_product_param {
-    num_output: 500
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
-  }
-}
-layer {
-  name: "relu1"
-  type: "ReLU"
-  bottom: "ip1"
-  top: "ip1"
-}
-layer {
-  name: "ip2"
-  type: "InnerProduct"
-  bottom: "ip1"
-  top: "ip2"
-  param {
-    lr_mult: 1
-  }
-  param {
-    lr_mult: 2
-  }
-  inner_product_param {
-    num_output: 10
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
-  }
-}
-layer {
-  name: "prob"
-  type: "Softmax"
-  bottom: "ip2"
-  top: "prob"
-}
-\end{lstlisting}
-
