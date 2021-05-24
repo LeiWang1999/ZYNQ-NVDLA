@@ -35,7 +35,7 @@
 \begin{enumerate}
     \item 使用 Caffe 预训练模型得到 Caffemodel 文件。
     \item 使用 Netron 将 Caffemodel 文件内部的权重参数导出为二进制文件。
-    \item 由加速器设计神经网络结构，并进行推理。
+    \item 根据加速器在软件端配置网络、载入数据，并进行推理。
 \end{enumerate}
 
 针对仅有三层卷积层，两层全连接层的 Lenet5 网络来说，配置的过程已经十分复杂，更不用说设计包含残差结构的 Resnet 网络。由此可以看出，硬件加速器被设计出来只是第一步，还需要构建完整的软件栈体系。

@@ -72,8 +72,6 @@ where options include:
     --rawdump             dump raw dimg data
 \end{lstlisting}
 
-Compiler 的编译过程较简单，本设计不多介绍，Runtime 的构建过程非常复杂，将在后面的章节详细介绍。
-
 \section{Caffe 与模型训练}
 
 本设计使用 Caffe 在服务器端训练了三个深度神经网络，其验证精度如表~\ref{tab:Vertification}所示。
@@ -121,12 +119,14 @@ TensorRT 选择的量化方法是 KL-divergence，即转化为最小化相对熵
 
 \subsection{量化步骤与精度损失}
 
-使用 TensorRT 进行量化的宏观处理流程如下，首先准备一个校准数据集，然后对每一层进行 Float32 的推理，之后依次：
+使用 TensorRT 进行量化\cite{周阳2020神经网络参数压缩和推断加速方法的研究}过程如下：
 
 \begin{enumerate}
-    \item 收集激活值的直方图;
-    \item 基于不同的阀址产生不同的量化分布；
-    \item 然后计算每个分布与原分布的相对熵，然后选择熵最小的一个，也就是跟原分布最像的一个;
+    \item 准备一个校准数据集;
+    \item 每一层进行 Float32 的推理;
+    \item 输入采样图片，收集激活值的直方图;
+    \item 基于不同的阈值产生不同的量化分布；
+    \item 计算每个分布与原分布的相对熵，选择熵最小的参数;
 \end{enumerate}
 
 校准是核心部分，校准数据集可以从训练集或者验证集中采样，本设计选择从验证集中进行采样方便对比精度损失情况，关于采样多少张图片，英伟达官方建议采样 500 到 1000 张图片。
@@ -185,20 +185,7 @@ TensorRT 选择的量化方法是 KL-divergence，即转化为最小化相对熵
 
 \subsection{Petalinux 工具介绍}
 
-Xilinx Petalinux 是一个定制版的 Yocto 工具，包括了 Linux Kernel、u-boot、device-tree、rootfs等源码、库，可以让客户很方便的生成、配置、编译及自定义。Petalinux支持Zynq UltraScale+ MPSoC、Zynq-7000全可编程SoC，以及MicroBlaze，可与Xilinx硬件设计工具Vivado协同工作，大大简化了Linux系统的开发工作。
-
-使用 PetaLinux 工具，开发人员可以定制 u-boot、Linux 内核或 Linux 应用，开发者还可以通过网络或 JTAG 在随附的全系统仿真器 (QEMU) 或物理硬件上添加新的内核、器件驱动程序、应用和库，以及启动并测试软件协议栈，完成从系统启动到执行的所有操作。在主机端提供的 PetaLinux 工具包括：
-
-\begin{itemize}
-    \item 命令行界面
-    \item 应用、器件驱动程序、库生成器以及开发模板
-    \item 可引导的系统镜像生成器
-    \item 调试代理程序
-    \item GCC 工具集
-    \item 集成的 QEMU 全系统仿真器
-    \item 自动化工具
-    \item 支持 Xilinx 系统调试器
-\end{itemize}
+Xilinx Petalinux 是一个定制版的 Yocto 工具，包括了 Linux Kernel、u-boot、device-tree、rootfs等源码，可以很方便的生成、配置、编译及自定义 Linux。对于 ZYNQ 7000+，基于 Petalinux 能够极大缩短移植 Linux 的周期，本设计使用 Petalinux 的命令行工具完成了硬件配置的解析，将 Vivado 中添加的 NVDLA 设计新增到了设备树中并分配内存，生成了基于 Linux Kernel 4.19 版本的 Linux 镜像文件，编译了 NVDLA 的驱动程序。
 
 \subsection{针对硬件设计的启动文件制作}
 
@@ -253,7 +240,7 @@ BOOT.BIN 与 IMAGE.ub 文件以及 ROOTFS 将会在目录下生成。
 
 其中，BOOT 分区格式为 FAT32，用来存储 BOOT.BIN 和 IMAGE.ub 文件，ROOTFS 需要的空间较大，用来存储根文件系统，WorkSpace 可有可无，我们使用他作为一个外置的存储，来存储一些数据。根据 Petalinux 的用户手册，BOOT 和 ROOTFS 需要严格在第一分区与第二分区。
 
-本设计不采用 Petalinux 自己生成的根文件系统，使用 \emph{ubuntu-16.04.2-minimal-armhf-2017-06-18} 作为根文件系统，将其解压到 rootfs 分区，再将 BOOT.BIN 与 IMAGE.ub 文件拷贝到 BOOT 分区，将 SD 卡插入开发板则 Linux 操作系统移植过程结束。
+本设计不采用 Petalinux 自己生成的根文件系统，使用 \emph{ubuntu-16.04.2-minimal-armhf-2017-06-18} 作为根文件系统，覆盖由 Petalinux 产生的原生文件系统。把文件存入 SD 卡对应的分区，插入开发板则 Linux 操作系统移植过程结束。
 
 \section{KMD 内核程序挂载}
 

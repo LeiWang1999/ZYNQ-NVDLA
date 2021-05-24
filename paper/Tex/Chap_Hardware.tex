@@ -4,13 +4,13 @@
 
 \section{Xilinx FPGA 设计套件}
 
-在上一章节中提到，本设计选用的芯片信号为 XC7Z045-2FFG900I，其为著名的 FPGA 供应厂商 Xilinx 研发。Xilinx 提供了非常完整的可编程逻辑开发软件工具链，及 Vivado 设计套件，使用该套件可以将我们的 Verilog 文件封装成知识产权 IP，进行硬件电路的仿真，生成比特流与硬件描述文件等功能。使用 ZYNQ 器件，也需要我们在 Vivado 的 BlockDesign 页面中分配 ARM 处理器使用到的资源。除此之外，Vivado 设计套件还包括了开发 ARM 裸机的 Vivado SDK、能够基于 LLVM 将 C$\backslash$C++ 程序转换为底层逻辑电路的 Vivado HLS 等应用。
+在上一章节中提到，本设计选用的芯片信号为 XC7Z045-2FFG900I，该芯片由 Xilinx 公司供应。Xilinx 提供了非常完整的可编程逻辑开发软件工具链，及 Vivado 设计套件，使用该套件可以将我们的 Verilog 文件封装成知识产权 IP，进行硬件电路的仿真，生成比特流与硬件描述文件等功能。使用 ZYNQ 器件，也需要我们在 Vivado 的 BlockDesign 页面中分配 ARM 处理器使用到的资源。除此之外，Vivado 设计套件还包括了开发 ARM 裸机的 Vivado SDK、能够基于 LLVM 将 C$\backslash$C++ 程序转换为底层逻辑电路的 Vivado HLS 等应用。
 
 本章节将说明如何使用 Vivado 设计套件完成 NVDLA IP 的打包，Block Design 设计，查看资源利用、时序、功耗等报告，最后生成比特流文件与硬件描述文件。 
 
 \section{NVDLA 硬件设计概述}
 
-NVDLA 是 NVIDIA 公司在2017年年末公布并且开源的，遗憾的是该项目自公布完成一年后便草草停止了维护。NVDLA 是一款模块化、可配置的神经网络推理加速器框架。通过核心MAC阵列、与查找表逻辑，NVDLA 可以支持深度神经网络算子，已经支持的有：
+NVDLA 由 NVIDIA 公司在2017年年末公布并且开源，遗憾的是该项目自公布完成一年后便草草停止了维护。NVDLA 是一款模块化、可配置的神经网络推理加速器框架。通过核心MAC阵列、与查找表逻辑，NVDLA 可以支持深度神经网络算子，已经支持的有：
 
 \begin{itemize}
     \item 卷积运算
@@ -98,27 +98,7 @@ NVDLA 在外侧暴露出四个接口，它们分别是 CSB 总线，主存储接
 
 \subsection{RAM 优化}
 
-由于 NVDLA 是面向 ASIC 设计，内部 RAM 的 Verilog 代码是结构级描述，这意味着在例化 RAM 的时候会消耗大量 FPGA 片上珍贵的 LUT 资源，此时对其综合，资源利用率情况表~\ref{tab:Resource Report Before}所示。会导致浪费极多的 LUT 资源，所以在导入之前本设计将所有的 RAM 替换成 FPGA 内部的 Block RAM 以减小 LUT 的开销，提高运行速度。
-
-\begin{table}[!htbp]
-    \caption{优化之前的资源利用率}
-    \label{tab:Resource Report Before}
-    \centering
-    \footnotesize% fontsize
-    \setlength{\tabcolsep}{4pt}% column separation
-    \renewcommand{\arraystretch}{1.2}%row space 
-    \begin{tabular}{llll}
-        \toprule
-        \textbf{RESOURCE} & \textbf{UTILIZATION} & \textbf{AVAILABLE} & \textbf{Utilization \%} \\
-        \midrule
-        LUT               & 421698               & 218600               & 192.91                  \\
-        LUTRAM            & 8                    & 70400                & 0.01                    \\
-        FF                & 92622                & 437200               & 22.33                   \\
-        DSP               & 33                   & 900                  & 3.67                    \\
-        BUFG              & 12                   & 32                   & 37.5                    \\
-        \bottomrule                   
-    \end{tabular}
-\end{table}
+由于 NVDLA 是面向 ASIC 设计，内部 RAM 的 Verilog 代码是结构级描述，这意味着在例化 RAM 的时候会消耗大量 FPGA 片上珍贵的 LUT 资源，此时对其综合会导致浪费极多的 LUT 资源，所以在导入之前本设计将所有的 RAM 替换成 FPGA 内部的 Block RAM 以减小 LUT 的开销，提高运行速度。
 
 替换 RAM 的方法也有两种，其一是例化 Vivado 设计免费提供的 BRAM Controller IP，但是 NVDLA 使用到的 RAM IP 过于繁杂，替换工作量巨大，第二是使用官方提供的行为级描述的 Verilog RAM 模块代码，本设计使用第二种。
 
@@ -140,14 +120,14 @@ NVDLA 在外侧暴露出四个接口，它们分别是 CSB 总线，主存储接
 
 在 Vivado 设计中，新建一个 wrapper 文件，命名为 \emph{Nv\_nvdla\_wrapper.v} ，部分内容见附录。在其中例化了 \emph{NV\_nvdla} 与 \emph{NV\_NVDLA\_apb2csb} 两个电路，并且补全了 AXI 总线与 APB 总线缺失的信号线，方便在后期 IP Package 阶段自动推导封装总线接口。
 
-为了方便之后 BlockDesign 中连线，也为了给 APB 总线挂上 Address Block，在 IP Package 阶段，我们需要 AXI 和 APB 总线进行包装，由于先前已经补全的信号线，这里我们让 Vivado 自动推导，包装完成后的 IP 核如图~\ref{fig:NVDLA Wrapper}所示。
-
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{dla_wrapper}
     \caption{NVDLA Wrapper IP}
     \label{fig:NVDLA Wrapper}
 \end{figure}
+
+为了方便之后 BlockDesign 中连线，也为了给 APB 总线挂上 Address Block，在 IP Package 阶段，我们需要 AXI 和 APB 总线进行包装，由于先前已经补全的信号线，这里我们让 Vivado 自动推导，包装完成后的 IP 核如图~\ref{fig:NVDLA Wrapper}所示。
 
 在 IP Package 阶段，AXI 的 Memory Block 会自行分配，这样在进行 Block Design 的时候 Vivado 会自动分配地址完成内存映射。但是 APB 总线的 Memory Block 需要自行添加，在本设计中，为 APB 总线分配了 4KB 大小的寻址空间。
 
@@ -161,6 +141,9 @@ NVDLA 在外侧暴露出四个接口，它们分别是 CSB 总线，主存储接
     \caption{Block Design Connect}
     \label{fig:Block Design Connect}
 \end{figure}
+
+NVDLA 有两个工作时钟，csb\_clk 与 core\_clk，分别用于读写寄存器与加速器工作，这会使 NVDLA 变为一个异步电路，难以进行静态时序分析。根据分析，时序问题主要产生在 core\_clk 之中，所以本设计将 csb\_clk 与 core\_clk 短接，使之变为同步电路，方便进行时序分析。
+
 
 \subsection{APB to AXI Bridge}
 
@@ -180,7 +163,7 @@ ZYNQ 7000+ 的 IP 如图~\ref{fig:ZYNQ 7000+}所示，在本设计中，启用�
     \item 以太网接口（Ethernet0），在软件设计章节，本文将在 SOC 上构建 Linux 操作系统，使能以太网接口可以使板卡通过以太网线访问互联网，方便开发与调试。
     \item SD卡接口（SD0），用来存放 Linux 操作系统的 BOOT 与 IMAGE 文件。
     \item 串口（UART0），用来实现串口终端，方便调试。
-    \item FCLK\_CLK0，输出时钟，该时钟可以作为可编程逻辑端的输入时钟，这样不需要额外对片外的时钟输入做约束，在本设计中该时钟取 100Mhz，有关 100Mhz 的取值，详见综合报告。
+    \item FCLK\_CLK0，输出时钟，该时钟可以作为可编程逻辑端的输入时钟，这样不需要额外对片外的时钟输入做约束，在本设计中该时钟取 100Mhz，有关 100Mhz 的取值，详见第六章测试与分析。
 \end{itemize}
 
 \begin{figure}[!htbp]
@@ -189,96 +172,6 @@ ZYNQ 7000+ 的 IP 如图~\ref{fig:ZYNQ 7000+}所示，在本设计中，启用�
     \caption{ZYNQ 7000+ block diagram}
     \label{fig:ZYNQ 7000+}
 \end{figure}
-
-\section{资源利用率}
-
-硬件设计完成之后，首先需要经过综合，综合阶段主要查看资源利用率情况，如表~\ref{tab:Resource Report}，确保资源足够。此外，Vivado 还会构建出理想的时钟树，给出理想的 Timing 和功耗报告。但综合阶段的数字电路设计没有映射到实际的物理器件上，这部分分析将在 综合阶段完成。
-
-\begin{table}[!htbp]
-    \caption{资源利用率报告}
-    \label{tab:Resource Report}
-    \centering
-    \footnotesize% fontsize
-    \setlength{\tabcolsep}{4pt}% column separation
-    \renewcommand{\arraystretch}{1.2}%row space 
-    \begin{tabular}{llll}
-        \toprule
-        \textbf{RESOURCE} & \textbf{UTILIZATION} & \textbf{AVAILABLE} & \textbf{Utilization \%} \\
-        \midrule
-        LUT               & 80293                & 218600               & 36.73                   \\
-        LUTRAM            & 1015                 & 70400                & 1.44                    \\
-        FF                & 92678                & 437200               & 21.20                   \\
-        BRAM              & 95                   & 545                  & 17.43                   \\
-        DSP               & 42                   & 900                  & 4.67                    \\
-        BUFG              & 1                    & 32                   & 3.13                    \\
-        \bottomrule                   
-    \end{tabular}
-\end{table}
-
-\section{静态时序与功耗分析}
-
-实现是紧接着综合，在这个过程中会进行布局布线。综合后生成的门级网表只是表示了门与门之前虚拟的连接关系，并没有规定每个门的位置以及连线的长度等，布局布线就是将门级网表中的门的位置与连线信息确定下来的过程。
-
-综合阶段和实现阶段都会给出 Timing 和功耗报告，但综合时期由 Vivado 给出的报告建立的是中树是理想时钟树，而实现阶段会引入实际布线延迟，建立真正的时钟树，这会导致同样的设计在不同的 FPGA 开发板上能够工作的实际最大频率不同。这一小节分析将对 Timing 报告与功耗报告。
-
-至于适宜给 NVDLA 工作的最大频率，将在第六章测试与分析进行分析。
-
-\subsection{Timing 报告分析}
-
-静态时序分析（Static Timing Analysis，STA）的基本功能是对设计电路的时序进行检查。时序检查是指建立时间与保持时间检查：
-\begin{itemize}
-    \item 建立时间检查是用来保证数据可以在给定时钟周期内到达触发器。
-    \item 保持时间检查是用来保证数据在被触发器采样后还能保持一定时间，即保证触发器不要漏采数据。
-\end{itemize}
-
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=0.4\textwidth]{SetupAndHold.png}
-    \caption{Setup 和 Hold 示例}
-    \label{fig:Setup and Hold}
-\end{figure}
-
-一个数字电路中只要存在环路边界，就会存在理论上的最大工作频率。时序检查的目的都是为了保证触发器可以发送并且采样到正确的数据，确保电路输入的时钟频率在理论的最大频率之下。
-
-NVDLA 有两个工作时钟，csb\_clk 与 core\_clk，分别用于读写寄存器与加速器工作，这会使 NVDLA 变为一个异步电路，难以进行静态时序分析。根据分析，时序问题主要产生在 core\_clk 之中，所以本设计将 csb\_clk 与 core\_clk 短接，使之变为同步电路，方便进行时序分析。
-
-首先将 10Mhz 的时钟接入 NVDLA，实现之后的 Timing 报告如表~\ref{tab:10Mhz Timing}所示，其中 Slack 指的是建立时间与到达时间的差值，如果整个设计的 Slack 存在负值，则就存在部分寄存器无法获取到数据，电路无法正常工作。从该表中可以看出，对于 Setup Slack，设计的关键路径保有 88.126 ns 的余量，而关键路径的 Hold Slack 只有 0.030 ns 的余量，不存在负数，电路可以正常工作。
-
-\begin{table}[!htbp]
-    \caption{10 Mhz Timing报告}
-    \label{tab:10Mhz Timing}
-    \centering
-    \footnotesize% fontsize
-    \setlength{\tabcolsep}{4pt}% column separation
-    \renewcommand{\arraystretch}{1.2}%row space 
-    \begin{tabular}{llll}
-        \toprule
-        \textbf{Frequency}        & \textbf{Worst Setup Slack}    & \textbf{Worst Hold Slack}    & \textbf{Total Negative Slack} \\
-        \midrule
-        \multicolumn{1}{c}{10Mhz} & \multicolumn{1}{c}{88.126 ns} & \multicolumn{1}{c}{0.030 ns} & \multicolumn{1}{c}{0.000 ns} \\
-        \bottomrule                   
-    \end{tabular}
-\end{table}
-
-\subsection{功耗报告分析}
-
-对于工作在 10 Mhz 下的 NVDLA，功耗报告如表~\ref{tab:10Mhz Power}所示，其中动态功耗占比较大，静态功耗占比较小。
-
-\begin{table}[!htbp]
-    \caption{10 Mhz Power报告}
-    \label{tab:10Mhz Power}
-    \centering
-    \footnotesize% fontsize
-    \setlength{\tabcolsep}{4pt}% column separation
-    \renewcommand{\arraystretch}{1.2}%row space 
-    \begin{tabular}{llll}
-        \toprule
-        \textbf{Frequency}        & \textbf{Total Power}       & \textbf{Static Power}            & \textbf{Dynamic Power}           \\
-        \midrule
-        \multicolumn{1}{c}{10Mhz} & \multicolumn{1}{c}{1.805W} & \multicolumn{1}{c}{0.220W(12.2\%)} & \multicolumn{1}{c}{1.585W(87.8\%)} \\
-        \bottomrule                   
-    \end{tabular}
-\end{table}
 
 % \section{Bitstream 与 hdf 文件生成}
 
