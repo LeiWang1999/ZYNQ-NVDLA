@@ -264,6 +264,7 @@ NvDlaError createImageCopy(const TestAppArgs* appArgs, const NvDlaImage* in, con
 //                    *outp = char(*inp); // no normalization happens
                     // compress the image from [0-255] to [0-127]
                     *outp = static_cast<NvS8>(std::floor((*inp * 127.0/255.0) + 0.5f));
+//                    std::cout << (int)*inp << " -> " << (int)*outp << std::endl;
                 }
             }
         }
