@@ -1,0 +1,157 @@
+creating new runtime context...
+Emulator starting
+dlaimg height: 32 x 32 x 3: LS: 256 SS: 0 Size: 8192
+submitting tasks...
+idx 1 : Work Found!
+Work Done
+runtime execution time = 71240 us 
+idx 2 : Work Found!
+Work Done
+runtime execution time = 43106 us 
+idx 3 : Work Found!
+Work Done
+runtime execution time = 35535 us 
+idx 4 : Work Found!
+Work Done
+runtime execution time = 35567 us 
+idx 5 : Work Found!
+Work Done
+runtime execution time = 35588 us 
+idx 6 : Work Found!
+Work Done
+runtime execution time = 35535 us 
+idx 7 : Work Found!
+Work Done
+runtime execution time = 35553 us 
+idx 8 : Work Found!
+Work Done
+runtime execution time = 35564 us 
+idx 9 : Work Found!
+Work Done
+runtime execution time = 35604 us 
+idx 10 : Work Found!
+Work Done
+runtime execution time = 35561 us 
+idx 11 : Work Found!
+Work Done
+runtime execution time = 35949 us 
+idx 12 : Work Found!
+Work Done
+runtime execution time = 35592 us 
+idx 13 : Work Found!
+Work Done
+runtime execution time = 35564 us 
+idx 14 : Work Found!
+Work Done
+runtime execution time = 35595 us 
+idx 15 : Work Found!
+Work Done
+runtime execution time = 35696 us 
+idx 16 : Work Found!
+Work Done
+runtime execution time = 35638 us 
+idx 17 : Work Found!
+Work Done
+runtime execution time = 35753 us 
+idx 18 : Work Found!
+Work Done
+runtime execution time = 35984 us 
+idx 19 : Work Found!
+Work Done
+runtime execution time = 35704 us 
+idx 20 : Work Found!
+Work Done
+runtime execution time = 35685 us 
+idx 21 : Work Found!
+Work Done
+runtime execution time = 35647 us 
+idx 22 : Work Found!
+Work Done
+runtime execution time = 35951 us 
+idx 23 : Work Found!
+Work Done
+runtime execution time = 35747 us 
+idx 24 : Work Found!
+Work Done
+runtime execution time = 35656 us 
+idx 25 : Work Found!
+Work Done
+runtime execution time = 35748 us 
+idx 26 : Work Found!
+Work Done
+runtime execution time = 35637 us 
+idx 27 : Work Found!
+Work Done
+runtime execution time = 36109 us 
+idx 28 : Work Found!
+Work Done
+runtime execution time = 35675 us 
+idx 29 : Work Found!
+Work Done
+runtime execution time = 35705 us 
+idx 30 : Work Found!
+Work Done
+runtime execution time = 35701 us 
+idx 31 : Work Found!
+Work Done
+runtime execution time = 36469 us 
+idx 32 : Work Found!
+Work Done
+runtime execution time = 35686 us 
+idx 33 : Work Found!
+Work Done
+runtime execution time = 35634 us 
+idx 34 : Work Found!
+Work Done
+runtime execution time = 35643 us 
+idx 35 : Work Found!
+Work Done
+runtime execution time = 35615 us 
+idx 36 : Work Found!
+Work Done
+runtime execution time = 36295 us 
+idx 37 : Work Found!
+Work Done
+runtime execution time = 35810 us 
+idx 38 : Work Found!
+Work Done
+runtime execution time = 35682 us 
+idx 39 : Work Found!
+Work Done
+runtime execution time = 36224 us 
+idx 40 : Work Found!
+Work Done
+runtime execution time = 41155 us 
+idx 41 : Work Found!
+Work Done
+runtime execution time = 34978 us 
+idx 42 : Work Found!
+Work Done
+runtime execution time = 34972 us 
+idx 43 : Work Found!
+Work Done
+runtime execution time = 34965 us 
+idx 44 : Work Found!
+Work Done
+runtime execution time = 34985 us 
+idx 45 : Work Found!
+Work Done
+runtime execution time = 34802 us 
+idx 46 : Work Found!
+Work Done
+runtime execution time = 34815 us 
+idx 47 : Work Found!
+Work Done
+runtime execution time = 35258 us 
+idx 48 : Work Found!
+Work Done
+runtime execution time = 35091 us 
+idx 49 : Work Found!
+Work Done
+runtime execution time = 34419 us 
+idx 50 : Work Found!
+Work Done
+runtime execution time = 34389 us 
+Total execute time = 1.82648e+06 us 36529.5 us / per image
+Shutdown signal received, exiting
+Test pass
