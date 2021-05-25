@@ -1,6 +1,6 @@
 \chapter{硬件设计实现}\label{chap:hardware}
 
-本章节将介绍基于 Xilinx Vivado 设计套件的系统的硬件设计实现，Xilinx Vivado 设计套件的开发流程包括四个步骤：设计、综合、实现、生成。在设计阶段，本章详细阐述了 NVDLA 的 RTL 代码生成方法，将 NVDLA 进行了高度的封装，以便能够在 Vivado 中进行 BlockDesign 设计；在综合阶段，分析了 NVDLA 的资源利用率；在实现阶段，分析了 NVDLA 的时序与功耗信息。
+本章节将介绍基于 Xilinx Vivado 设计套件的系统的硬件设计实现，Xilinx Vivado 设计套件的开发流程包括四个步骤：设计、综合、实现、生成。在设计阶段，本章详细阐述了 NVDLA 的 RTL 代码生成方法，将 NVDLA 进行了部分优化与高度的封装，以便能够在 Vivado 中进行 BlockDesign 设计。
 
 \section{Xilinx FPGA 设计套件}
 
@@ -151,18 +151,19 @@ NVDLA 有两个工作时钟，csb\_clk 与 core\_clk，分别用于读写寄存�
 
 \subsection{AXI Smart Connect}
 
-Axi Smart Connect 的作用是用来自动配置 AXI 设备的内存映射，与 Axi InterConnect 的作用是一样的，但是 Smart Connect 更紧密的嵌入到了 Vivado 内部，不需要用户太多的干涉。
+Axi Smart Connect 的作用是自动配置 AXI 设备的内存映射，与 Axi InterConnect 的作用是一样的，但是 Smart Connect 更紧密的嵌入到了 Vivado 内部，不需要用户太多的干涉。
 
-在本设计中用到了两个 Smart Connect ，其中一个是将 ZYNQ 的 AXI Master 接入了 NVDLA 的控制总线，以便通过内存映射机制读写 NVDLA 的寄存器；另一个将 NVDLA 的主内存接口接入了 ZYNQ 的 AXI Slave，这样就可以 NVDLA 就可以访问挂在在 ARM 侧的 DDR 存储，与处理器共用内存，处理器可以通过硬件 DMA 搬移数据，加快访存速度。
+在本设计中用到了两个 Smart Connect ，其中一个是将 ZYNQ 的 AXI Master 接入了 NVDLA 的控制总线，以便通过内存映射机制读写 NVDLA 的寄存器；另一个将 NVDLA 的主内存接口接入了 ZYNQ 的 AXI Slave，以便 NVDLA 访问挂在在 ARM 侧的 DDR 存储，与处理器共用内存，处理器可以通过硬件 DMA 搬移数据，加快访存速度。
 
 \subsection{ZYNQ 7000+ AP SOC}
 
-ZYNQ 7000+ 的 IP 如图~\ref{fig:ZYNQ 7000+}所示，在本设计中，启用了如下资源：
+ZYNQ 7000+ 的 IP 如图~\ref{fig:ZYNQ 7000+}所示，本设计中使用到了如下资源：
 
 \begin{itemize}
     \item 以太网接口（Ethernet0），在软件设计章节，本文将在 SOC 上构建 Linux 操作系统，使能以太网接口可以使板卡通过以太网线访问互联网，方便开发与调试。
     \item SD卡接口（SD0），用来存放 Linux 操作系统的 BOOT 与 IMAGE 文件。
     \item 串口（UART0），用来实现串口终端，方便调试。
+    \item 快速中断请求，用来接受由 NVDLA 产生的处理完成中断信号。
     \item FCLK\_CLK0，输出时钟，该时钟可以作为可编程逻辑端的输入时钟，这样不需要额外对片外的时钟输入做约束，在本设计中该时钟取 100Mhz，有关 100Mhz 的取值，详见第六章测试与分析。
 \end{itemize}
 
