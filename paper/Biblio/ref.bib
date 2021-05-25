@@ -3,6 +3,147 @@
 %-                             Bibliography                                -%
 %-                                                                         -%
 %---------------------------------------------------------------------------%
+
+@inproceedings{118698,
+  author    = {Holler and Tam and Castro and Benson},
+  booktitle = {International 1989 Joint Conference on Neural Networks},
+  title     = {An electrically trainable artificial neural network (ETANN) with 10240 'floating gate' synapses},
+  year      = {1989},
+  volume    = {},
+  number    = {},
+  pages     = {191-196 vol.2},
+  doi       = {10.1109/IJCNN.1989.118698}
+}
+
+@inproceedings{5726581,
+  author    = {Hammerstrom, D.},
+  booktitle = {1990 IJCNN International Joint Conference on Neural Networks},
+  title     = {A VLSI architecture for high-performance, low-cost, on-chip learning},
+  year      = {1990},
+  volume    = {},
+  number    = {},
+  pages     = {537-544 vol.2},
+  doi       = {10.1109/IJCNN.1990.137621}
+}
+
+@inproceedings{714364,
+  author    = {Viredaz, M.A. and Ienne, P.},
+  booktitle = {Proceedings of 1993 International Conference on Neural Networks (IJCNN-93-Nagoya, Japan)},
+  title     = {MANTRA I: a systolic neuro-computer},
+  year      = {1993},
+  volume    = {3},
+  number    = {},
+  pages     = {3054-3057 vol.3},
+  doi       = {10.1109/IJCNN.1993.714364}
+}
+
+@article{人工神经网络硬件化途径与神经计算机研究,
+  journal = {深圳大学学报},
+  pages = {8-13},
+  volume = {1},
+  number = {6},
+  title = {人工神经网络硬件化途径与神经计算机研究},
+  year = {1997},
+  author    = {王守觉,鲁华祥,陈向东,曾玉娟},
+  keywords = {神经网络;神经计算机;人工智能},
+  abstract = {讨论了人工神经网络硬件化实现的途径和意义，提出对通用神经计算机性能的原则要求．在此原则指引下研制的小型神经计算机（预言神１号），具有灵活性强，使用方便，每秒模拟２×１０７次神经联结计算，并且有在计算过程中随时变更网络拓扑结构和神经元非线性函数的功能，文中讨论了它的适用范围和性能价格比问题．}
+}
+
+@article{10.1145/2654822.2541967,
+  author     = {Chen, Tianshi and Du, Zidong and Sun, Ninghui and Wang, Jia and Wu, Chengyong and Chen, Yunji and Temam, Olivier},
+  title      = {DianNao: A Small-Footprint High-Throughput Accelerator for Ubiquitous Machine-Learning},
+  year       = {2014},
+  issue_date = {March 2014},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {42},
+  number     = {1},
+  issn       = {0163-5964},
+  url        = {https://doi.org/10.1145/2654822.2541967},
+  doi        = {10.1145/2654822.2541967},
+  abstract   = {Machine-Learning tasks are becoming pervasive in a broad range of domains, and in a broad range of systems (from embedded systems to data centers). At the same time, a small set of machine-learning algorithms (especially Convolutional and Deep Neural Networks, i.e., CNNs and DNNs) are proving to be state-of-the-art across many applications. As architectures evolve towards heterogeneous multi-cores composed of a mix of cores and accelerators, a machine-learning accelerator can achieve the rare combination of efficiency (due to the small number of target algorithms) and broad application scope.Until now, most machine-learning accelerator designs have focused on efficiently implementing the computational part of the algorithms. However, recent state-of-the-art CNNs and DNNs are characterized by their large size. In this study, we design an accelerator for large-scale CNNs and DNNs, with a special emphasis on the impact of memory on accelerator design, performance and energy.We show that it is possible to design an accelerator with a high throughput, capable of performing 452 GOP/s (key NN operations such as synaptic weight multiplications and neurons outputs additions) in a small footprint of 3.02 mm2 and 485 mW; compared to a 128-bit 2GHz SIMD processor, the accelerator is 117.87x faster, and it can reduce the total energy by 21.08x. The accelerator characteristics are obtained after layout at 65 nm. Such a high throughput in a small footprint can open up the usage of state-of-the-art machine-learning algorithms in a broad set of systems and for a broad set of applications.},
+  journal    = {SIGARCH Comput. Archit. News},
+  month      = feb,
+  pages      = {269–284},
+  numpages   = {16},
+  keywords   = {memory, accelerator, neural networks}
+}
+
+
+@inproceedings{7011421,
+  author    = {Chen, Yunji and Luo, Tao and Liu, Shaoli and Zhang, Shijin and He, Liqiang and Wang, Jia and Li, Ling and Chen, Tianshi and Xu, Zhiwei and Sun, Ninghui and Temam, Olivier},
+  booktitle = {2014 47th Annual IEEE/ACM International Symposium on Microarchitecture},
+  title     = {DaDianNao: A Machine-Learning Supercomputer},
+  year      = {2014},
+  volume    = {},
+  number    = {},
+  pages     = {609-622},
+  doi       = {10.1109/MICRO.2014.58}
+}
+
+@article{10.1145/2786763.2694358,
+  author     = {Liu, Daofu and Chen, Tianshi and Liu, Shaoli and Zhou, Jinhong and Zhou, Shengyuan and Teman, Olivier and Feng, Xiaobing and Zhou, Xuehai and Chen, Yunji},
+  title      = {PuDianNao: A Polyvalent Machine Learning Accelerator},
+  year       = {2015},
+  issue_date = {March 2015},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {43},
+  number     = {1},
+  issn       = {0163-5964},
+  url        = {https://doi.org/10.1145/2786763.2694358},
+  doi        = {10.1145/2786763.2694358},
+  abstract   = {Machine Learning (ML) techniques are pervasive tools in various emerging commercial applications, but have to be accommodated by powerful computer systems to process very large data. Although general-purpose CPUs and GPUs have provided straightforward solutions, their energy-efficiencies are limited due to their excessive supports for flexibility. Hardware accelerators may achieve better energy-efficiencies, but each accelerator often accommodates only a single ML technique (family). According to the famous No-Free-Lunch theorem in the ML domain, however, an ML technique performs well on a dataset may perform poorly on another dataset, which implies that such accelerator may sometimes lead to poor learning accuracy. Even if regardless of the learning accuracy, such accelerator can still become inapplicable simply because the concrete ML task is altered, or the user chooses another ML technique.In this study, we present an ML accelerator called PuDianNao, which accommodates seven representative ML techniques, including k-means, k-nearest neighbors, naive bayes, support vector machine, linear regression, classification tree, and deep neural network. Benefited from our thorough analysis on computational primitives and locality properties of different ML techniques, PuDianNao can perform up to 1056 GOP/s (e.g., additions and multiplications) in an area of 3.51 mm^2, and consumes 596 mW only. Compared with the NVIDIA K20M GPU (28nm process), PuDianNao (65nm process) is 1.20x faster, and can reduce the energy by 128.41x.},
+  journal    = {SIGARCH Comput. Archit. News},
+  month      = mar,
+  pages      = {369–381},
+  numpages   = {13},
+  keywords   = {computer architecture, machine learning, accelerator}
+}
+
+@inproceedings{7551409,
+  author    = {Liu, Shaoli and Du, Zidong and Tao, Jinhua and Han, Dong and Luo, Tao and Xie, Yuan and Chen, Yunji and Chen, Tianshi},
+  booktitle = {2016 ACM/IEEE 43rd Annual International Symposium on Computer Architecture (ISCA)},
+  title     = {Cambricon: An Instruction Set Architecture for Neural Networks},
+  year      = {2016},
+  volume    = {},
+  number    = {},
+  pages     = {393-405},
+  doi       = {10.1109/ISCA.2016.42}
+}
+
+@article{薛永红2019机器下棋的历史与启示,
+  title   = {机器下棋的历史与启示——从 “深蓝” 到 AlphaZero},
+  author  = {薛永红 and 王洪鹏},
+  journal = {科技导报},
+  volume  = {37},
+  number  = {19},
+  pages   = {87--96},
+  year    = {2019}
+}
+
+
+@inbook{10.5555/1074100.1074686,
+  author    = {Kanal, Laveen N.},
+  title     = {Perceptron},
+  year      = {2003},
+  isbn      = {0470864125},
+  publisher = {John Wiley and Sons Ltd.},
+  address   = {GBR},
+  abstract  = {In 1957 the psychologist Frank Rosenblatt proposed "The Perceptron: a perceiving and recognizing automaton" as a class of artificial nerve nets, embodying aspects of the brain and receptors of biological systems. Fig. 1 shows the network of the Mark 1 Perceptron. Later, Rosenblatt protested that the term perceptron, originally intended as a generic name for a variety of theoretical nerve nets, was actually associated with a very specific piece of hardware (Rosenblatt, 1962). The basic building block of a perceptron is an element that accepts a number of inputs xi, i = 1,..., N, and computes a weighted sum of these inputs where, for each input, its fixed weight ω can be only + 1 or - 1. The sum is then compared with a threshold θ, and an output y is produced that is either 0 or 1, depending on whether or not the sum exceeds the threshold. In other words},
+  booktitle = {Encyclopedia of Computer Science},
+  pages     = {1383–1385},
+  numpages  = {3}
+}
+
+@mastersthesis{王斌2019基于深度图像和深度学习的机器人抓取检测算法研究,
+  title  = {基于深度图像和深度学习的机器人抓取检测算法研究},
+  author = {王斌},
+  year   = {2019},
+  school = {浙江大学}
+}
+
+
 @article{HORNIK1991251,
   title = {Approximation capabilities of multilayer feedforward networks},
   journal = {Neural Networks},
@@ -16,6 +157,17 @@
   author = {Kurt Hornik},
   keywords = {Multilayer feedforward networks, Activation function, Universal approximation capabilities, Input environment measure, () approximation, Uniform approximation, Sobolev spaces, Smooth approximation},
   abstract = {We show that standard multilayer feedforward networks with as few as a single hidden layer and arbitrary bounded and nonconstant activation function are universal approximators with respect to Lp(μ) performance criteria, for arbitrary finite input environment measures μ, provided only that sufficiently many hidden units are available. If the activation function is continuous, bounded and nonconstant, then continuous mappings can be learned uniformly over compact input sets. We also give very general conditions ensuring that networks with sufficiently smooth activation functions are capable of arbitrarily accurate approximation to a function and its derivatives.}
+}
+
+@article{726791,
+  author  = {Lecun, Y. and Bottou, L. and Bengio, Y. and Haffner, P.},
+  journal = {Proceedings of the IEEE},
+  title   = {Gradient-based learning applied to document recognition},
+  year    = {1998},
+  volume  = {86},
+  number  = {11},
+  pages   = {2278-2324},
+  doi     = {10.1109/5.726791}
 }
 
 @article{DBLP:journals/corr/HeZRS15,
@@ -34,4 +186,139 @@
   biburl = {https://dblp.org/rec/journals/corr/HeZRS15.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
+
+@misc{shen2019highly,
+  title  = {{HIGHLY} {EFFICIENT} 8-{BIT} {LOW} {PRECISION} {INFERENCE} {OF} {CONVOLUTIONAL} {NEURAL} {NETWORKS}},
+  author = {Haihao Shen and Jiong Gong and Xiaoli Liu and Guoming Zhang and Ge Jin and and Eric Lin},
+  year   = {2019},
+  url    = {https://openreview.net/forum?id=SklzIjActX}
+}
+
+@article{DBLP:journals/corr/JouppiYPPABBBBB17,
+  author        = {Norman P. Jouppi and
+               Cliff Young and
+               Nishant Patil and
+               David A. Patterson and
+               Gaurav Agrawal and
+               Raminder Bajwa and
+               Sarah Bates and
+               Suresh Bhatia and
+               Nan Boden and
+               Al Borchers and
+               Rick Boyle and
+               Pierre{-}luc Cantin and
+               Clifford Chao and
+               Chris Clark and
+               Jeremy Coriell and
+               Mike Daley and
+               Matt Dau and
+               Jeffrey Dean and
+               Ben Gelb and
+               Tara Vazir Ghaemmaghami and
+               Rajendra Gottipati and
+               William Gulland and
+               Robert Hagmann and
+               Richard C. Ho and
+               Doug Hogberg and
+               John Hu and
+               Robert Hundt and
+               Dan Hurt and
+               Julian Ibarz and
+               Aaron Jaffey and
+               Alek Jaworski and
+               Alexander Kaplan and
+               Harshit Khaitan and
+               Andy Koch and
+               Naveen Kumar and
+               Steve Lacy and
+               James Laudon and
+               James Law and
+               Diemthu Le and
+               Chris Leary and
+               Zhuyuan Liu and
+               Kyle Lucke and
+               Alan Lundin and
+               Gordon MacKean and
+               Adriana Maggiore and
+               Maire Mahony and
+               Kieran Miller and
+               Rahul Nagarajan and
+               Ravi Narayanaswami and
+               Ray Ni and
+               Kathy Nix and
+               Thomas Norrie and
+               Mark Omernick and
+               Narayana Penukonda and
+               Andy Phelps and
+               Jonathan Ross and
+               Amir Salek and
+               Emad Samadiani and
+               Chris Severn and
+               Gregory Sizikov and
+               Matthew Snelham and
+               Jed Souter and
+               Dan Steinberg and
+               Andy Swing and
+               Mercedes Tan and
+               Gregory Thorson and
+               Bo Tian and
+               Horia Toma and
+               Erick Tuttle and
+               Vijay Vasudevan and
+               Richard Walter and
+               Walter Wang and
+               Eric Wilcox and
+               Doe Hyun Yoon},
+  title         = {In-Datacenter Performance Analysis of a Tensor Processing Unit},
+  journal       = {CoRR},
+  volume        = {abs/1704.04760},
+  year          = {2017},
+  url           = {http://arxiv.org/abs/1704.04760},
+  archiveprefix = {arXiv},
+  eprint        = {1704.04760},
+  timestamp     = {Mon, 13 Aug 2018 16:48:05 +0200},
+  biburl        = {https://dblp.org/rec/journals/corr/JouppiYPPABBBBB17.bib},
+  bibsource     = {dblp computer science bibliography, https://dblp.org}
+}
+
+@misc{CNNIOT,
+  howpublished = {\url{https://github.com/mfarhadi/CNNIOT/}},
+  year         = {2018},
+  title        = {CNNIOT},
+  author       = {mfarhadi}
+}
+
+@mastersthesis{周阳2020神经网络参数压缩和推断加速方法的研究,
+  title  = {神经网络参数压缩和推断加速方法的研究},
+  author = {周阳},
+  year   = {2020},
+  school = {中国科学院大学 (中国科学院深圳先进技术研究院)}
+}
+
+
+@inproceedings{9040769,
+  author    = {Feng, Shanggong and Wu, Junning and Zhou, Shengang and Li, Renwei},
+  booktitle = {2019 IEEE 10th International Conference on Software Engineering and Service Science (ICSESS)},
+  title     = {The Implementation of LeNet-5 with NVDLA on RISC-V SoC},
+  year      = {2019},
+  volume    = {},
+  number    = {},
+  pages     = {39-42},
+  doi       = {10.1109/ICSESS47205.2019.9040769}
+}
+
+@misc{nvdla_loadables,
+  howpublished = {\url{https://github.com/LeiWang1999/nvdla_loadables/}},
+  year         = {2021},
+  title = {NVDLA Loadables},
+  author = {LeiWang1999}
+}
+
+@mastersthesis{祁琛2018应用于神经网络的高效能计算单元的研究与实现,
+  title  = {应用于神经网络的高效能计算单元的研究与实现},
+  author = {祁琛},
+  year   = {2018},
+  school = {东南大学}
+}
+
 %---------------------------------------------------------------------------%

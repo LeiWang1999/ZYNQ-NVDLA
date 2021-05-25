@@ -1,12 +1,68 @@
 \chapter{硬件设计实现}\label{chap:hardware}
 
-本章节对硬件设计进行了描述，首先阐述了 NVDLA 的配置方法与可编程逻辑代码生成，并且基于 Xilinx Vivado 设计套件进行了 IP 的打包，使用 BlockDesign 完成系统的连线，给出了资源利用率报告,并根据 Timing 报告与功耗报告选择 NVDLA 的工作时钟。  
+本章节将介绍基于 Xilinx Vivado 设计套件的系统的硬件设计实现，Xilinx Vivado 设计套件的开发流程包括四个步骤：设计、综合、实现、生成。在设计阶段，本章详细阐述了 NVDLA 的 RTL 代码生成方法，将 NVDLA 进行了高度的封装，以便能够在 Vivado 中进行 BlockDesign 设计；在综合阶段，分析了 NVDLA 的资源利用率；在实现阶段，分析了 NVDLA 的时序与功耗信息。
 
 \section{Xilinx FPGA 设计套件}
 
-在上一章节中提到，本设计选用的芯片信号为 XC7Z045-2FFG900I，其为著名的 FPGA 供应厂商 Xilinx 研发。Xilinx 提供了非常完整的可编程逻辑开发软件工具链，及 Vivado 设计套件，使用该套件可以将我们的 Verilog 文件封装成知识产权 IP，进行硬件电路的仿真，生成比特流与硬件描述文件等功能。使用 ZYNQ 器件，也需要我们在 Vivado 的 BlockDesign 页面中分配 ARM 处理器使用到的资源。除此之外，Vivado 设计套件还包括了开发 ARM 裸机的 Vivado SDK、能够基于 LLVM 将 C$\backslash$C++ 程序转换为底层逻辑电路的 Vivado HLS 等应用。
+在上一章节中提到，本设计选用的芯片信号为 XC7Z045-2FFG900I，该芯片由 Xilinx 公司供应。Xilinx 提供了非常完整的可编程逻辑开发软件工具链，及 Vivado 设计套件，使用该套件可以将我们的 Verilog 文件封装成知识产权 IP，进行硬件电路的仿真，生成比特流与硬件描述文件等功能。使用 ZYNQ 器件，也需要我们在 Vivado 的 BlockDesign 页面中分配 ARM 处理器使用到的资源。除此之外，Vivado 设计套件还包括了开发 ARM 裸机的 Vivado SDK、能够基于 LLVM 将 C$\backslash$C++ 程序转换为底层逻辑电路的 Vivado HLS 等应用。
 
 本章节将说明如何使用 Vivado 设计套件完成 NVDLA IP 的打包，Block Design 设计，查看资源利用、时序、功耗等报告，最后生成比特流文件与硬件描述文件。 
+
+\section{NVDLA 硬件设计概述}
+
+NVDLA 由 NVIDIA 公司在2017年年末公布并且开源，遗憾的是该项目自公布完成一年后便草草停止了维护。NVDLA 是一款模块化、可配置的神经网络推理加速器框架。通过核心MAC阵列、与查找表逻辑，NVDLA 可以支持深度神经网络算子，已经支持的有：
+
+\begin{itemize}
+    \item 卷积运算
+    \item 激活函数
+    \item 池化
+    \item 归一化
+\end{itemize}
+
+实际上，由于NVDLA是完全开源的，完全可以自己手动添加相关算子的硬件逻辑。
+
+\subsection{NVDLA 硬件结构分析}
+
+前文中提到，NVDLA 具有模块化的属性，这很有助于我们理解加速器的工作流程，如图~\ref{fig:NVDLA Architecture}所示，NVDLA 的各个模块可以独立、同时工作。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{NVDLA Architecture.jpg}
+    \caption{NVDLA 结构}
+    \label{fig:NVDLA Architecture}
+\end{figure}
+
+\begin{itemize}
+    \item 卷积引擎配置了卷积 Buffer，在使能卷积运算的时候，需要先通过寄存器配置给出 Input Image 与 Weights 在内存上的地址，然后将数据缓存到 Buffer 中来进行运算，减少访存的开销。NVDLA 支持两种卷积模式：
+    \begin{itemize}
+        \item 直接卷积，及标准的卷积，可以通过 MAC 阵列并行加速。
+        \item Winograd 快速卷积，从算法层面通过共用权重来减少运算量。
+    \end{itemize}
+    卷积引擎的核心是 MAC 阵列，该阵列的大小是可配置的，本文使用阵列大小为 8x8 。卷积的结果不可以直接写回内存，必须经过SDP，及激活函数层，其他引擎则没有这个限制。
+    \item 除去卷积引擎之外，NVDLA 一共还有五个引擎，他们是负责完成激活函数的 SDP 引擎，负责完成池化操作的 PDP 引擎，负责完成 LRN 操作的CDP引擎，做图形 Reshape 的 RUBIK 引擎，最后，NVDLA 设计还提供了一个 BDMA 引擎，用来在 DRAM 和高速存储之间搬移数据。
+\end{itemize}
+
+NVDLA 在外侧暴露出四个接口，它们分别是 CSB 总线，主存储接口、高速存储接口、中断接口。
+
+\begin{itemize}
+    \item 寄存器配置总线（Configuration Space Bus Interface，CSB） ，用来读写 NVDLA 的寄存器，对于 CSB 总线，我们不甚讲解，其在读写地址的时候需要做移位来压缩指令大小，NVDLA 提供了 csb2apb 转换电路，在读写的时候使用该电路包裹即可利用 APB 总线协议读写 NVDLA 的寄存器。
+    \item 主存储接口（Data Backbone interface，DBB），用来访存，该接口使用的协议为 AXI4 总线协议，可以挂载在 AXI4 接口的存储控制器上，在本文中，我们将其挂载到片上的 DDR 存储，与 ARM 处理器共享内存。
+    \item 高速存储接口（high-bandwidth interface），可以外接第二块 SRAM 作为辅存储，存储中间数据，降低访存瓶颈。
+    \item 中断接口（Interrupt interface），NVDLA 不仅支持通过寄存器查询的方式查询任务是否完成，也支持产生硬件中断，方便我们编写驱动程序。
+\end{itemize}
+
+\subsection{NVDLA 自定义配置}
+
+在本设计中，我们使用官方提供的 small 配置，即最精简的NVDLA配置，该配置有如下特点：
+
+\begin{enumerate}
+    \item 最小化 MAC 阵列，本设计将 NVDLA 的 MAC 阵列大小配置为 8 * 8。
+    \item 关闭高速存储接口，只使用主存储接口。
+    \item 仅支持 INT8 格式的 MAC 运算。
+    \item 不支持权重压缩。
+    \item 不支持 WINOGRAD 快速卷积。
+    \item 不支持 Reshape 特征图。
+\end{enumerate}
 
 \section{NVDLA IP 生成描述}
 
@@ -16,7 +72,7 @@
 
 综合以上，本文使用 \emph{make} 进行 RTL 生成，并且使用 Docker 容器技术分离环境解决 \emph{make} 软件依赖过复杂的问题。
 
-\subsection{基于 \emph{make} 的 RTL 生成}
+\subsection{基于 \emph{make} 的 RTL 代码生成}
 
 为了能够在不污染主机环境的情况下构建 \emph{make} 工具，本设计使用 Docker 容器技术搭建软件环境，基于 Ubuntu：16.04 容器，安装好如下环境：
 
@@ -38,23 +94,17 @@
 ./tools/bin/tmake -build vmod
 \end{lstlisting}
 
-执行完该命令之后，可以被综合的 Verilog 代码将会被存放在 out 文件夹下，此时已经可以通过 Vivado 导入文件夹解析依赖，但是由于 NVDLA 是面向 ASIC 设计，内部 RAM 的 Verilog 代码是结构级描述，这意味着在例化 RAM 的时候会消耗大量 FPGA 片上珍贵的 LUT 资源，所以在导入之前需要将所有的 RAM 替换成 FPGA 内部的 Block RAM。
+执行完该命令之后，可以被综合的 Verilog 代码将会被存放在 out 文件夹下，此时已经可以通过 Vivado 导入文件夹解析依赖关系，进行分析。
 
-\subsection{替换 Block RAM}
+\subsection{RAM 优化}
+
+由于 NVDLA 是面向 ASIC 设计，内部 RAM 的 Verilog 代码是结构级描述，这意味着在例化 RAM 的时候会消耗大量 FPGA 片上珍贵的 LUT 资源，此时对其综合会导致浪费极多的 LUT 资源，所以在导入之前本设计将所有的 RAM 替换成 FPGA 内部的 Block RAM 以减小 LUT 的开销，提高运行速度。
 
 替换 RAM 的方法也有两种，其一是例化 Vivado 设计免费提供的 BRAM Controller IP，但是 NVDLA 使用到的 RAM IP 过于繁杂，替换工作量巨大，第二是使用官方提供的行为级描述的 Verilog RAM 模块代码，本设计使用第二种。
 
 具体步骤为，将原本的 \emph{vmod/rams/synth} 文件夹删除，在 Vivado 导入文件夹的时候，使用 \emph{vmod/rams/fpga} 文件夹。
 
-\subsection{csb2apb}
-
-从 Vivado 导入 vmod 文件夹之后，NVDLA 的顶层模块文件为 \emph{NV\_nvdla.v} ，但是本设计还做了另一层封装，使用英伟达官方提供的 csb2apb 电路，将原本的 CSB 总线转化为 APB 总线，这样能够方便我们在 Vivado 设计中使用内存映射读写 NVDLA 的寄存器。
-
-在 Vivado 设计中，新建一个 wrapper 文件，命名为 \emph{Nv\_nvdla\_wrapper.v} ，详细内容见附录。在其中例化了 \emph{NV\_nvdla} 与 \emph{NV\_NVDLA\_apb2csb} 两个电路，并且补全了 AXI 总线与 APB 总线缺失的信号线，方便在后期 IP Package 阶段自动推导封装总线接口。
-
-\subsection{关闭 Clock Gating}
-
-再次由于 NVDLA 是面向ASIC设计，内部的 RAM 在例化的时候默认有 Clock Gating 电路用来降低功耗，但是 FPGA 的时钟树是设计好的，不需要该电路，否则可能会因为 Clock Buf资源不够导致布线过不去，在 Vivado 的全局变量里，添加如下几个 Global Define，关闭不必要的电路：
+由于 NVDLA 是面向ASIC设计，内部的 RAM 在例化的时候默认有 Clock Gating 电路用来降低功耗，但是 FPGA 的时钟树是设计好的，不需要该电路，否则可能会因为 Clock Buf资源不够导致布线过不去，在 Vivado 的全局变量里，添加如下几个 Global Define，关闭不必要的电路：
 
 \begin{itemize}
     \item VLIB\_BYPASS\_POWER\_CG
@@ -64,10 +114,11 @@
     \item SYNTHESIS
 \end{itemize}
 
+\subsection{控制总线协议优化与封装}
 
-\subsection{封装AXI、APB总线}
+从 Vivado 导入 vmod 文件夹之后，NVDLA 的顶层模块文件为 \emph{NV\_nvdla.v} ，但是本设计还做了另一层封装，使用英伟达官方提供的 csb2apb 电路，将原本的 CSB 总线转化为 APB 总线，这样能够方便我们在 Vivado 设计中使用内存映射读写 NVDLA 的寄存器。
 
-为了方便之后 BlockDesign 中连线，也为了给 APB 总线挂上 Address Block，在 IP Package 阶段，我们需要 AXI 和 APB 总线进行包装，由于先前已经补全的信号线，这里我们让 Vivado 自动推导，包装完成后的 IP 核如图~\ref{fig:NVDLA Wrapper}所示。
+在 Vivado 设计中，新建一个 wrapper 文件，命名为 \emph{Nv\_nvdla\_wrapper.v} ，部分内容见附录。在其中例化了 \emph{NV\_nvdla} 与 \emph{NV\_NVDLA\_apb2csb} 两个电路，并且补全了 AXI 总线与 APB 总线缺失的信号线，方便在后期 IP Package 阶段自动推导封装总线接口。
 
 \begin{figure}[!htbp]
     \centering
@@ -76,11 +127,11 @@
     \label{fig:NVDLA Wrapper}
 \end{figure}
 
-\subsection{增加 Address Block}
+为了方便之后 BlockDesign 中连线，也为了给 APB 总线挂上 Address Block，在 IP Package 阶段，我们需要 AXI 和 APB 总线进行包装，由于先前已经补全的信号线，这里我们让 Vivado 自动推导，包装完成后的 IP 核如图~\ref{fig:NVDLA Wrapper}所示。
 
 在 IP Package 阶段，AXI 的 Memory Block 会自行分配，这样在进行 Block Design 的时候 Vivado 会自动分配地址完成内存映射。但是 APB 总线的 Memory Block 需要自行添加，在本设计中，为 APB 总线分配了 4KB 大小的寻址空间。
 
-\section{Top Block Design 设计}
+\section{Block Design 设计}
 
 在我们的主工程中导入已经打包好的 NVDLA IP，并引入 APB to AXI Bridge、AXI Smart Connect、ZYNQ 7000+ 等其他知识产权 IP，他们的连线关系如图~\ref{fig:Block Design Connect}所示。
 
@@ -90,6 +141,9 @@
     \caption{Block Design Connect}
     \label{fig:Block Design Connect}
 \end{figure}
+
+NVDLA 有两个工作时钟，csb\_clk 与 core\_clk，分别用于读写寄存器与加速器工作，这会使 NVDLA 变为一个异步电路，难以进行静态时序分析。根据分析，时序问题主要产生在 core\_clk 之中，所以本设计将 csb\_clk 与 core\_clk 短接，使之变为同步电路，方便进行时序分析。
+
 
 \subsection{APB to AXI Bridge}
 
@@ -109,7 +163,7 @@ ZYNQ 7000+ 的 IP 如图~\ref{fig:ZYNQ 7000+}所示，在本设计中，启用�
     \item 以太网接口（Ethernet0），在软件设计章节，本文将在 SOC 上构建 Linux 操作系统，使能以太网接口可以使板卡通过以太网线访问互联网，方便开发与调试。
     \item SD卡接口（SD0），用来存放 Linux 操作系统的 BOOT 与 IMAGE 文件。
     \item 串口（UART0），用来实现串口终端，方便调试。
-    \item FCLK\_CLK0，输出时钟，该时钟可以作为可编程逻辑端的输入时钟，这样不需要额外对片外的时钟输入做约束，在本设计中该时钟取 100Mhz，有关 100Mhz 的取值，详见综合报告。
+    \item FCLK\_CLK0，输出时钟，该时钟可以作为可编程逻辑端的输入时钟，这样不需要额外对片外的时钟输入做约束，在本设计中该时钟取 100Mhz，有关 100Mhz 的取值，详见第六章测试与分析。
 \end{itemize}
 
 \begin{figure}[!htbp]
@@ -119,51 +173,9 @@ ZYNQ 7000+ 的 IP 如图~\ref{fig:ZYNQ 7000+}所示，在本设计中，启用�
     \label{fig:ZYNQ 7000+}
 \end{figure}
 
-\section{综合}
+% \section{Bitstream 与 hdf 文件生成}
 
-硬件设计完成之后，首先需要经过综合，在这一小节，我们分别列出资源利用率报告，Timing 报告与功耗报告。
-
-\subsection{资源利用率报告}
-
-在本章节，我们主要分析 Timing 报告得出对于 NVDLA 能够给与的最大输入时钟，这需要我们更改输入时钟来反复综合，在这个过程中硬件的资源利用率是不会变化的，所以我们首先给出硬件资源利用率报告，其一般也是我们再进行 FPGA 设计的时候首先需要查看的报告。
-
-\begin{table}[!htbp]
-    \caption{资源利用率报告}
-    \label{tab:Resource Report}
-    \centering
-    \footnotesize% fontsize
-    \setlength{\tabcolsep}{4pt}% column separation
-    \renewcommand{\arraystretch}{1.2}%row space 
-    \begin{tabular}{llll}
-        \toprule
-        \textbf{RESOURCE} & \textbf{UTILIZATION} & \textbf{AVAILABLE} & \textbf{Utilization \%} \\
-        \midrule
-        LUT               & 80293                & 218600               & 36,73                   \\
-        LUTRAM            & 1015                 & 70400                & 1,44                    \\
-        FF                & 92678                & 437200               & 21.20                   \\
-        BRAM              & 95                   & 545                  & 17,43                   \\
-        DSP               & 42                   & 900                  & 4,67                    \\
-        BUFG              & 1                    & 32                   & 3,13                    \\
-        \bottomrule                   
-    \end{tabular}
-\end{table}
-
-\subsection{Timing 报告}
-
-
-\subsection{功耗报告}
-
-
-
-\section{实现}
-
-实现是紧接着综合的下一个步骤，在这个过程中会进行布局布线。综合后生成的门级网表只是表示了门与门之前虚拟的连接关系，并没有规定每个门的位置以及连线的长度等，布局布线就是将门级网表中的门的位置与连线信息确定下来的过程。
-
-所谓布局，及是将每一个门映射到 CLB 的过程；所谓布线，是利用FPGA中丰富的布线资源将 CLB 根据逻辑关系连接在一起的过程。
-
-\section{Bitstream 与 hdf 文件生成}
-
-最后，生成 Bitstream，有了 Bitstream 就可以将设计的数字电路烧录到 FPGA 板卡中去，但是本设计仅将 Bitstream 烧录到板卡中去是没有效果的。在下一章节，我们需要在 ARM 上构建 Linux 系统，需要我们生成 HDF 硬件描述文件，为了生成 HDF 文件，需要使用到 Vivado SDK，在 Vivado 中选择 Export Hardware，则 HDF 文件会在 SDK 目录下自动生成。
+% 最后，生成 Bitstream，有了 Bitstream 就可以将设计的数字电路烧录到 FPGA 板卡中去，但是本设计仅将 Bitstream 烧录到板卡中去是没有效果的。在下一章节，我们需要在 ARM 上构建 Linux 系统，需要我们生成 HDF 硬件描述文件，为了生成 HDF 文件，需要使用到 Vivado SDK，在 Vivado 中选择 Export Hardware，则 HDF 文件会在 SDK 目录下自动生成。
 
 
 
