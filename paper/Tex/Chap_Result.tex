@@ -26,10 +26,10 @@
     \end{tabular}
 \end{table}
 
-此时发现，LUT 资源的使用严重超过可使用数量，而 FPGA 内部的 BRAM 资源几乎未被使用，经过优化后，本设计的资源利用率信息最终如表~\ref{tab:Resource Report}，资源的使用情况都在合理范围之内。
+此时发现，LUT 资源的使用严重超过可使用数量，而 FPGA 内部的 BRAM 资源几乎未被使用，经过优化后，NVDLA 在FPGA上的资源利用率信息最终如表~\ref{tab:Resource Report}，资源的使用情况都在合理范围之内。
 
 \begin{table}[!htbp]
-    \caption{资源利用率}
+    \caption{NVDLA 的资源使用情况}
     \label{tab:Resource Report}
     \centering
     \footnotesize% fontsize
@@ -39,12 +39,35 @@
         \toprule
         \textbf{RESOURCE} & \textbf{UTILIZATION} & \textbf{AVAILABLE} & \textbf{Utilization \%} \\
         \midrule
-        LUT               & 80293                & 218600               & 36.73                   \\
-        LUTRAM            & 1015                 & 70400                & 1.44                    \\
-        FF                & 92678                & 437200               & 21.20                   \\
+        LUT               & 77248                & 218600               & 35.34                   \\
+        LUTRAM            & 372                  & 70400                & 0.53                    \\
+        FF                & 87999                & 437200               & 20.13                   \\
         BRAM              & 95                   & 545                  & 17.43                   \\
-        DSP               & 42                   & 900                  & 4.67                    \\
-        BUFG              & 1                    & 32                   & 3.13                    \\
+        DSP               & 33                   & 900                  & 3.67                    \\
+        BUFG              & 2                    & 32                   & 6.25                    \\
+        \bottomrule                   
+    \end{tabular}
+\end{table}
+
+表~\ref{tab:Module Resource Report}给出了在最终总体的硬件设计中各个模块的资源使用率情况，包括了两个智能的总线连接器、一个同步复位单元、一个 AXI 转 APB 的桥接器、少量由 PL 端消耗的逻辑资源以及一个 NVDLA 硬件加速器。从表格中可以看出，NVDLA 占用了绝大多数的逻辑资源，占比93.9\%，表~\ref{tab:Module Resource Report}中的 In Total 项表明了本次设计的硬件加速系统所有的硬件资源开销。
+
+\begin{table}[!htbp]
+    \caption{各模块的资源使用情况}
+    \label{tab:Module Resource Report}
+    \centering
+    \footnotesize% fontsize
+    \setlength{\tabcolsep}{4pt}% column separation
+    \renewcommand{\arraystretch}{1.2}%row space 
+    \begin{tabular}{cccccc}
+        \toprule
+        \textbf{Module}                 & \textbf{Number}            & \textbf{LUT}               & \textbf{FF}                & \textbf{BRAM}           & \textbf{DSP} \\
+        \midrule
+        \textbf{SmartConnect}           & 2                      & 2397                       & 3313                       & 0                       & 0            \\
+        \textbf{rst\_ps7\_0\_100M}      & 1                      & 19                         & 40                         & 0                       & 0            \\
+        \textbf{processing\_system7\_0} & 1                      & 112                        & 0                          & 0                       & 0            \\
+        \textbf{axi\_apb\_bridge\_0}    & 1                      & 89                         & 144                        & 0                       & 0            \\
+        \textbf{NV\_nvdla\_wrapper\_0}  & 1                      & 76888                      & 87943                      & 95                      & 42           \\
+        \textbf{In Total}               & 6                      & 81902(37.47\%)             & 94753(21.67\%)             & 95(17.43\%)             & 42(4.67\%)   \\
         \bottomrule                   
     \end{tabular}
 \end{table}
@@ -152,12 +175,12 @@
 
 \subsection{实验配置}
 
-前文中提到，本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，全部的 prototxt 文件与 loadables 文件详见 Github\cite{nvdla_loadables}。此外，为了对比 CPU 的运行时间，本设计还在 ARM A9 处理器上进行了 Caffe 框架的移植与编译，对预训练的 Caffemodel 进行 CPU 侧的推理，由于 CPU 的访存特性，Caffe 在进行推理的时候速度会由慢到快，最终趋于稳定，所以本设计取迭代五十次后取推理时间的平均值。如图~\ref{fig:BootStrap}所示，本节还在主机端基于 Bootstrap 与 JQuery 等 Web 应用技术开发了的网页服务，并通过 Ajax 向后端发送推理请求，运行在 ZYNQ 7000+ 芯片上的 Ubuntu 操作系统里，使用 Flask 框架接受请求并且调度。但是在实际测试过程中，如进行数据集级别的推理以及与 Caffe 进行比较，均不在该网页服务里完成。
+前文中提到，本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，全部的 prototxt 文件与 loadables 文件详见 Github\cite{nvdla_loadables}。此外，为了对比 CPU 的运行时间，本设计在 ARM A9 处理器上进行了 Caffe 框架的移植与编译，对预训练的 Caffemodel 进行 CPU 侧的推理，由于 CPU 的访存特性，Caffe 在进行推理的时候速度会由慢到快，最终趋于稳定，所以本设计取迭代五十次后取推理时间的平均值。如图~\ref{fig:BootStrap}所示，本节还在主机端基于 Bootstrap 与 JQuery 等 Web 应用技术开发了的网页服务，并通过 Ajax 向后端发送推理请求，运行在 ZYNQ 7000+ 芯片上的 Ubuntu 操作系统里使用 Flask 框架接受请求并且调度。但是在测试过程中进行数据集级别的推理以及与 Caffe 框架进行的比较部分均不在该网页服务里完成。在测试环境中：NVDLA 和 Caffe 的输入 Batch 均为 1；NVDLA 进行推理的数据精度是8位的定点整型，Caffe进行推理的数据精度为32位的浮点型；NVDLA 的运行时间从 UMD 向 KMD 发送任务开始计算，KMD 接收到中断完成任务停止，Caffe 的运行时间由第一层的推理开始计算，到最后一层推理结束停止。
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{bootstrap}
-    \caption{用户友好的输入页面}
+    \caption{基于 Bootstrap 开发的网页服务}
     \label{fig:BootStrap}
 \end{figure}
 
@@ -189,7 +212,6 @@
 
 本节针对设计的三个模型统计 NVDLA 的推理速度，其中Resnet18-IMAGENET2012 因为需要分配的内存过大，而无法在板卡上运行，所以本设计没有对运行速度进行评估，其余两个模型，分别推理了一千张图像观察推理的平均耗时。
 
-
 \begin{table}[!htbp]
     \caption{运行速度}
     \label{tab:Execution Time}
@@ -216,4 +238,4 @@
     \item 对于 NVDLA，因其在 FPGA 上实现，所以功能验证正确是最主要的，对于运行速度需要通过 ASIC 流程得出，根据中国科学院自动化研究所的研究，在 600 Mhz 的工作频率下，Lenet5 的推理速度可以达到 0.2 ms \cite{9040769}。 
 \end{enumerate}
 
-其次，Resnet18-CIFAR10 在 CPU 侧推理的速度是 Lenet5 的 14.5 倍，可知其网络比 Lenet5 复杂许多，但是在 NVDLA 侧，推理速度仍然与 Lenet5 不相上下，说明在这两个网络的推理过程中，网络的复杂程度不是影响推理速度的关键因素，可能是访存等其他原因。
+其次，Resnet18-CIFAR10 在 CPU 侧推理的速度是 Lenet5 的 14.5 倍，但是在 NVDLA 侧，推理速度仍然与 Lenet5 不相上下，说明在这两个网络的推理过程中，网络的复杂程度不是影响推理速度的关键因素，可能是访存等其他原因。
