@@ -175,7 +175,7 @@
 
 \subsection{实验配置}
 
-前文中提到，本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，全部的 prototxt 文件与 loadables 文件详见 Github\cite{nvdla_loadables}。此外，为了对比 CPU 的运行时间，本设计在 ARM A9 处理器上进行了 Caffe 框架的移植与编译，对预训练的 Caffemodel 进行 CPU 侧的推理，由于 CPU 的访存特性，Caffe 在进行推理的时候速度会由慢到快，最终趋于稳定，所以本设计取迭代五十次后取推理时间的平均值。如图~\ref{fig:BootStrap}所示，本节还在主机端基于 Bootstrap 与 JQuery 等 Web 应用技术开发了的网页服务，并通过 Ajax 向后端发送推理请求，运行在 ZYNQ 7000+ 芯片上的 Ubuntu 操作系统里使用 Flask 框架接受请求并且调度。但是在测试过程中进行数据集级别的推理以及与 Caffe 框架进行的比较部分均不在该网页服务里完成。在测试环境中：NVDLA 和 Caffe 的输入 Batch 均为 1；NVDLA 进行推理的数据精度是8位的定点整型，Caffe进行推理的数据精度为32位的浮点型；NVDLA 的运行时间从 UMD 向 KMD 发送任务开始计算，KMD 接收到中断完成任务停止，Caffe 的运行时间由第一层的推理开始计算，到最后一层推理结束停止。
+前文中提到，本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，全部的 prototxt 文件与 loadables 文件详见 Github\cite{nvdla_loadables}。此外，为了对比 CPU 的运行时间，本设计在 ARM A9 处理器上进行了 Caffe 框架的移植与编译，对预训练的 Caffemodel 进行 CPU 侧的推理，由于 CPU 的访存特性，Caffe 在进行推理的时候速度会由慢到快，最终趋于稳定，所以本设计取迭代五十次后取推理时间的平均值。如图~\ref{fig:BootStrap}所示，本节还在主机端基于 Bootstrap 与 JQuery 等 Web 应用技术开发了的网页服务，并通过 Ajax 向后端发送推理请求，运行在 ZYNQ 7000+ 芯片上的 Ubuntu 操作系统里使用 Flask 框架接受请求并且调度。但是在测试过程中进行数据集级别的推理以及与 Caffe 框架进行的比较部分均不在该网页服务里完成。在测试环境中：NVDLA 和 Caffe 的输入 Batch 均为 1；NVDLA 进行推理的数据精度是8位的定点整型，Caffe进行推理的数据精度为32位的浮点型；NVDLA 的运行时间从 UMD 向 KMD 发送任务开始计算，KMD 接收到中断完成任务停止，Caffe 的运行时间由第一层的推理开始计算，到最后一层推理结束停止，仅统计正向传播所用的时间。
 
 \begin{figure}[!htbp]
     \centering
@@ -219,23 +219,15 @@
     \footnotesize% fontsize
     \setlength{\tabcolsep}{4pt}% column separation
     \renewcommand{\arraystretch}{1.2}%row space 
-    \begin{tabular}{lcccc}
+    \begin{tabular}{lccccc}
         \toprule
-        \textbf{Network}                                   & \multicolumn{1}{l}{\textbf{1000 Images Execution Time}} & \multicolumn{1}{l}{\textbf{Time Per Image}} & \textbf{FPS}     & \multicolumn{1}{l}{\textbf{Time ARM A9 (666 Mhz)}} \\
+        \textbf{Network}               & \multicolumn{1}{l}{\textbf{1000 Images Execution Time}} & \multicolumn{1}{l}{\textbf{Time Per Image}} & \textbf{FPS}     & \multicolumn{1}{l}{\textbf{Time ARM A9 (666 Mhz)}} \\
         \midrule
-        \textbf{Lenet5-MNIST}          & 288129 ms                                               & 288.13 ms                                   & 3.47             & 23.55 ms                                            \\
-        \textbf{Resnet18-CIFAR10}      & 287145 ms                                               & 287.15 ms                                   & 3.48             & 342.24 ms                                          \\
-        \textbf{Resnet18-IMAGENET2012} & \textbackslash{}                                        & \textbackslash{}                            & \textbackslash{} & 6169.63 ms                                         \\
+        \textbf{Lenet5-MNIST}          & 11976 ms                                               & 11.20 ms                                   & 89.2             & 26.89 ms                                           \\
+        \textbf{Resnet18-CIFAR10}      & 36529 ms                                               & 36.53 ms                                   & 27.4             & 307.69 ms                                          \\
+        \textbf{Resnet18-IMAGENET2012} & \textbackslash{}                                       & \textbackslash{}                           & \textbackslash{} & 6558.88 ms                                         \\
         \bottomrule                   
     \end{tabular}
 \end{table}
 
-\textbf{实验结论：}如表~\ref{tab:Execution Time}所示，
-虽然根据图表所示，对于 Lenet5，CPU 侧的推理仅需要 20ms，其速度比设计的硬件加速器还要快 10 倍，究其原因如下：
-
-\begin{enumerate}
-    \item CPU 是集成在 ZYNQ 器件上的硬核处理器，主频可达到 666 Mhz、而 NVDLA 因为其在 FPGA 上运行导致最高运行频率收到限制，仅可达到 100 Mhz。
-    \item 对于 NVDLA，因其在 FPGA 上实现，所以功能验证正确是最主要的，对于运行速度需要通过 ASIC 流程得出，根据中国科学院自动化研究所的研究，在 600 Mhz 的工作频率下，Lenet5 的推理速度可以达到 0.2 ms \cite{9040769}。 
-\end{enumerate}
-
-其次，Resnet18-CIFAR10 在 CPU 侧推理的速度是 Lenet5 的 14.5 倍，但是在 NVDLA 侧，推理速度仍然与 Lenet5 不相上下，说明在这两个网络的推理过程中，网络的复杂程度不是影响推理速度的关键因素，可能是访存等其他原因。
+\textbf{实验结论：} 如表~\ref{tab:Execution Time}所示，对于 Lenet5，ARM A9 的推理需要 20ms，而 NVDLA 仅需要 10ms 左右的时间，加速比为 2.4；对于 Resnet18-CIFAR10，在 ARM 侧推理的速度是 Lenet5 的 14.5 倍，但是在 NVDLA 侧推理速度仅为 Lenet5 的 3 倍，加速比为 8.42；在两个网络上，NVDLA 相比于 ARM 侧都能实现不错的加速效果。实验中的 NVDLA 是在 FPGA 上实现的，由于 FPGA 的芯片性能以及硬件资源的限制，使得 NVDLA 的性能得到了限制，其工作频率仅有 100 Mhz，如果使用 ASIC 流程进行 NVDLA 实现，则性能的提升会更加明显，根据中国科学院自动化研究所的研究，在 600 Mhz 的工作频率下，使用 Lenet5 完成一幅图像的推理仅需要 0.2 ms\cite{9040769}。 
