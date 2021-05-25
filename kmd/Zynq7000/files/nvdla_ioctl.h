@@ -65,7 +65,7 @@ struct nvdla_mem_handle {
  *
  */
 struct nvdla_ioctl_submit_task {
-#define NVDLA_MAX_BUFFERS_PER_TASK (6144)
+#define NVDLA_MAX_BUFFERS_PER_TASK (30000)
 	__u32 num_addresses;
 #define NVDLA_NO_TIMEOUT    (0xffffffff)
 	__u32 timeout;

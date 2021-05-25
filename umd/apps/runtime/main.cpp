@@ -83,7 +83,6 @@ static NvDlaError launchTest(const TestAppArgs* appArgs)
 
     testInfo.dlaServerRunning = false;
     PROPAGATE_ERROR_FAIL(testSetup(appArgs, &testInfo));
-
     PROPAGATE_ERROR_FAIL(run(appArgs, &testInfo));
 
 fail:
@@ -216,6 +215,7 @@ int main(int argc, char* argv[])
         NvDlaDebugPrintf("where options include:\n");
         NvDlaDebugPrintf("    -h                    print this help message\n");
         NvDlaDebugPrintf("    -s                    launch test in server mode\n");
+        NvDlaDebugPrintf("    --image_dir           image_dirs for multiple \n");
         NvDlaDebugPrintf("    --image <file>        input jpg/pgm file\n");
         NvDlaDebugPrintf("    --normalize <value>   normalize value for input image\n");
         NvDlaDebugPrintf("    --mean <value>        comma separated mean value for input image\n");
