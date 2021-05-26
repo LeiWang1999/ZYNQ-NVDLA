@@ -1,0 +1,76 @@
+\contentsline {chapter}{摘要}{I}{chapter*.2}%
+\contentsline {chapter}{Abstract}{III}{chapter*.3}%
+\contentsline {chapter}{\numberline {第一章\hspace {.3em}}绪论}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}研究背景及国内外研究现状}{1}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}神经网络计算机与芯片}{1}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}深度学习处理器}{2}{subsection.1.1.2}%
+\contentsline {section}{\numberline {1.2}研究意义及前景}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}研究内容及结构安排}{2}{section.1.3}%
+\contentsline {chapter}{\numberline {第二章\hspace {.3em}}相关技术介绍}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}深度神经网络概述}{5}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}感知机模型}{5}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}卷积神经网络概述}{8}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}LeNet5 介绍}{8}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}Resnet 18 网络结构}{10}{subsection.2.1.4}%
+\contentsline {section}{\numberline {2.2}FPGA 与 ZYNQ 器件}{10}{section.2.2}%
+\contentsline {section}{\numberline {2.3}神经网络硬件加速平台}{11}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}众核处理器}{11}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}GPU}{12}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Google TPU}{12}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}DianNao 系列}{12}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.5}NVIDIA Deep Learning Accelerator}{13}{subsection.2.3.5}%
+\contentsline {chapter}{\numberline {第三章\hspace {.3em}}系统总体设计}{15}{chapter.3}%
+\contentsline {section}{\numberline {3.1}系统设计框图}{15}{section.3.1}%
+\contentsline {section}{\numberline {3.2}硬件设计架构与互联}{16}{section.3.2}%
+\contentsline {section}{\numberline {3.3}验证平台}{17}{section.3.3}%
+\contentsline {section}{\numberline {3.4}用户友好的输入页面设计方案}{18}{section.3.4}%
+\contentsline {chapter}{\numberline {第四章\hspace {.3em}}硬件设计实现}{19}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Xilinx FPGA 设计套件}{19}{section.4.1}%
+\contentsline {section}{\numberline {4.2}NVDLA 硬件设计概述}{19}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}NVDLA 硬件结构分析}{19}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}NVDLA 自定义配置}{21}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}NVDLA IP 生成描述}{21}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}基于 \emph {make} 的 RTL 代码生成}{21}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}RAM 优化}{22}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}控制总线协议优化与封装}{23}{subsection.4.3.3}%
+\contentsline {section}{\numberline {4.4}Block Design 设计}{24}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}APB to AXI Bridge}{24}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}AXI Smart Connect}{24}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}ZYNQ 7000+ AP SOC}{25}{subsection.4.4.3}%
+\contentsline {chapter}{\numberline {第五章\hspace {.3em}}软件设计实现}{27}{chapter.5}%
+\contentsline {section}{\numberline {5.1}NVDLA 软件工具链概述}{27}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Caffe 与模型训练}{29}{section.5.2}%
+\contentsline {section}{\numberline {5.3}TensorRT 与模型量化}{30}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}TensorRT 量化原理}{30}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}量化步骤与精度损失}{31}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}calibtabel 生成}{31}{subsection.5.3.3}%
+\contentsline {section}{\numberline {5.4}Ubuntu 16.04 嵌入式操作系统移植}{32}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Petalinux 工具介绍}{32}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}针对硬件设计的启动文件制作}{32}{subsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.4.3}替换根文件系统}{33}{subsection.5.4.3}%
+\contentsline {section}{\numberline {5.5}KMD 内核程序挂载}{33}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Linux 设备树新增节点}{34}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Petalinux 内核添加应用}{34}{subsection.5.5.2}%
+\contentsline {subsection}{\numberline {5.5.3}驱动程序加载}{34}{subsection.5.5.3}%
+\contentsline {section}{\numberline {5.6}UMD 应用程序编译}{35}{section.5.6}%
+\contentsline {subsection}{\numberline {5.6.1}LIBJPEG 链接库编译}{35}{subsection.5.6.1}%
+\contentsline {subsection}{\numberline {5.6.2}UMD 构建}{35}{subsection.5.6.2}%
+\contentsline {subsection}{\numberline {5.6.3}Runtime 测试}{35}{subsection.5.6.3}%
+\contentsline {chapter}{\numberline {第六章\hspace {.3em}}测试与分析}{37}{chapter.6}%
+\contentsline {section}{\numberline {6.1}资源利用率}{37}{section.6.1}%
+\contentsline {section}{\numberline {6.2}最大工作频率分析}{38}{section.6.2}%
+\contentsline {section}{\numberline {6.3}基于 NVDLA 的硬件加速系统性能评估}{40}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}实验配置}{40}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}精度对比分析}{40}{subsection.6.3.2}%
+\contentsline {subsection}{\numberline {6.3.3}推理速度分析}{41}{subsection.6.3.3}%
+\contentsline {chapter}{\numberline {第七章\hspace {.3em}}总结与展望}{43}{chapter.7}%
+\contentsline {chapter}{参考文献}{45}{section*.42}%
+\contentsline {chapter}{致谢}{47}{chapter*.44}%
+\contentsline {chapter}{\numberline {附录 A\hspace {.3em}}}{1}{appendix.A}%
+\contentsline {section}{\numberline {A.1}\emph {small.spec}}{1}{section.A.1}%
+\contentsline {section}{\numberline {A.2}\emph {Nv\_nvdla\_wrapper.v}}{2}{section.A.2}%
+\contentsline {section}{\numberline {A.3}\emph {Lenet5 量化关键代码}}{4}{section.A.3}%
+\contentsline {section}{\numberline {A.4}\emph {Cache to Json}}{5}{section.A.4}%
+\contentsline {section}{\numberline {A.5}\emph {system-user.dtsi}}{6}{section.A.5}%
+\contentsline {section}{\numberline {A.6}\emph {Makefile}}{6}{section.A.6}%
+\contentsline {section}{\numberline {A.7}\emph {opendla.bb}}{7}{section.A.7}%

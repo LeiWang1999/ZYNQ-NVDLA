@@ -319,7 +319,7 @@
             \songti
             \renewcommand{\arraystretch}{1.3} %rows, default value is 1.0
             \begin{tabular}{ p{3cm} p{9cm}<{\centering} }
-                \makebox[em][s]{\ucas@label@ch@title} & \ucas@value@ch@title \\ 
+                \makebox[5em][s]{\ucas@label@ch@title} & \ucas@value@ch@title \\ 
                 \cline{2-2}
                 
                 \makebox[5em][s]{\ucas@label@ch@major} & \ucas@value@ch@major \\

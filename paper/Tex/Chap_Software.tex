@@ -89,7 +89,7 @@ where options include:
         \midrule
         Lenet5-MNIST          & 99.7                                                \\
         Resnet18-CIFAR10      & 90.2                                                \\
-        Resnet18-IMAGENET2012 & 60.2(Top5)                                          \\
+        Resnet18-IMAGENET2012 & 88.1(Top5)                                          \\
         \bottomrule                   
     \end{tabular}
 \end{table}
@@ -154,14 +154,14 @@ TensorRT 选择的量化方法是 KL-divergence，即转化为最小化相对熵
         \midrule
         Lenet5-MNIST          & 99.7                                                 & 99.5                                                 \\
         Resnet18-CIFAR10      & 90.2                                                 & 86.7                                                 \\
-        Resnet18-IMAGENET2012 & 60.2(Top5)                                           & 50.5(Top5)                                           \\
+        Resnet18-IMAGENET2012 & 88.1(Top5)                                           & 77.0(Top5)                                           \\
         \bottomrule                   
     \end{tabular}
 \end{table}
 
 \subsection{calibtabel 生成}
 
-使用 TensorRT 量化会生成 cache 文件，内部每一行代表每一个 layer 的 Scale Factor，但是 NVDLA 的 Compiler 在进行量化时需要接受 Json 格式的文件，其结构如下：
+使用 TensorRT 量化会生成 cache 文件，内部每一行代表每一个 layer 的 Scale Factor，但是 NVDLA 的 Compiler 在进行量化时需要接受 Json 格式的文件，如下所示：
 
 \begin{lstlisting}
     {"first_conv":
@@ -169,8 +169,7 @@ TensorRT 选择的量化方法是 KL-divergence，即转化为最小化相对熵
          "max": 0,
          "offset": 0,
          "min": 0
-        }
-    },
+    }   },
 \end{lstlisting}
 
 其中 first\_conv 是 Layer 的 name，本设计使用 Python3 结合 PyCaffe 自行编写了 Cache 文件到 Json 文件转化的脚本，该脚本的内容详见附录。

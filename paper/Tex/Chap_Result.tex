@@ -1,10 +1,10 @@
 \chapter{测试与分析}\label{chap:result}
 
-硬件设计完成之后，首先需要经过综合，综合阶段主要查看资源利用率情况确保资源足够。此外，Vivado 还会构建出理想的时钟树，给出理想的 Timing 和功耗报告。但综合阶段的数字电路设计没有映射到实际的物理器件上，所以这部分将基于实现阶段的 Timing 与功耗进行分析。
+硬件设计完成之后，首先需要经过综合，综合阶段主要查看资源利用率情况确保资源足够。此外，Vivado 还会构建出理想的时钟树，给出理想的 Timing 和功耗报告。但综合阶段的数字电路设计没有映射到实际的物理器件上，所以这部分将基于实现阶段的 Timing 与功耗进行分析。最终，本章节将会对本设计的硬件加速系统性能进行评估。
 
 \section{资源利用率}
 
-在硬件设计实现章节，本设计将 NVDLA 内部数量庞大的存储资源替换为了 FPGA 片上的 BRAM 资源，在替换之前，其资源利用率情况如表~\ref{tab:Resource Report Before}所示。
+在硬件设计实现章节，本设计将 NVDLA 内部存储优化为了 FPGA 片上的 BRAM 资源，在替换之前，其资源利用率情况如表~\ref{tab:Resource Report Before}所示。
 
 \begin{table}[!htbp]
     \caption{优化 RAM 之前的资源利用率}
@@ -152,7 +152,7 @@
 如表~\ref{tab:10-100 Mhz Power}，本文还给出了 10Mhz、25Mhz、50Mhz、75Mhz、100Mhz 时钟下的功耗情况，当时钟频率增加的时候，系统的功耗不断增加，其中静态功耗占比较小，约为 10\%，动态功耗的占比较大，约为 90\%。
 
 \begin{table}[!htbp]
-    \caption{10 25 50 75 100 Mhz 功耗}
+    \caption{不同时钟下的功耗情况}
     \label{tab:10-100 Mhz Power}
     \centering
     \footnotesize% fontsize
@@ -175,7 +175,7 @@
 
 \subsection{实验配置}
 
-前文中提到，本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，全部的 prototxt 文件与 loadables 文件详见 Github\cite{nvdla_loadables}。此外，为了对比 CPU 的运行时间，本设计在 ARM A9 处理器上进行了 Caffe 框架的移植与编译，对预训练的 Caffemodel 进行 CPU 侧的推理，由于 CPU 的访存特性，Caffe 在进行推理的时候速度会由慢到快，最终趋于稳定，所以本设计取迭代五十次后取推理时间的平均值。如图~\ref{fig:BootStrap}所示，本节还在主机端基于 Bootstrap 与 JQuery 等 Web 应用技术开发了的网页服务，并通过 Ajax 向后端发送推理请求，运行在 ZYNQ 7000+ 芯片上的 Ubuntu 操作系统里使用 Flask 框架接受请求并且调度。但是在测试过程中进行数据集级别的推理以及与 Caffe 框架进行的比较部分均不在该网页服务里完成。在测试环境中：NVDLA 和 Caffe 的输入 Batch 均为 1；NVDLA 进行推理的数据精度是8位的定点整型，Caffe进行推理的数据精度为32位的浮点型；NVDLA 的运行时间从 UMD 向 KMD 发送任务开始计算，KMD 接收到中断完成任务停止，Caffe 的运行时间由第一层的推理开始计算，到最后一层推理结束停止，仅统计正向传播所用的时间。
+本设计基于 Caffe 框架自行训练了三个网络，其网络结构限于篇幅，全部的 prototxt 文件与 loadables 文件已开源在 Github\cite{nvdla_loadables}。此外，为了对比 CPU 的运行时间，本设计在 ARM A9 处理器上进行了 Caffe 框架的移植与编译，对预训练的 Caffemodel 进行 CPU 侧的推理，由于 CPU 的访存特性，Caffe 在进行推理的时候速度会由慢到快，最终趋于稳定，所以本设计取迭代五十次后取推理时间的平均值。如图~\ref{fig:BootStrap}所示，本节还在主机端基于 Bootstrap 与 JQuery 等 Web 应用技术开发了的网页服务，并通过 Ajax 向后端发送推理请求，运行在 ZYNQ 7000+ 芯片上的 Ubuntu 操作系统里使用 Flask 框架接受请求并且调度。但是在测试过程中进行数据集级别的推理以及与 Caffe 框架进行的比较部分均不在该网页服务里完成。在测试环境中：NVDLA 和 Caffe 的输入 Batch 均为 1；NVDLA 进行推理的数据精度是8位的定点整型，Caffe进行推理的数据精度为32位的浮点型；NVDLA 的运行时间从 UMD 向 KMD 发送任务开始计算，KMD 接收到中断完成任务停止，Caffe 的运行时间由第一层的推理开始计算，到最后一层推理结束停止，仅统计正向传播所用的时间。
 
 \begin{figure}[!htbp]
     \centering
@@ -186,7 +186,7 @@
 
 \subsection{精度对比分析}
 
-本节将 TensorRT 为了量化而采样的一千张图像再次使用 NVDLA 进行推理并验证精度是否存在损失。其中，Resnet18-IMAGENET2012 网络参数较多，而本设计仅有 500MB 左右的片上存储，使得该网络无法在开发板卡上正常推理，精度的得出是使用的 QEMU 虚拟环境，经过 HPC 模拟硬件加速器调度得出。
+本节将 TensorRT 为了量化而采样的一千张图像再次使用 NVDLA 进行推理并验证精度是否存在损失。其中，Resnet18-IMAGENET2012 网络参数较多，而本设计搭建的硬件平台仅有 500MB 左右可用的片上存储，使得该网络无法在开发板卡上正常推理，精度的得出是使用的 QEMU 虚拟环境，经过 HPC 模拟硬件加速器调度得出。
 
 \begin{table}[!htbp]
     \caption{精度对比}
@@ -201,7 +201,7 @@
         \midrule
         Lenet5-MNIST          & 99.7                                                 & 99.5                                                 & 97.5                                                 \\  
         Resnet18-CIFAR10      & 90.2                                                 & 86.7                                                 & 80.7                                                 \\
-        Resnet18-IMAGENET2012 & 60.2(Top5)                                           & 50.5(Top5)                                           & 50.5(Top5)                                           \\
+        Resnet18-IMAGENET2012 & 88.1(Top5)                                           & 77.0(Top5)                                           & 77.0(Top5)                                           \\
         \bottomrule                   
     \end{tabular}
 \end{table}
@@ -210,7 +210,7 @@
 
 \subsection{推理速度分析}
 
-本节针对设计的三个模型统计 NVDLA 的推理速度，其中Resnet18-IMAGENET2012 因为需要分配的内存过大，而无法在板卡上运行，所以本设计没有对运行速度进行评估，其余两个模型，分别推理了一千张图像观察推理的平均耗时。
+本节针对设计的三个模型统计 NVDLA 的推理速度，其中Resnet18-IMAGENET2012 因为需要分配的内存过大，而无法在板卡上运行，所以本设计没有对运行速度进行评估，其余两个模型，分别推理了一千张图像，在 ARM 端，本小节使用 Caffe 对同一模型迭代50次得到平均推理时间。表~\ref{tab:Execution Time}记录了推理的平均耗时情况，图~\ref{fig:Relative Speedup}记录了前五十次推理 NVDLA 相对 Caffe 的加速比。
 
 \begin{table}[!htbp]
     \caption{运行速度}
@@ -229,5 +229,12 @@
         \bottomrule                   
     \end{tabular}
 \end{table}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{SpeedupRatio.pdf}
+    \caption{相对加速比}
+    \label{fig:Relative Speedup}
+\end{figure}
 
 \textbf{实验结论：} 如表~\ref{tab:Execution Time}所示，对于 Lenet5，ARM A9 的推理需要 20ms，而 NVDLA 仅需要 10ms 左右的时间，加速比为 2.4；对于 Resnet18-CIFAR10，在 ARM 侧推理的速度是 Lenet5 的 14.5 倍，但是在 NVDLA 侧推理速度仅为 Lenet5 的 3 倍，加速比为 8.42；在两个网络上，NVDLA 相比于 ARM 侧都能实现不错的加速效果。实验中的 NVDLA 是在 FPGA 上实现的，由于 FPGA 的芯片性能以及硬件资源的限制，使得 NVDLA 的性能得到了限制，其工作频率仅有 100 Mhz，如果使用 ASIC 流程进行 NVDLA 实现，则性能的提升会更加明显，根据中国科学院自动化研究所的研究，在 600 Mhz 的工作频率下，使用 Lenet5 完成一幅图像的推理仅需要 0.2 ms\cite{9040769}。 
