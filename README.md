@@ -1,6 +1,14 @@
 <h1 align="center">ZYNQ-NVDLA</h1>
 
+Here is my final year project for Bachelor，NVDLA Xilinx FPGA Mapping！
+
 [Technical Post](https://leiblog.wang/NVDLA-Xilinx-FPGA-Mapping)
+
+[Graduation Paper](https://leiblog.wang/static/2021-05-30/%E6%9C%AC%E7%A7%91%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E8%AE%BA%E6%96%87.pdf)
+
+## System Design
+
+![系统设计](http://leiblog.wang/static/image/2021/5/SystemDesign.png)
 
 ## File Tree of WorkSpace
 
@@ -12,6 +20,10 @@ reports/ Timing、Power、Resource、Execution reports
 sdk_sanity/ sdk sanity Test for NVDLA
 umd/ User Mode code
 ```
+
+## Test
+
+![](http://leiblog.wang/static/image/2021/5/DNkWv2.png)
 
 ## Reference
 
