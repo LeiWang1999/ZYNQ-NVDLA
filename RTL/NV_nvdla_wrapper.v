@@ -53,23 +53,23 @@ module NV_nvdla_wrapper(
     input [7:0] nvdla_core2dbb_r_rid,
     input nvdla_core2dbb_r_rlast,
     input [64 -1:0] nvdla_core2dbb_r_rdata,
-    output [1:0] m_axi_awburst,
-    output  m_axi_awlock, 
-    output [3:0] m_axi_awcache,
-    output [2:0] m_axi_awprot, 
-    output [3:0] m_axi_awqos,  
-    output  m_axi_awuser, 
-    output  m_axi_wuser,  
-    input  [1:0] m_axi_bresp,
-    input   m_axi_buser,
-    output [1:0] m_axi_arburst,
-    output  m_axi_arlock, 
-    output [3:0] m_axi_arcache,
-    output [2:0] m_axi_arprot, 
-    output [3:0] m_axi_arqos,  
-    output  m_axi_aruser, 
-    input  [1:0] m_axi_rresp,
-    input   m_axi_ruser,
+    output [1:0] nvdla_core2dbb_aw_awburst,
+    output  nvdla_core2dbb_aw_awlock, 
+    output [3:0] nvdla_core2dbb_aw_awcache,
+    output [2:0] nvdla_core2dbb_aw_awprot, 
+    output [3:0] nvdla_core2dbb_aw_awqos,  
+    output  nvdla_core2dbb_aw_awuser, 
+    output  nvdla_core2dbb_w_wuser,  
+    input  [1:0] nvdla_core2dbb_b_bresp,
+    input   nvdla_core2dbb_b_buser,
+    output [1:0] nvdla_core2dbb_ar_arburst,
+    output  nvdla_core2dbb_ar_arlock, 
+    output [3:0] nvdla_core2dbb_ar_arcache,
+    output [2:0] nvdla_core2dbb_ar_arprot, 
+    output [3:0] nvdla_core2dbb_ar_arqos,  
+    output  nvdla_core2dbb_ar_aruser, 
+    input  [1:0] nvdla_core2dbb_r_rresp,
+    input   nvdla_core2dbb_r_ruser,
     // cfg APB
     input psel,
     input penable,
@@ -164,19 +164,19 @@ module NV_nvdla_wrapper(
 assign nvdla_core2dbb_aw_awsize = 3'b011;
 assign nvdla_core2dbb_ar_arsize = 3'b011;
 
-assign m_axi_awburst = 2'b01;
-assign m_axi_awlock  = 1'b0;
-assign m_axi_awcache = 4'b0010;
-assign m_axi_awprot  = 3'h0;
-assign m_axi_awqos   = 4'h0;
-assign m_axi_awuser  = 'b1;
-assign m_axi_wuser   = 'b0;
-assign m_axi_arburst = 2'b01;
-assign m_axi_arlock  = 1'b0;
-assign m_axi_arcache = 4'b0010;
-assign m_axi_arprot  = 3'h0;
-assign m_axi_arqos   = 4'h0;
-assign m_axi_aruser  = 'b1;
+assign nvdla_core2dbb_aw_awburst = 2'b01;
+assign nvdla_core2dbb_aw_awlock  = 1'b0;
+assign nvdla_core2dbb_aw_awcache = 4'b0010;
+assign nvdla_core2dbb_aw_awprot  = 3'h0;
+assign nvdla_core2dbb_aw_awqos   = 4'h0;
+assign nvdla_core2dbb_aw_awuser  = 'b1;
+assign nvdla_core2dbb_w_wuser   = 'b0;
+assign nvdla_core2dbb_ar_arburst = 2'b01;
+assign nvdla_core2dbb_ar_arlock  = 1'b0;
+assign nvdla_core2dbb_ar_arcache = 4'b0010;
+assign nvdla_core2dbb_ar_arprot  = 3'h0;
+assign nvdla_core2dbb_ar_arqos   = 4'h0;
+assign nvdla_core2dbb_ar_aruser  = 'b1;
 
 assign pslverr = 1'b0;
 
