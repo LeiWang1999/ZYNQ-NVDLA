@@ -6083,8 +6083,8 @@
       </xilinx:taxonomies>
       <xilinx:displayName>NV_nvdla_wrapper_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>3</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2021-07-17T10:46:04Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>4</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2021-07-17T13:46:05Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@49eae038_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@41bdc7b9_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
@@ -6109,6 +6109,13 @@
         <xilinx:tag xilinx:name="ui.data.coregen.dd@1afb622b_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@502392b6_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@14e6667_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@50f29d5c_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3a9604e_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@220a3a38_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@75f9ea57_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2628301f_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4b54cd30_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@219e5748_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
