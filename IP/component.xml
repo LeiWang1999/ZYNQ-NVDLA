@@ -6083,8 +6083,8 @@
       </xilinx:taxonomies>
       <xilinx:displayName>NV_nvdla_wrapper_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>4</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2021-07-17T13:46:05Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>5</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2021-07-20T11:12:31Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@49eae038_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@41bdc7b9_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
@@ -6116,6 +6116,18 @@
         <xilinx:tag xilinx:name="ui.data.coregen.dd@2628301f_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@4b54cd30_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@219e5748_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@31c8bbba_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3b196491_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3a2446e_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@54829313_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4d8f6555_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6f480a40_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3ef99e5e_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2cc5db8_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1de07ddf_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5e029917_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@715365dd_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@614961b1_ARCHIVE_LOCATION">c:/Users/tjwan/Desktop/ZYNQ-NVDLA/IP</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
