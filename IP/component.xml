@@ -6083,8 +6083,8 @@
       </xilinx:taxonomies>
       <xilinx:displayName>NV_nvdla_wrapper_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>4</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2021-07-17T13:46:05Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>5</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2021-07-20T11:12:31Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
       </xilinx:tags>
     </xilinx:coreExtensions>
