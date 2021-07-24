@@ -28,56 +28,106 @@ module NV_nvdla_wrapper(
 
     output dla_intr,
     // dbb AXI
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWVALID" *)
     output nvdla_core2dbb_aw_awvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWREADY" *)
     input nvdla_core2dbb_aw_awready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWID" *)
     output [7:0] nvdla_core2dbb_aw_awid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWLEN" *)
     output [3:0] nvdla_core2dbb_aw_awlen,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWSIZE" *)
     output [2:0] nvdla_core2dbb_aw_awsize,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWADDR" *)
     output [64 -1:0] nvdla_core2dbb_aw_awaddr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi WVALID" *)
     output nvdla_core2dbb_w_wvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi WREADY" *)
     input nvdla_core2dbb_w_wready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi WDATA" *)
     output [64 -1:0] nvdla_core2dbb_w_wdata,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi WSTRB" *)
     output [64/8-1:0] nvdla_core2dbb_w_wstrb,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi WLAST" *)
     output nvdla_core2dbb_w_wlast,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARVALID" *)
     output nvdla_core2dbb_ar_arvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARREADY" *)
     input nvdla_core2dbb_ar_arready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARID" *)
     output [7:0] nvdla_core2dbb_ar_arid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARLEN" *)
     output [3:0] nvdla_core2dbb_ar_arlen,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARSIZE" *)
     output [2:0] nvdla_core2dbb_ar_arsize,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARADDR" *)
     output [64 -1:0] nvdla_core2dbb_ar_araddr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi BVALID" *)
     input nvdla_core2dbb_b_bvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi BREADY" *)
     output nvdla_core2dbb_b_bready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi BID" *)
     input [7:0] nvdla_core2dbb_b_bid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi RVALID" *)
     input nvdla_core2dbb_r_rvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi RREADY" *)
     output nvdla_core2dbb_r_rready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi RID" *)
     input [7:0] nvdla_core2dbb_r_rid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi RLAST" *)
     input nvdla_core2dbb_r_rlast,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi RDATA" *)
     input [64 -1:0] nvdla_core2dbb_r_rdata,
-    output [1:0] nvdla_core2dbb_aw_awburst,
-    output  nvdla_core2dbb_aw_awlock, 
-    output [3:0] nvdla_core2dbb_aw_awcache,
-    output [2:0] nvdla_core2dbb_aw_awprot, 
-    output [3:0] nvdla_core2dbb_aw_awqos,  
-    output  nvdla_core2dbb_aw_awuser, 
-    output  nvdla_core2dbb_w_wuser,  
-    input  [1:0] nvdla_core2dbb_b_bresp,
-    input   nvdla_core2dbb_b_buser,
-    output [1:0] nvdla_core2dbb_ar_arburst,
-    output  nvdla_core2dbb_ar_arlock, 
-    output [3:0] nvdla_core2dbb_ar_arcache,
-    output [2:0] nvdla_core2dbb_ar_arprot, 
-    output [3:0] nvdla_core2dbb_ar_arqos,  
-    output  nvdla_core2dbb_ar_aruser, 
-    input  [1:0] nvdla_core2dbb_r_rresp,
-    input   nvdla_core2dbb_r_ruser,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWBURST" *)
+    output [1:0] m_axi_awburst,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWLOCK" *)
+    output  m_axi_awlock, 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWCACHE" *)
+    output [3:0] m_axi_awcache,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWPROT" *)
+    output [2:0] m_axi_awprot, 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWQOS" *)
+    output [3:0] m_axi_awqos,  
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi AWUSER" *)
+    output  m_axi_awuser, 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi WUSER" *)
+    output  m_axi_wuser,  
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi BRESP" *)
+    input  [1:0] m_axi_bresp,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi BUSER" *)
+    input   m_axi_buser,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARBURST" *)
+    output [1:0] m_axi_arburst,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARLOCK" *)
+    output  m_axi_arlock, 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARCACHE" *)
+    output [3:0] m_axi_arcache,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARPROT" *)
+    output [2:0] m_axi_arprot, 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARQOS" *)
+    output [3:0] m_axi_arqos,  
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi ARUSER" *)
+    output  m_axi_aruser, 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi RRESP" *)
+    input  [1:0] m_axi_rresp,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 m_axi RUSER" *)
+    input   m_axi_ruser,
     // cfg APB
+    (* X_INTERFACE_INFO = "xilinx.com:interface:apb:1.0 s_apb PSEL" *)
     input psel,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:apb:1.0 s_apb PENABLE" *)
     input penable,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:apb:1.0 s_apb PWRITE" *)
     input pwrite,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:apb:1.0 s_apb PADDR" *)
     input [31:0] paddr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:apb:1.0 s_apb PWDATA" *)
     input [31:0] pwdata,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:apb:1.0 s_apb PRDATA" *)
     output [31:0] prdata,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:apb:1.0 s_apb PREADY" *)
     output pready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:apb:1.0 s_apb PSLVERR" *)
     output pslverr
     );
 
@@ -164,19 +214,19 @@ module NV_nvdla_wrapper(
 assign nvdla_core2dbb_aw_awsize = 3'b011;
 assign nvdla_core2dbb_ar_arsize = 3'b011;
 
-assign nvdla_core2dbb_aw_awburst = 2'b01;
-assign nvdla_core2dbb_aw_awlock  = 1'b0;
-assign nvdla_core2dbb_aw_awcache = 4'b0010;
-assign nvdla_core2dbb_aw_awprot  = 3'h0;
-assign nvdla_core2dbb_aw_awqos   = 4'h0;
-assign nvdla_core2dbb_aw_awuser  = 'b1;
-assign nvdla_core2dbb_w_wuser   = 'b0;
-assign nvdla_core2dbb_ar_arburst = 2'b01;
-assign nvdla_core2dbb_ar_arlock  = 1'b0;
-assign nvdla_core2dbb_ar_arcache = 4'b0010;
-assign nvdla_core2dbb_ar_arprot  = 3'h0;
-assign nvdla_core2dbb_ar_arqos   = 4'h0;
-assign nvdla_core2dbb_ar_aruser  = 'b1;
+assign m_axi_awburst = 2'b01;
+assign m_axi_awlock  = 1'b0;
+assign m_axi_awcache = 4'b0010;
+assign m_axi_awprot  = 3'h0;
+assign m_axi_awqos   = 4'h0;
+assign m_axi_awuser  = 'b1;
+assign m_axi_wuser   = 'b0;
+assign m_axi_arburst = 2'b01;
+assign m_axi_arlock  = 1'b0;
+assign m_axi_arcache = 4'b0010;
+assign m_axi_arprot  = 3'h0;
+assign m_axi_arqos   = 4'h0;
+assign m_axi_aruser  = 'b1;
 
 assign pslverr = 1'b0;
 
