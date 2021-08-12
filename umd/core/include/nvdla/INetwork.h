@@ -63,9 +63,11 @@ public:
     virtual ITensor* addInput(const char * name, Dims4 dimensions) = 0;
 
     //	virtual void markChanged(const ILayer *) = 0;
+    //  指定网络的 Input 和 Output Tensor
     virtual bool markInput(ITensor * tensor) = 0;
     virtual void markOutput(ITensor * tensor) = 0;
-
+    // 构建网络的API函数，理论上通过以下这组add函数，就可以不使用caffe模型，手工的创建一个网络，类似大多数框架提供的网络构造API函数。
+    // 但NVDLA似乎没有对外开放这组接口用于手工构造网络，TVM框架就对外开放了这组接口
     virtual IConvolutionLayer *    addConvolution   (ITensor * input, int numOutputs, int paddingValue, Dims2 kernelSize,
                                                     Dims2 tlPadding, Dims2 brPadding, Dims2 stride, Dims2 dilation,
                                                     Weights kernelWeights, Weights biasWeights, BiasMode biasMode, int numGroups) = 0;

@@ -295,8 +295,10 @@ void Tensor::setTensorType(TensorType t)
 NvDlaError Tensor::setChannelDynamicRange(NvS32 chnlIndx, NvF32 min, NvF32 max)
 {
     NvDlaError e = NvDlaSuccess;
+    // min/max = scale * +- 127 -> max(min,max)/127.0 = scale
     NvF32 scaleFactor = std::max<NvF32>(std::fabs(min), std::fabs(max))/127.0;
 
+    // 输入的 chnlIndx 数不能大于 Tensor 的 Channel 数
     if (chnlIndx >= mDimensions.c)
     {
         e = NvDlaError_BadParameter;
@@ -306,7 +308,9 @@ NvDlaError Tensor::setChannelDynamicRange(NvS32 chnlIndx, NvF32 min, NvF32 max)
     {
         // clear existing scales and adjust vector capacity if need be before inserting
         mChnlScales.clear();
+        // mChnlScales 是一个 Vector、reserve 是为其开辟了内存空间，但是这个 Vector 的 Size 没有改变
         mChnlScales.reserve(mDimensions.c);
+        // As we can see, 如果指定 -1，那就是对 Tensor 的每个通道都使用同一个 scaleFactor
         for (NvU32 cc = 0; cc < static_cast<NvU32>(mDimensions.c); ++cc)
         {
             mChnlScales.push_back(scaleFactor);
@@ -315,6 +319,7 @@ NvDlaError Tensor::setChannelDynamicRange(NvS32 chnlIndx, NvF32 min, NvF32 max)
     else
     {
         // adjust vector capacity before inserting
+        // 否则就只设置 chnlIndx 这个通道的 scaleFactor
         if (mChnlScales.capacity() < (size_t)mDimensions.c)
         {
             mChnlScales.reserve(mDimensions.c);

@@ -210,6 +210,8 @@ template <typename I, typename P>
 class PrivPair
 {
 public:
+    // I 表示的是 接口 Interface
+    // P 表示的就是 私密的 Private
     typedef I InterfaceType;
     typedef P PrivateType;
 

@@ -393,20 +393,15 @@ NvDlaError runTest(const TestAppArgs* appArgs, TestInfo* i)
     PROPAGATE_ERROR_FAIL(setupOutputBuffer(appArgs, i, &pOutputBuffer));
     NvDlaDebugPrintf("submitting tasks...\n");
     clock_gettime(CLOCK_MONOTONIC, &before);
-//    for(size_t idx = 0; idx <= 20; ++idx) {
-//        struct timespec _before, _after;
-//        clock_gettime(CLOCK_MONOTONIC, &_before);
-        if (!runtime->submit())
-            ORIGINATE_ERROR(NvDlaError_BadParameter, "runtime->submit() failed");
-//        clock_gettime(CLOCK_MONOTONIC, &_after);
-//        NvDlaDebugPrintf("idx = %d : execution time = %f us\n", idx, get_elapsed_time(&_before,&_after));
-//    }
+    if (!runtime->submit())
+        ORIGINATE_ERROR(NvDlaError_BadParameter, "runtime->submit() failed");
+
     clock_gettime(CLOCK_MONOTONIC, &after);
-    NvDlaDebugPrintf("execution Total time = %f us\n", get_elapsed_time(&before,&after));
+    NvDlaDebugPrintf("execution time = %f s\n", get_elapsed_time(&before,&after));
 
     PROPAGATE_ERROR_FAIL(DlaBuffer2DIMG(&pOutputBuffer, i->outputImage));
 
-//    i->outputImage->printBuffer(true);   /* Print the output buffer */
+    //i->outputImage->printBuffer(true);   /* Print the output buffer */
 
     /* Dump output dimg to a file */
     PROPAGATE_ERROR_FAIL(DIMG2DIMGFile(i->outputImage,
@@ -452,7 +447,6 @@ NvDlaError run(const TestAppArgs* appArgs, TestInfo* i)
         ORIGINATE_ERROR(NvDlaError_DeviceNotFound, "runtime->initEMU() failed");
 
     /* Run test */
-
     PROPAGATE_ERROR_FAIL(runTest(appArgs, i));
 
 fail:

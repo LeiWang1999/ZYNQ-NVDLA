@@ -406,13 +406,13 @@ NvDlaError Compiler::compileInternal(const char *tp_name, const char *target_con
     {
         ORIGINATE_ERROR_FAIL(NvDlaError_BadParameter, "No profiler available.");
     }
-
+    // ？？？？这里为什么要再来一下，总之很迷惑，这个在之前已经解析过了啊
     profile = ProfileFactory::priv(profiler->getProfile(tp_name));
     if ( !profile )
     {
         ORIGINATE_ERROR_FAIL(NvDlaError_BadParameter, "Couldn't find profile to compile.");
     }
-
+    // 将 target_config_name 转换为 target_config 对象
     target_config = TargetConfigFactory::priv(profiler->getTargetConfig(target_config_name));
     if ( !target_config )
     {
@@ -471,7 +471,7 @@ NvDlaError Compiler::compileInternal(Profile *profile, TargetConfig *target_conf
         gLogInfo << "\ttensor scaling mode " << profile->tensorScalingMode().c_str() << endl;
         gLogInfo << "\tquantization mode " << profile->quantizationMode().c_str() << endl;
     }
-
+    // 生成 canonical_ast，原始的抽象语法树，不带有硬件信息
     can_g = canonical_ast::generateGraph(net);
     if ( !can_g )
     {
@@ -485,7 +485,7 @@ NvDlaError Compiler::compileInternal(Profile *profile, TargetConfig *target_conf
         PROPAGATE_ERROR_FAIL( dump_can.visitElems( can_g->scoredOrdering()) );
     }
 
-
+    // 将 canonical_ast 转换为 engine_ast
     g.push_back( engine_ast::generateGraph(profile, target_config, can_g) );
     if ( !g.back() )
     {
@@ -499,31 +499,31 @@ NvDlaError Compiler::compileInternal(Profile *profile, TargetConfig *target_conf
         dump_eng.setFilename("engine_g.json");
         PROPAGATE_ERROR_FAIL( dump_eng.visitElems( g.back()->scoredOrdering()) );
     }
-
+    // 注册缓存，这个也不知道是干嘛用的（
     g.push_back( registerBuffers(g.back()) );
     if ( !g.back() )
     {
         PROPAGATE_ERROR_FAIL(NvDlaError_InvalidState, "failed compilation phase: registerBuffers");
     }
-
+    // 只对第一层 ConvOP 的权重数据进行了量化
     g.push_back( preProcessAuxData(g.back()) );
     if ( !g.back() )
     {
         PROPAGATE_ERROR_FAIL(NvDlaError_InvalidState, "failed compulation phase: preProcessAuxData");
     }
-
+    // 主要是针对 RELU 来说的，Relu 就是一个 Scale、
     g.push_back( mergeActivationOperations(g.back()) );
     if ( !g.back() )
     {
         PROPAGATE_ERROR_FAIL(NvDlaError_InvalidState, "failed compilation phase: mergeActivationOperations");
     }
-
+    // Merge Scale Operation
     g.push_back( updateScalingFactors(g.back()) );
     if ( !g.back() )
     {
         PROPAGATE_ERROR_FAIL(NvDlaError_InvalidState, "failed compilation phase: updateScalingFactors");
     }
-
+    // Quantize Data from fp32 - > int16
     g.push_back( quantizeAuxData(g.back()) );
     if ( !g.back() )
     {

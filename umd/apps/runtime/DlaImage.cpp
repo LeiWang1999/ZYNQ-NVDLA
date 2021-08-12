@@ -342,7 +342,7 @@ NvDlaError NvDlaImage::packData(std::stringstream& sstream, bool stableHash, boo
                                 // Push negative zeros to positive zeros
                                 tmp = 0x0;
                             }
-                            else if (isnan(tmp))
+                            else if (std::isnan(tmp))
                             {
                                 // Emit only one version of NaN
                                 tmp = 0x7FBFFFFF;

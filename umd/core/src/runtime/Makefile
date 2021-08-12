@@ -49,6 +49,7 @@ MODULE_CPPFLAGS := --std=c++11 -fexceptions -fno-rtti
 all:: $(LIB)
 
 include rules.mk
+
 # the logic to compile and link stuff is in here
 $(LIB): $(ALLMODULE_OBJS)
 	@echo building $(MODULE)  $@
