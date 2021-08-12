@@ -44,6 +44,7 @@
 #include "ErrorMacros.h"
 
 
+
 using std::map;
 using std::vector;
 using std::set;
@@ -174,7 +175,7 @@ engine_ast::Graph::~Graph()
         delete m_scored_ordering;
     }
 }
-
+//这个函数完成的是两个graph的转换，通过参数可以看到，输入不仅仅由can_graph,还有编译器的profile和编译目标配置target_config，说明转换后的graph应该反应部分硬件和编译选项的要求
 engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *target_config, canonical_ast::Graph *can_graph)
 {
     NvDlaError e = NvDlaSuccess;
@@ -197,7 +198,7 @@ engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *tar
     {
         ORIGINATE_ERROR_FAIL(NvDlaError_BadParameter, "must associate target_config with Engine AST generateGraph");
     }
-
+    //编译目标是否支持批处理
     if (target_config->isBatchModeCapable())
     {
         NvU32 numBatches = profile->multiBatchSize();
@@ -208,13 +209,14 @@ engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *tar
             ORIGINATE_ERROR_FAIL(NvDlaError_BadValue, "numbatches is greater than allowed maxbatches (%d)", maxBatches);
         }
     }
-
+    // 建立engine_graph对象，参数是profile和target_config
     eng_graph  = new engine_ast::Graph(profile, target_config);
     if ( !eng_graph )
     {
         ORIGINATE_ERROR_FAIL(NvDlaError_InsufficientMemory, "Can't create a new Engine AST");
     }
-
+    //初始化eng_graph的资源，主要是内存池和LutManager，内存池包括GLOBAL_DRAM_POOL，LOCAL_DRAM_POOL
+    //如果profile开启了SRAM，那么还有LOCAL_CVSRAM_POOL，这三个mempool的大小由profile参数指定
     e = eng_graph->initGraphResources();
     if (e != NvDlaSuccess)
     {
@@ -222,16 +224,17 @@ engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *tar
         eng_graph = NULL;
         ORIGINATE_ERROR_FAIL(NvDlaError_InsufficientMemory, "Couldn't initialize all graph resources");
     }
-
+    // engine graph 访问计分板
     eng_graph->setScoredOrdering( new ScoredDependencyOrdering(eng_graph) );
     eng_graph->setOrdering(new DependencyOrdering(eng_graph->scoredOrdering()));
 
     //
     // create edges to mirror the canonical edges.
-    //
+    // 这里可以看语法树的转换，canonical_ast 的 edge 是被复制到 engine_ast 上的
     for ( set<canonical_ast::Edge *>::iterator cei = can_graph->edges().begin(), CEI = can_graph->edges().end();
           cei != CEI; ++cei )
     {
+        //根据canonical_ast::Edge建立engine_ast::Edge对象
         engine_ast::Edge* engine_edge = new engine_ast::Edge(*cei);
         Tensor* engine_tensor = 0;
         if ( !engine_edge )
@@ -240,68 +243,84 @@ engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *tar
             eng_graph = NULL;
             ORIGINATE_ERROR_FAIL(NvDlaError_InsufficientMemory, "Couldn't transform canonical edge '%s' into engine edge", (*cei)->id().c_str());
         }
-
-        engine_tensor = (*cei)->originalTensor()->clone();
+      //engine_tensor复制自can_tensor,前面讲过can_tensor其实是clone自network的tensor
+      engine_tensor = (*cei)->originalTensor()->clone();
         engine_tensor->setDataFormat(nvdla::DataFormat::NCHW); // all tensors are NCHW unless otherwise specified
-        engine_tensor->setNetwork(NULL);                       // get rid of any connections back to the network builder
+        engine_tensor->setNetwork(NULL);                       // get rid of any connections back to the network builder 这里在创建can_tensor的时候已经变成 NULL 了。。
 
-        engine_edge->setGraph(eng_graph);
-        engine_edge->setId(eng_graph->nextEdgeId());
-        engine_edge->setDataEdge();
-        engine_edge->setOriginalTensor(engine_tensor);
+        engine_edge->setGraph(eng_graph); //指定engine_edge的container为eng_graph
+        engine_edge->setId(eng_graph->nextEdgeId()); //设定engine_edge的Id，string类型，e-0,e-1等
+        engine_edge->setDataEdge(); //设定edge的type为DATA
+        engine_edge->setOriginalTensor(engine_tensor); //指定edge关联的tensor
 
-        can_to_eng_edge_map[*cei] = engine_edge;
-        eng_graph->insertEdge(engine_edge);
+        can_to_eng_edge_map[*cei] = engine_edge; //建立can_edge和engine_edge的关联MAP
+        eng_graph->insertEdge(engine_edge); //把engine_edge加入eng_graph的edge列表
 
     }
-
+    //如果没有指定multibatchsize，则根据network的input tensor的n指定推导multibatchsize
+    //如果指定了multibatchsize，那就按照multibatchsize来执行
     if (profile->multiBatchSize() == 0)
     {
         // Patch up profile->multiBatchSize()
         // The compiler should be querying this information from the network instead of the profile
 
         // Collect the multibatch size of the network, based on the input tensor dimensions
+        // 设置输入的维度
         for ( vector<canonical_ast::Edge *>::const_iterator cie = can_graph->inputEdges().begin();
                     cie != can_graph->inputEdges().end(); ++cie)
         {
             engine_ast::Edge *input_edge = can_to_eng_edge_map[*cie];
             Dims4 networkDims = input_edge->originalTensor()->getDimensions();
 
-            PROPAGATE_ERROR_FAIL(profile->setMultiBatchSize(networkDims.n));
+            //根据input_edge的tensor Dimension的n，设定profile的multibatchsize
+          PROPAGATE_ERROR_FAIL(profile->setMultiBatchSize(networkDims.n));
         }
     }
 
     //
     // create nodes to mirror the canonical nodes
-    //
+    // 迭代can_graph的所有nodes
     for ( set<canonical_ast::Node *>::iterator cni = can_graph->nodes().begin(), CNI = can_graph->nodes().end();
           cni != CNI; ++cni )
     {
-        engine_ast::Graph::EdgeSequence engSrcEdges;
-        engine_ast::Graph::EdgeSequence engSinkEdges;
-        engine_ast::Graph::NodeSequence engNodes;
-        canonical_ast::Graph::EdgeSequence canSrcEdges = can_graph->nodeEdges(*cni, ast::EdgeSideEnum::SECOND);
-        canonical_ast::Graph::EdgeSequence canSinkEdges = can_graph->nodeEdges(*cni, ast::EdgeSideEnum::FIRST);
+        engine_ast::Graph::EdgeSequence engSrcEdges; //engine_graph的SrcEdges
+        engine_ast::Graph::EdgeSequence engSinkEdges; //engine_graph的SinkEdges
+        engine_ast::Graph::NodeSequence engNodes; //engine_graph的Nodes
+        canonical_ast::Graph::EdgeSequence canSrcEdges = can_graph->nodeEdges(*cni, ast::EdgeSideEnum::SECOND); //can_graph的当前node的inputedge的总和
+        canonical_ast::Graph::EdgeSequence canSinkEdges = can_graph->nodeEdges(*cni, ast::EdgeSideEnum::FIRST); //can_graph的当前node的outputedge的总和
         canonical_ast::Graph::EdgeSequenceIterator cei;
-
+        // 这里就是复制一下Src、SinkEdge
+        // 找出所有canSrcEdges对应的engine_edge,放入engSrcEdges列表
         for (cei = canSrcEdges.begin(); cei != canSrcEdges.end(); ++cei)
         {
             engSrcEdges.push_back(can_to_eng_edge_map[*cei]);
         }
-
+        // 找出所有canSinkEdges对应的engine_edge,放入engSinkEdges列表
         for (cei = canSinkEdges.begin(); cei != canSinkEdges.end(); ++cei)
         {
             engSinkEdges.push_back(can_to_eng_edge_map[*cei]);
         }
-
+        //从当前的can_node转化出eng_nodes，之所以是end_nodes是因为一个can_node可以对应2，3个eng_nodes
+        //转换完毕是否把结果的engNodes挂在eng_graph上？？？需要详细看transformCanNode()函数代码
         e = transformCanNode(eng_graph, *cni, engSrcEdges, engSinkEdges, engNodes);
         if ( e != NvDlaSuccess )
         {
             delete eng_graph; // blow up
             eng_graph = NULL;
-            ORIGINATE_ERROR_FAIL(e, "Couldn't transform canonical node '%s' into engine node", (*cni)->id().c_str());
+            ORIGINATE_ERROR_FAIL(e, "Couldn't transform"
+                                    " canonical node '%s' into engine node", (*cni)->id().c_str());
         }
-
+        //n-0:->n-0:dc-conv-0 n-1:bias-0
+        //n-1:->n-2:pdp-0
+        //n-2:->n-3:dc-conv-1 n-4:bias-1
+        //n-3:->n-5:pdp-1
+        //n-4:->n-6:fc-0 n-7:bias-2
+        //n-5:->n-8:sdp-scale-0 n-9:act-0
+        //n-6:->n-10:fc-1 n-11:bias-3
+        //n-7:->n-12:cpu-sm-0
+        //上面列出的就是transformCanNode()函数的转换结果，可以看到1个can_node有可能转换成2个eng_node
+        //是因为can_node是直接对那个network模型的node，而在engine中，一个network模型中的node有可能是
+        //需要2个engine前后协同计算才能得到结果，所有这里的eng_node其实已经是映射到硬件上的node了
         if ( eng_graph->debugGraphDump() )
         {
             gLogInfo << (*cni)->id() << ":->";
@@ -313,20 +332,26 @@ engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *tar
         }
     }
 
-    for ( vector<canonical_ast::Edge *>::const_iterator cie = can_graph->inputEdges().begin();
+  //迭代can_graph的所有inputEdges
+  for ( vector<canonical_ast::Edge *>::const_iterator cie = can_graph->inputEdges().begin();
             cie != can_graph->inputEdges().end(); ++cie)
     {
-        engine_ast::Edge *first_edge = can_to_eng_edge_map[can_graph->inputEdges().front()];
-        engine_ast::Edge *input_edge = can_to_eng_edge_map[*cie];
-        input_edge->originalTensor()->setDataFormat(profile->networkInputDataFormat());
-
-        // Determine if multibatch parameters are consistent for all input tensors
+      //找出can_graph的首个inputEdge对应的eng_edge
+      engine_ast::Edge *first_edge = can_to_eng_edge_map[can_graph->inputEdges().front()];
+      //当前迭代的can_edge对应的eng_edge
+      engine_ast::Edge *input_edge = can_to_eng_edge_map[*cie];
+      //当前eng_edge对应的tensor格式设定为profile指定的InputDataFormat
+      input_edge->originalTensor()->setDataFormat(profile->networkInputDataFormat());
+      // 要求所有的inputedge的multibatch参数n必须一致
+      // Determine if multibatch parameters are consistent for all input tensors
         if (first_edge->originalTensor()->getDimensions().n != input_edge->originalTensor()->getDimensions().n)
         {
             ORIGINATE_ERROR_FAIL(NvDlaError_BadValue, "Input tensor multibatch dimensions mismatch: %d != %d", first_edge->originalTensor()->getDimensions().n, input_edge->originalTensor()->getDimensions().n);
         }
 
         Dims4 networkDims = input_edge->originalTensor()->getDimensions();
+      //拿所有inputedge的multibatch参数n和profile指定的multibatch参数进行比较，如果不一致
+      //则以profile指定的参数为准，并把inputedge中的tensor变量的networkDims.n更新为profile指定的值
         if ( networkDims.n != (NvS32)profile->multiBatchSize() )
         {
             gLogWarning << "Overriding input multibatch size from " << networkDims.n << " to " << profile->multiBatchSize() << endl;
@@ -335,6 +360,9 @@ engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *tar
         }
 
         // if it is IMG input format, ensure #chnls match between model and profile params
+        // 如果profile指定的输入IMG tensor的channel数与network提供的networkDims.c不一致
+        // 则以profile设定的input tensor的channel值为准，同时更新engine_graph的inputedge对应的tensor
+        // 的networkDims.c的值
         if ( profile->networkInputSurfaceFormat().category() == surface::SurfaceCategoryEnum::IMG &&
              networkDims.c != profile->networkInputSurfaceFormat().channelsPerAtom())
         {
@@ -372,7 +400,9 @@ engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *tar
                 input_edge->originalTensor()->setChannelOffsets(channelOffsets);
             }
         }
-
+      // 这个bindid好像只是整个图的input和output的edge才设定，这个函数只是设定两个变量而已
+      // m_bindDomain = bindDomain; m_bindId = id; bingDomain有input output debug三种
+      // 这个bindid也是随着inputedge的增加顺序往后排
         input_edge->setBindId(input_edges.size(), IOD_Input);
         if ( eng_graph->debugBinding() )
         {
@@ -383,13 +413,14 @@ engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *tar
         input_edges.push_back( input_edge );
     };
 
+    // 设定整个eng_graph的inputedge列表为input_edges
     if ( input_edges.size() )
     {
         eng_graph->setInputEdges(input_edges);
     }
 
-
-    for ( vector<canonical_ast::Edge *>::const_iterator coe = can_graph->outputEdges().begin();
+  //按照以上处理inputedge的方法，处理所有的outputedges
+  for ( vector<canonical_ast::Edge *>::const_iterator coe = can_graph->outputEdges().begin();
             coe != can_graph->outputEdges().end(); ++coe)
     {
         engine_ast::Edge *output_edge = can_to_eng_edge_map[*coe];
@@ -412,12 +443,22 @@ engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *tar
 
         output_edges.push_back( output_edge );
     };
+  //设定整个eng_graph的outputedge列表为output_edges
 
-    if ( output_edges.size() )
+  if ( output_edges.size() )
     {
         eng_graph->setOutputEdges(output_edges);
     }
-
+    // 打印所有eng_node的name，编号，以及对应的can_node的name
+    // 同时打印每个eng_node的所有input output aux类型的edge
+    //libnvdla<3> dc-conv-0/n-0/conv1:
+    //libnvdla<3> 	in e-0
+    //libnvdla<3> 	out e-11
+    //libnvdla<3> 	aux e-9
+    //libnvdla<3> bias-0/n-1/conv1:
+    //libnvdla<3> 	in e-11
+    //libnvdla<3> 	out e-1
+    //libnvdla<3> 	aux e-10
     // cache input/output/aux edges of each node into their respective data ports
     if ( eng_graph->debugGraphDump() )
     {
@@ -474,14 +515,14 @@ engine_ast::Graph *engine_ast::generateGraph(Profile *profile, TargetConfig *tar
 fail:
     return NULL;
 }
-
+//transformCanConvOp完成conv类型的canNode到engNode的转换操作
 static NvDlaError transformCanConvOp
 (
     engine_ast::Graph* engGraph,
-    canonical_ast::Node *canNode,
+    canonical_ast::Node *canNode, //输入是一个canNode
     engine_ast::Graph::EdgeSequence engSrcEdges,
     engine_ast::Graph::EdgeSequence engSinkEdges,
-    engine_ast::Graph::NodeSequence& transformedEngNodes
+    engine_ast::Graph::NodeSequence& transformedEngNodes //输出是一个或多个engNodes
 )
 {
     NvDlaError e = NvDlaSuccess;
@@ -498,26 +539,33 @@ static NvDlaError transformCanConvOp
     canonical_ast::Graph::EdgeSequence canInputEdges   = canNode->graph()->inputEdges();
     canonical_ast::Graph::EdgeSequence canOutputEdges  = canNode->graph()->outputEdges();
 
+    //转换操作只支持conv的输入输出edge都是1的类型
     if (engSrcEdges.size() != 1 || engSinkEdges.size() != 1)
     {
         ORIGINATE_ERROR_FAIL(NvDlaError_NotSupported, "Don't support Conv operation with input edges (%d) != 1 or "
                                                    "output edges (%d) != 1", engSrcEdges.size(), engSinkEdges.size());
     }
 
-    engSrcEdge     = engSrcEdges[0];
-    engSinkEdge    = engSinkEdges[0];
+    engSrcEdge     = engSrcEdges[0]; //实际上engSrcEdges[]数组也只有一个元素
+    engSinkEdge    = engSinkEdges[0]; //实际上engSinkEdge[]数组也只有一个元素
+    //canNode转换为canConvNode
     canConvNode    = canonical_ast::NodeFactory::nodeCast<canonical_ast::ConvolutionNode*>(canNode);
+    //根据canConvNode构造engConvNode<这条语句后面单独解析>
     engConvNode    = engine_ast::NodeFactory::newConvCoreConvolutionOpNode(canConvNode, engGraph);
+  //adjointSDPNode是由engConvNode根据canConvNode创建的，创建完毕直接和engConvNode进行关联
     adjointSDPNode = engConvNode->addSDPJointOpNode(canConvNode);
-    adjointSDPNode->params().setConvMode(engConvNode->params().convMode());
+  //设定adjointSDPNode工作模式，因为SDP引擎功能较多
+  adjointSDPNode->params().setConvMode(engConvNode->params().convMode());
 
     ASSERT( canNode->inputEdges().size() == 1 );
     ASSERT( canNode->outputEdges().size() == 1 );
-
+    //判断当前要转换的节点的输入edge是否是整个graph的输入edge
     isInputBindable  = std::find(canInputEdges.begin(), canInputEdges.end(), canNode->inputEdges().at(0)) != canInputEdges.end();
+    //判断当前要转换的节点的输出edge是否是整个graph的输出edge
     isOutputBindable = std::find(canOutputEdges.begin(), canOutputEdges.end(), canNode->outputEdges().at(0)) != canOutputEdges.end();
+    //判断engConvNode的conv模式是否是WINOGRAD
     isWG             = engConvNode->params().convMode() == engine_ast::ConvolutionModeEnum::CONV_WINOGRAD;
-
+    //WINOGRAD模式的conv操作不适合作为系统的输入或者输出节点
     if (isWG && (isInputBindable || isOutputBindable))
     {
         gLogWarning << "Can't use WG mode with bindable surfaces. Falling back to CONV_DIRECT for "
@@ -527,18 +575,20 @@ static NvDlaError transformCanConvOp
         engConvNode->params().setConvMode(engine_ast::ConvolutionModeEnum::CONV_DIRECT);
         adjointSDPNode->params().setConvMode(engine_ast::ConvolutionModeEnum::CONV_DIRECT);
     }
-
+    //把engSrcEdge连接到刚刚创建的engConvNode的输入edge侧
     engGraph->appendNodeToEdge(engSrcEdge, ast::EdgeSideEnum::SECOND, engConvNode);
+    //把engSinkEdge连接到刚刚创建的adjointSDPNode的输出edge侧
     engGraph->appendNodeToEdge(engSinkEdge, ast::EdgeSideEnum::FIRST, adjointSDPNode);
-
+    //为engConvNode创建并关联auxEdge，这个auxEdge用来向conv节点输入weight数据
     PROPAGATE_ERROR_FAIL(engConvNode->nodeAuxEdge(&convAuxEdge));
+    //为adjointSDPNode创建并关联auxEdge，这个auxEdge用来向sdp节点输入bias数据
     PROPAGATE_ERROR_FAIL(adjointSDPNode->nodeAuxEdge(&sdpAuxEdge));
 
     PROPAGATE_ERROR_FAIL(engConvNode->populateEdgePorts());
-    transformedEngNodes.push_back(engConvNode);
+    transformedEngNodes.push_back(engConvNode); //把engConvNode加入函数返回node列表中
 
     PROPAGATE_ERROR_FAIL(adjointSDPNode->populateEdgePorts());
-    transformedEngNodes.push_back(adjointSDPNode);
+    transformedEngNodes.push_back(adjointSDPNode); //把adjointSDPNode加入函数返回node列表中
 
     if (isWG)
     {

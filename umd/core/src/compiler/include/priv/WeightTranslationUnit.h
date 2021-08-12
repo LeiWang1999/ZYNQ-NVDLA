@@ -178,9 +178,9 @@ class WeightTrns
         )
         {
             std::vector<NvF32> filterScales;
-            NvF32 max = std::numeric_limits<NvF32>::lowest();
+            NvF32 max = std::numeric_limits<NvF32>::lowest(); // 先把 max 初始化为 FLoat 32 的最小值
             const MP* origWts = reinterpret_cast<const MP*>(const_cast<void*>(highPrecWts.values));
-
+            // 获取所有Tensor的最大值
             for (NvS32 g = 0; g < G; g++)
             {
                 NvS32 gOffset = g * K * C * RS;
@@ -196,7 +196,7 @@ class WeightTrns
             }
 
             NvF32 scale = max / 127, invScale = 1 / scale;
-
+            // 开始量化
             for (NvS32 g = 0; g < G; g++)
             {
                 NvS32 gOffset = g * K * C * RS;

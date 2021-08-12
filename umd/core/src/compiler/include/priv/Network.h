@@ -53,12 +53,14 @@ class Network;
 class NetworkFactory
 {
 public:
+    // PrivPair 是一个模版类，用来描述接口和具体实现之间的映射关系
     typedef PrivPair<INetwork *, Network*> NetworkPrivPair;
 
     static NetworkPrivPair newNetwork();
     static NvDlaError deleteNetwork(INetwork *network);
-
+    // 通过 INetwork 访问到对应的 Network
     static Network *priv(INetwork *);
+    // 通过 Network 访问到对应的 INetwork
     static INetwork *i(Network *);
     static INetwork *self(void *s);
 

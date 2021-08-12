@@ -2511,10 +2511,10 @@ ac_config_headers="$ac_config_headers config.h"
 # autoconf's default CXXFLAGS are usually "-g -O2".  These aren't necessarily
 # the best choice for libprotobuf.
 if test "x${ac_cv_env_CFLAGS_set}" = "x"; then :
-  CFLAGS=""
+  CFLAGS="-fPIC"
 fi
 if test "x${ac_cv_env_CXXFLAGS_set}" = "x"; then :
-  CXXFLAGS=""
+  CXXFLAGS="-fPIC"
 fi
 
 ac_aux_dir=

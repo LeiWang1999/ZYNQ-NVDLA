@@ -220,7 +220,7 @@ bool Wisdom::setNetworkTransient(INetwork *inetwork)
     // since the network ultimately refers to them all, just triggering
     // it's symbols to be resolved is sufficient to be able to deserialize
     // it later.
-    //
+    // 设置符号表（symbol table），具体可以看 wisdom -> symbol table
     bool ok = network->assignSymbols(m_container->wisdom_priv());
     m_network = network;
     return ok;

@@ -78,14 +78,18 @@ NvDlaError parseTensorScales(const TestAppArgs* appArgs, TestInfo *i, nvdla::INe
             std::vector<nvdla::ITensor*>::iterator nii = networkInputs.begin();
 
             // set scaling factor for the network input tensors
+            // 这里是对输入的数据进行量化，一般是 data 层
             for (; nii != networkInputs.end(); ++nii)
             {
                 NvF32 scale = 0.0f;
                 NvF32 min = 0.0f;
                 NvF32 max = 0.0f;
                 std::string tName = (*nii)->getName();
+                // 可以发现这里是根据每个 Layer 的 Name 来索引网络的 scale，也就是说 TensorRT 量化出来的那个是不能直接用的，详情见之前的博客
                 if (doc[tName.c_str()].HasMember("scale")) {
+                    // 因为出来的都是 scale，所以总是会使用这个分支的
                     scale = doc[tName.c_str()]["scale"].GetFloat();
+                    // min 和 max 都是根据 scale 来调整上下届，具体的量化算法是什么呢？
                     min = scale * -127.0f;
                     max = scale * 127.0f;
                 }
@@ -101,8 +105,8 @@ NvDlaError parseTensorScales(const TestAppArgs* appArgs, TestInfo *i, nvdla::INe
                 PROPAGATE_ERROR_FAIL( (*nii)->setChannelDynamicRange(-1, min, max) );
                 const_cast<TestAppArgs*>(appArgs)->tensorScales.insert(std::pair<std::string, NvF32>(tName, scale));
             }
-
-            for (; li != networkLayers.end(); ++li)
+          //  这里是提取每一层Layer的Scale信息
+          for (; li != networkLayers.end(); ++li)
             {
                 NvF32 scale = 0.0f;
                 NvF32 min = 0.0f;
@@ -158,6 +162,7 @@ static NvDlaError parseCaffeNetwork(const TestAppArgs* appArgs, TestInfo* i)
         ORIGINATE_ERROR_FAIL(NvDlaError_BadParameter, "Unable to parse caffemodel: \"%s\"", caffePrototxtFile.c_str());
 
     // if the application has so far not marked the network's outputs, allow the parser to do so now
+    // 锁定最后一个整个网络的输出层
     if (network->getNumOutputs() <= 0)
     {
         int outs = parser->identifyOutputs(network);
@@ -230,10 +235,11 @@ NvDlaError parseAndCompile(const TestAppArgs* appArgs, TestInfo* i)
 {
     NvDlaError e = NvDlaSuccess;
     bool isCaffe = appArgs->caffemodel != "";
-
+    // 这里啥也没做啊... 直接返回 true
     PROPAGATE_ERROR_FAIL(parseSetup(appArgs, i));
 
     NvDlaDebugPrintf("creating new wisdom context...\n");
+    // A Factory Method to Create a IWisdom Instance
     i->wisdom = nvdla::createWisdom();
     if (!i->wisdom)
         ORIGINATE_ERROR_FAIL(NvDlaError_BadParameter, "createWisdom() failed");

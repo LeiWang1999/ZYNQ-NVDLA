@@ -28,11 +28,8 @@
 COMPILER_SUBDIRS = core/src/compiler \
 	apps/compiler
 
-
 RUNTIME_SUBDIRS = core/src/runtime \
 	apps/runtime
-
-
 
 compiler:
 	for dir in $(COMPILER_SUBDIRS); do \
@@ -40,7 +37,6 @@ compiler:
 	done
 
 runtime:
-	@echo $(!pwd)
 	for dir in $(RUNTIME_SUBDIRS); do \
 		$(MAKE) -C $$dir; \
 	done

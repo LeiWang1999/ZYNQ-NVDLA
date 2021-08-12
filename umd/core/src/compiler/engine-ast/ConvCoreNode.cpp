@@ -711,7 +711,7 @@ NvDlaError engine_ast::ConvCoreNode::quantizeAuxData()
         ORIGINATE_ERROR_FAIL(NvDlaError_NotSupported, "Don't support weight quantization for group convolutions yet for %s\n",
                                 name().c_str());
     }
-
+    // 为量化之后的 Tensor 数据开辟内存
     quantizedWts = reinterpret_cast<NvS8*>(std::malloc(origWtsBlob.count * sizeof(NvS8)));
 
     if (graph()->profile()->quantizationMode() == nvdla::QuantizationMode::PER_KERNEL)
@@ -1065,6 +1065,7 @@ NvDlaError engine_ast::ConvCoreNode::preProcessAuxData()
     PROPAGATE_ERROR_FAIL( verifyEdgePorts() );
 
     dataInputEdge = inputEdges()[0];
+    // 枚举类型：IMG、FEATURE_DATA、WEIGHT、BIAS_DATA、BATCH_NORM_DATA、SCALE_DATA
     isIMGConv     = dataInputEdge->tensorSurfaceDesc()->surfaceFormat().category() == surface::SurfaceCategoryEnum::IMG;
 
     // dilation is not possible with IMG convolution
@@ -1075,6 +1076,7 @@ NvDlaError engine_ast::ConvCoreNode::preProcessAuxData()
 
     // quantize weights if img Conv, since int8 weights have to undergo
     // pre and/or post Chnl Ext for IMG Conv
+    // 如果数据是输入的第一层卷积，就进行量化
     if (isIMGConv)
     {
         PROPAGATE_ERROR_FAIL( quantizeAuxData() );

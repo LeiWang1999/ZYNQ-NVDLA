@@ -1061,7 +1061,7 @@ NvDlaError engine_ast::Graph::preProcessAuxData()
 {
     NvDlaError e = NvDlaSuccess;
     NodeSequence allNodes = orderedNodes();
-
+    // 遍历所有的 OP Node
     for (NodeSequence::const_iterator ni = allNodes.begin(); ni != allNodes.end(); ++ni)
     {
         PROPAGATE_ERROR_FAIL((*ni)->preProcessAuxData());
@@ -1094,9 +1094,10 @@ NvDlaError engine_ast::Graph::mergeUnitScaleOperations()
     Node* removeNode = NULL;
 
     do
-    {
+    {   // iterate all Nodes for engine abstract syntax tree
         for (ni = startNodeIter; ni != allNodes.end(); ++ni)
         {
+            // The Node type must be SDP
             if ((*ni)->engineType().v() != EngineTypeEnum::SDP)
             {
                 continue;

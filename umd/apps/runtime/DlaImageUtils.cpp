@@ -204,7 +204,7 @@ NvDlaError JPEG2DIMG(std::string inputFileName, NvDlaImage* output, nvdla::IRunt
 #if defined(JCS_EXTENSIONS)
         case JCS_YCbCr: // FIXME: dont know how to handle compression yet
         case JCS_RGB:
-//            info.out_color_space = JCS_EXT_BGR;                    // FIXME: currently extracting as BGR (since caffe ref model assumes BGR)
+            info.out_color_space = JCS_EXT_BGR;                    // FIXME: currently extracting as BGR (since caffe ref model assumes BGR)
             output->m_meta.surfaceFormat = NvDlaImage::T_B8G8R8;
             output->m_meta.channel = 3;
             break;

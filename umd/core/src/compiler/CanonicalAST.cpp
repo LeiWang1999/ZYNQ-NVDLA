@@ -144,7 +144,8 @@ canonical_ast::Graph *canonical_ast::generateGraph(Network *network)
     map<Tensor *, canonical_ast::Edge *>::iterator tei;
 
     Graph *graph = new Graph();
-
+    // 下面这个循环把network中的inputTensor汇总成一个数组，并把Graph中input_edges数组大小设定成
+    // network中的inputTensor的数组大小
     vector<Tensor *> network_inputs;
     for (int ni = 0; ni < network->getNumInputs(); ++ni)
     {
@@ -152,7 +153,8 @@ canonical_ast::Graph *canonical_ast::generateGraph(Network *network)
     }
     input_edges.resize(network_inputs.size());
 
-
+    //下面这个循环把network中的outputTensor汇总成一个数组，并把Graph中outputedges数组大小设定成
+    //network中的outputTensor的数组大小
     vector<Tensor *> network_outputs;
     for (int ni = 0; ni < network->getNumOutputs(); ++ni)
     {
@@ -162,8 +164,8 @@ canonical_ast::Graph *canonical_ast::generateGraph(Network *network)
 
     //    gLogInfo << "canonical_ast::" << __func__ << " network shows " << network_inputs.size() << " inputs and " <<
     //        network_outputs.size() << " outputs" << endl;
-
-    for (int li = 0; li < network->getNumLayers(); li++)
+    //下面这个循环迭代network中的layer序列，根据每个layer的信息分别建立Graph中的相应的Node
+  for (int li = 0; li < network->getNumLayers(); li++)
     {
         ILayer *ilayer = network->getLayer(li);
         Layer *layer = LayerFactory::priv(ilayer);
@@ -172,7 +174,7 @@ canonical_ast::Graph *canonical_ast::generateGraph(Network *network)
             gLogError << __func__ << " encountered null layer at network layer index=" << li << endl;
             continue;
         }
-
+        //根据network中的layer，建立相应的Node
         canonical_ast::Node *can_node = newCanonicalNode(layer);
         if ( !can_node )
         {
@@ -180,20 +182,22 @@ canonical_ast::Graph *canonical_ast::generateGraph(Network *network)
             graph = 0;
             goto done;
         }
-        can_node->setGraph(graph);
-        graph->insertNode(can_node);
+        can_node->setGraph(graph);  // 这样可以从layer直接找到layer所在的graph
+        graph->insertNode(can_node);  // 为 graph 插入node
 
-        can_node->setId(graph->nextNodeId());
-        can_node->setName(layer->getName());
+        can_node->setId(graph->nextNodeId()); // 设置 node 的id，n-0 n-1 这样
+        can_node->setName(layer->getName());  // 设置 node 的name
 
-        node_layer[can_node] = layer;
+        node_layer[can_node] = layer;     //  设置 node 和 layer 的 map 关系
+
     }
 
     //
     // Now all the layer nodes are in the graph.
     // For each layer assemble the edges.
     //
-
+    //现在，所有network中的layer都在graph中建立了相应的node，并且这个对应关系也记录在了node_layer的MAP中
+    //下面循环迭代这个MAP中的每一项
     for (lni = node_layer.begin(); lni != node_layer.end(); ++lni)
     {
         canonical_ast::Node *node = lni->first;
@@ -202,8 +206,8 @@ canonical_ast::Graph *canonical_ast::generateGraph(Network *network)
         size_t input_tensors = 0, output_tensors = 0, aux_input_tensors = 0;
         vector<Tensor *> io_tensors, aux_tensors;
         NVDLA_UNUSED(aux_input_tensors);
-
-        for(int ii = 0, II = l->getNumInputs(); ii < II; ++ii)
+        //针对network中当前迭代的这个layer，找出其全部inputTensors并加入io_tensors列表
+      for(int ii = 0, II = l->getNumInputs(); ii < II; ++ii)
         {
             Tensor *tensor = TensorFactory::priv(l->getInput(ii));
             if ( !tensor )
@@ -214,7 +218,8 @@ canonical_ast::Graph *canonical_ast::generateGraph(Network *network)
             io_tensors.push_back(tensor);
             input_tensors++;
         }
-        for(int oo = 0, OO = l->getNumOutputs(); oo < OO; ++oo)
+      //针对network中当前迭代的这个layer，找出其全部outputTensors并加入io_tensors列表
+      for(int oo = 0, OO = l->getNumOutputs(); oo < OO; ++oo)
         {
             Tensor *tensor = TensorFactory::priv(l->getOutput(oo));
             if ( ! tensor )
@@ -225,55 +230,63 @@ canonical_ast::Graph *canonical_ast::generateGraph(Network *network)
             io_tensors.push_back(tensor);
             output_tensors++;
         }
-
-        for(size_t io = 0, IO = io_tensors.size(); io < IO; ++io)
+      //针对当前layer，迭代刚刚找到的全部iotensor的列表
+      for(size_t io = 0, IO = io_tensors.size(); io < IO; ++io)
         {
             Tensor *nw_tensor = io_tensors[io];
-            bool is_input = io < input_tensors;
+            bool is_input = io < input_tensors;//根据当前tensor在列表中的位置判断是input还是output
+                                               // edge_side是个enum值，input=SECOND，output=FIRST
             ast::EdgeSide edge_side( is_input ? ast::EdgeSideEnum::SECOND : ast::EdgeSideEnum::FIRST);
+            // edge_dir是个enum值，有单向双向和无方向三种，这里统一设定为单向
             ast::EdgeDirection edge_dir(ast::EdgeDirectionEnum::DIRECTED);
-
+            // 在tensor_edge映射MAP中查找当前tensor的对应项
             map<Tensor *, canonical_ast::Edge *>::iterator f = tensor_edge.find(nw_tensor);
-            canonical_ast::Edge *can_edge = 0;
-            Tensor* can_tensor = 0;
-            if ( f == tensor_edge.end() )
+            canonical_ast::Edge *can_edge = 0;// graph中的edge
+            Tensor* can_tensor = 0;// graph中的tensor
+            if ( f == tensor_edge.end() ) //如果没有在MAP中找到对应项
             {
-                can_edge = new canonical_ast::Edge();
-                can_edge->setGraph(graph);
+                can_edge = new canonical_ast::Edge(); //新建一个graph中的edge
+                can_edge->setGraph(graph); //把新建的edge的container设定为graph
 
-                can_tensor = nw_tensor->clone();
-                can_tensor->setNetwork(NULL);   // get rid of any connections back to the network builder
-                can_tensor->setTensorType(TensorType::kIO);
-                can_edge->setId(graph->nextEdgeId());
-                can_edge->setOriginalTensor(can_tensor);
-                graph->insertEdge(can_edge);
-
+                can_tensor = nw_tensor->clone();//把network中的tensor复制到一个新的变量can_tensor
+                can_tensor->setNetwork(NULL);  //由于这个新的tensor变量将加入graph所以其network指针清空，不在指向原来的network(这里是复制一份tensor，network中原来的tensor还在)
+                can_tensor->setTensorType(TensorType::kIO);//graph中的tensor设定为IO类型
+                can_edge->setId(graph->nextEdgeId()); //graph中edge的Id设定为string，e-0,e-1,e-2等
+                can_edge->setOriginalTensor(can_tensor);//graph中的edge的原始tensor设定为can_tensor，注意，这里的OriginalTensor指向的是从network中复制clone过来的一个副本，并不在network中，可以看出这里的包含关系，graph-->can_edge-->can_tensor
+                graph->insertEdge(can_edge);//把根据network中1个layer的iotensor新建的edge加入graph列表
+                //tensor_edge映射MAP加入nw中tensor到graph中edge映射
+                //nw_tensor_to_can_tensor映射MAP加入nw中tensor到graph中edge的tensor映射
                 tensor_edge[nw_tensor] = can_edge;
                 nw_tensor_to_can_tensor[nw_tensor] = can_tensor;
             } else {
                 can_edge = f->second;
             }
+            //把当前新建的edge加入到node的edge_side侧列表当中
             graph->appendNodeToEdge(can_edge, edge_side, node);
 
             // if this is an input node it could be one of the network inputs.
             // if so keep track of it.
             if ( is_input )
             {
+              //迭代整个network的inputTensors列表
                 for ( size_t iti = 0; iti < network_inputs.size(); iti++)
                 {
-                    if ( nw_tensor == network_inputs[iti] )
+                  //如果当前node对应的这个inputTensor在整个network的inputTensors列表当中
+                  if ( nw_tensor == network_inputs[iti] )
                     {
                         // gLogInfo << " identified input edge: " << (int)iti << " tensor id " << tensor->getName() << endl;
-                        input_edges[iti] = can_edge;
+                        input_edges[iti] = can_edge; //把当前edge加入graph的input_edges列表当中
                         can_tensor = nw_tensor_to_can_tensor[nw_tensor];
+                        //设定当前tensor属性为INPUT
                         can_tensor->setTensorType(TensorType::kNW_INPUT);
                         break;
                     }
                 }
-                node->markInputEdge(can_edge);
+                node->markInputEdge(can_edge); //告诉当前node，你的这个edge是一个网络inputedge
             }
             else
             {
+                // 相对的，mark output
                 for ( size_t oti = 0; oti < network_outputs.size(); oti++)
                 {
                     if ( nw_tensor == network_outputs[oti] )
@@ -292,18 +305,18 @@ canonical_ast::Graph *canonical_ast::generateGraph(Network *network)
 
     if ( input_edges.size() )
     {
-        graph->setInputEdges(input_edges);
+        graph->setInputEdges(input_edges); //设定整个graph的inputedges队列为input_edges
     }
     if ( output_edges.size() )
     {
-        graph->setOutputEdges(output_edges);
+        graph->setOutputEdges(output_edges); //设定整个graph的outputedges队列为output_edges
     }
 
-    graph->scoredOrdering()->generate();
-    graph->markClean();
+    graph->scoredOrdering()->generate(); // graph 计分牌生成，这部分比较复杂
+    graph->markClean(); // 清除graph的m_dirty脏标志，所有对graph的更改都要设定m_dirty为true
 
 done:
-    return graph;
+    return graph; // 把按照network生成的graph作为返回值返回
 }
 
 ostream &canonical_ast::outputJson(canonical_ast::Graph *graph, ostream &os)

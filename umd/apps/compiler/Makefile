@@ -35,9 +35,9 @@ BUILDDIR := $(BUILDOUT)/$(MODULE)
 TEST_BIN := $(BUILDDIR)/$(MODULE)
 
 INCLUDES :=
-MODULE_COMPILEFLAGS := -W -Wall -Wno-multichar -Wno-unused-parameter -Wno-unused-function -Werror-implicit-function-declaration
+MODULE_COMPILEFLAGS := -W -Wall -Wno-multichar -Wno-unused-parameter -Wno-unused-function -Werror-implicit-function-declaration -g
 MODULE_CFLAGS := --std=c99
-MODULE_CPPFLAGS := --std=c++11 -fexceptions -fno-rtti
+MODULE_CPPFLAGS := --std=c++11 -fexceptions -frtti
 
 all:: $(TEST_BIN)
 

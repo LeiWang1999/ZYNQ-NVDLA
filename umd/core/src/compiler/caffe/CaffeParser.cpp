@@ -185,6 +185,7 @@ struct CaffeParserPoolingDimsCallback : public INetwork::OutputDimensionsFormula
         assert( input.h + tlPadding.h + brPadding.h >= kernel.h );
         assert( input.w + tlPadding.w + brPadding.w >= kernel.w );
         int pooledH, pooledW;
+        // floor 是向下取整、ceil 是向上取整
         if (mHasTorchPooling.find(std::string(layerName)) != mHasTorchPooling.end())
         {
             pooledH = static_cast<int>
@@ -923,16 +924,18 @@ const IBlobNameToTensor* CaffeParser::parse(const char* deployFile,
     if (!mDimsCallback) {
         mDimsCallback = new CaffeParserPoolingDimsCallback;
     }
+    // 设置 Network 输出层长宽的计算公式（向上取整）
     network->setPoolingOutputDimensionsFormula(mDimsCallback);
 
     // this is used to deal with dropout layers which have different input and output
+    // 解析 Caffemodel 文件，提取权重数据等，转化到 mModel 对象中
     mModel = new dc::NetParameter();
     if (!readBinaryProto(mModel/*.get()*/, modelFile, mProtobufBufferSize))
     {
         gLogError << "Could not parse model file" << std::endl;
         return 0;
     }
-
+    // 解析 Prototxt 文件，转化到 mDeploy 对象中
     mDeploy = new dc::NetParameter();
     if (!readTextProto(mDeploy/*.get()*/, deployFile))
     {
@@ -1035,16 +1038,18 @@ int CaffeParser::identifyOutputs(INetwork * network)
     std::set< ITensor* > outputTensors;
     std::set< ITensor* > inputTensors;
 
+    // 缓存每层的输入 Tensor 和输出 Tensor
     for (int l = 0; l < network->getNumLayers(); ++l)
     {
+        // 获取每一层
         ILayer* layer = network->getLayer(l);
         if (!layer)
             return -1;
-
+        // 将输入 Tensor 存入inputTensors 里
         for (int ii = 0; ii < layer->getNumInputs(); ++ii) {
             inputTensors.insert(layer->getInput(ii));
         }
-
+        // 将输出 Tensor 存入 OutputTensors 里
         for (int oo = 0; oo < layer->getNumOutputs(); ++oo)
         {
             outputTensors.insert(layer->getOutput(oo));
@@ -1053,6 +1058,7 @@ int CaffeParser::identifyOutputs(INetwork * network)
 
     for (std::set<ITensor*>::iterator oi = outputTensors.begin(); oi != outputTensors.end(); ++oi)
     {
+        // oi 是遍历 outputTensors，如果这个 Layer 不是某个Laye的r输入，那么他就是最后一层的输出，这个逻辑没毛病。
         // an output tensor which is not an input to any other layers is a network output tensor
         if (inputTensors.find(*oi) == inputTensors.end())
         {

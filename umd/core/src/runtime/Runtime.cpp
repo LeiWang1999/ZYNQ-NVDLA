@@ -662,6 +662,7 @@ NvDlaError Runtime::submitInternal()
                     dla_task.task_id = task->id();
 
                     fillTaskAddressList(task, &dla_task);
+
                     PROPAGATE_ERROR_FAIL( NvDlaSubmit(NULL, dev, &dla_task, 1) );
                 }
                 break;

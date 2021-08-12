@@ -782,6 +782,7 @@ bool Network::assignSymbols(Wisdom *wisdom)
         }
 
         // tell the layer to assign symbols for whatever it references...
+        // 更新 wisdom 对象里的符号表（symbol table）
         ok = layer->assignSymbols(wisdom);
         if ( !ok ) {
             gLogError << "unable to assign symbols for layer " << layer->getName() << endl;
