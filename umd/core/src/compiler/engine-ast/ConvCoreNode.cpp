@@ -669,11 +669,12 @@ NvDlaError engine_ast::ConvCoreNode::quantizeAuxData()
     std::vector<NvF32> filterScales;
 
     NvU32 G = params().numGroups();
-    NvU32 K = params().weightDims().n / G;
-    NvU32 C = params().weightDims().c / G;
-    NvU32 RS = params().weightDims().h * params().weightDims().w; // per-group values
+    NvU32 K = auxSurfaces().back()->dimensions().n / G;
+    NvU32 C = auxSurfaces().back()->dimensions().c / G;
+    NvU32 RS = auxSurfaces().back()->dimensions().h * auxSurfaces().back()->dimensions().w; // per-group values
     NvU32 kStride = C * RS;
     NvU32 cStride = RS;
+
 
     PROPAGATE_ERROR_FAIL( verifyEdgePorts() );
 

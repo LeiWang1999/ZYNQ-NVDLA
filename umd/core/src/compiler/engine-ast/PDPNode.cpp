@@ -222,7 +222,7 @@ NvU16 engine_ast::PDPNode::calculateMaxWidth
     NvU16 pdpMaxFlyingWidth   = 0;
 
     const NvU32 PDP_BUF_SIZE  = (7 * 1024);
-    const NvU16 rtlOverlapLines[9] = {1, 1, 2, 4, 4, 8, 8, 8, 8};
+    const NvU16 rtlOverlapLines[18] = {1, 1, 2, 4, 4, 8, 8, 8, 8};
 
     NvU16 logicalOverlapLines = (NvU16) ceil(float(poolingKernelHeight)/float(poolingStrideY));
     NvU32 atom_k_size         = graph()->target_config()->atomicKSize();
