@@ -11,6 +11,7 @@ IP/ Vivado IP Package For Nvdla Small
 include/ Tengine backend include
 RTL/ nvdla small rtl (include wrapper.v)
 kmd/ kernel mode drive for petalinux (include zynq7000 / zynq MPSoc)
+prebuilt/ aarch64 prebuilt lib
 reports/ Timing、Power、Resource、Execution reports
 sdk_sanity/ sdk sanity Test for NVDLA
 umd/ Compiler and Runtime source code
@@ -65,10 +66,3 @@ detection num: 3
 Output:
 
 ![yolox_dla_out](yolox_dla_out.jpg)
-
-## Reference
-
-1. https://vvviy.github.io/2018/09/12/nv_small-FPGA-Mapping-Workflow-I/
-2. https://vvviy.github.io/2018/09/17/nv_small-FPGA-Mapping-Workflow-II/
-5. http://nvdla.org/primer.html
-7. https://github.com/SameLight/ITRI-OpenDLA
