@@ -2,7 +2,7 @@
 
 NVDLA Xilinx FPGA Mapping！
 
-1. **[Tengine Frontend Support !](https://github.com/OAID/Tengine)**
+1. **[Tengine Frontend Supported !](https://github.com/OAID/Tengine)**
 
 ## File Tree of WorkSpace
 
