@@ -97,11 +97,11 @@ public: // internally facing
 
     virtual NvU16 getFactoryType() const;
 
-    inline bool debugVersions() const { return false; }
-    inline bool debugTasks() const { return false; }
-    inline bool debugMemoryLayout() const { return false; }
-    inline bool debugGraphs() const { return false; }
-    inline bool debugProfile() const { return false; }
+    inline bool debugVersions() const { return true; }
+    inline bool debugTasks() const { return true; }
+    inline bool debugMemoryLayout() const { return true; }
+    inline bool debugGraphs() const { return true; }
+    inline bool debugProfile() const { return true; }
 
 protected:
 
