@@ -113,12 +113,12 @@ protected:
 
     virtual ~Runtime();
 
-    inline bool debugMemoryLayout() const  { return false; }
-    inline bool debugTasks() const { return false; }
-    inline bool debugVersions() const { return false; }
-    inline bool debugLoadables() const { return false; }
-    inline bool debugBinding() const { return false; }
-    inline bool debugStrideRewrite() const { return false; }
+    inline bool debugMemoryLayout() const  { return true; }
+    inline bool debugTasks() const { return true; }
+    inline bool debugVersions() const { return true; }
+    inline bool debugLoadables() const { return true; }
+    inline bool debugBinding() const { return true; }
+    inline bool debugStrideRewrite() const { return true; }
 
     NvDlaError submitInternal(void);
 

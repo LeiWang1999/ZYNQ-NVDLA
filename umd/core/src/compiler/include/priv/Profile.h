@@ -180,7 +180,7 @@ public: // internally facing
     virtual NvDlaError setQuantizationMode(nvdla::QuantizationMode qm);
     nvdla::QuantizationMode quantizationMode() const { return m_compileParams.m_quantizationMode; }
 
-    inline bool debug() const { return false; }
+    inline bool debug() const { return true; }
 
     virtual NvDlaError initGlobalParams(IGlobalParams* gp);
     virtual NvDlaError initCompileParams(ICompileParams* cp);
