@@ -20,6 +20,10 @@ sdk_sanity/ sdk sanity Test for NVDLA
 umd/ Compiler and Runtime source code
 ```
 
+## Talk
+
+- Tengine Open Talk : New Backend OpenDLA. [[slides](https://github.com/LeiWang1999/ZYNQ-NVDLA/TengineTalk.pdf)] [[recording](https://www.bilibili.com/video/BV1z44y1478k)]
+
 ## Test
 
 #### 3.1 Classification
