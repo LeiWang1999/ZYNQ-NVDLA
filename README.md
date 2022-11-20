@@ -2,7 +2,7 @@
 
 NVDLA Xilinx FPGA Mapping！
 
-1. [Technical Post](https://leiblog.wang/NVDLA-Xilinx-FPGA-Mapping)
+1. [Technical Post](https://zhuanlan.zhihu.com/p/378202360)
 
 2. **[Tengine Frontend Supported !](https://github.com/OAID/Tengine)**
 
